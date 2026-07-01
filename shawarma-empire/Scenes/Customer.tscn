@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Customer/Customer.gd" id="1_customer"]
+[ext_resource type="Script" path="res://Scripts/StateMachine/StateMachine.gd" id="2_machine"]
+[ext_resource type="Script" path="res://Scripts/Customer/States/CustomerIdleState.gd" id="3_idle"]
+[ext_resource type="Script" path="res://Scripts/Customer/States/CustomerWalkingState.gd" id="4_walk"]
+[ext_resource type="Script" path="res://Scripts/Customer/States/CustomerWaitingState.gd" id="5_wait"]
+[ext_resource type="Script" path="res://Scripts/Customer/States/CustomerLeavingState.gd" id="6_leave"]
+
+[node name="Customer" type="Node2D"]
+script = ExtResource("1_customer")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.2, 0.55, 0.95, 1)
+polygon = PackedVector2Array(-16, -32, 16, -32, 16, 16, -16, 16)
+
+[node name="Head" type="Polygon2D" parent="."]
+position = Vector2(0, -44)
+color = Color(0.95, 0.76, 0.58, 1)
+polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_machine")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("3_idle")
+walking_state = NodePath("../Walking")
+
+[node name="Walking" type="Node" parent="StateMachine"]
+script = ExtResource("4_walk")
+waiting_state = NodePath("../Waiting")
+
+[node name="Waiting" type="Node" parent="StateMachine"]
+script = ExtResource("5_wait")
+leaving_state = NodePath("../Leaving")
+wait_seconds = 2.0
+
+[node name="Leaving" type="Node" parent="StateMachine"]
+script = ExtResource("6_leave")

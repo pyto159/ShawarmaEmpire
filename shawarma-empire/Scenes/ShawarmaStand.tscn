@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Stand/ShawarmaStand.gd" id="1_stand"]
+
+[node name="ShawarmaStand" type="Node2D"]
+script = ExtResource("1_stand")
+
+[node name="Counter" type="Polygon2D" parent="."]
+position = Vector2(0, 48)
+color = Color(0.72, 0.42, 0.22, 1)
+polygon = PackedVector2Array(-150, -24, 150, -24, 150, 24, -150, 24)
+
+[node name="GrillPlaceholder" type="Polygon2D" parent="."]
+position = Vector2(-70, -20)
+color = Color(0.18, 0.18, 0.18, 1)
+polygon = PackedVector2Array(-48, -28, 48, -28, 48, 28, -48, 28)
+
+[node name="PreparationArea" type="Polygon2D" parent="."]
+position = Vector2(70, -20)
+color = Color(0.82, 0.82, 0.74, 1)
+polygon = PackedVector2Array(-48, -28, 48, -28, 48, 28, -48, 28)
+
+[node name="CustomerWaitingPoint" type="Marker2D" parent="."]
+position = Vector2(0, 130)
+
+[node name="CustomerExitPoint" type="Marker2D" parent="."]
+position = Vector2(420, 130)

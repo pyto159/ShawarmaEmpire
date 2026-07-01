@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/ShawarmaStand.tscn" id="1_stand_scene"]
+[ext_resource type="PackedScene" path="res://Scenes/Customer.tscn" id="2_customer_scene"]
+[ext_resource type="Script" path="res://Scripts/Customer/CustomerSpawner.gd" id="3_spawner"]
+
+[node name="Main" type="Node2D"]
+
+[node name="ShawarmaStand" parent="." instance=ExtResource("1_stand_scene")]
+position = Vector2(360, 260)
+
+[node name="CustomerSpawner" type="Node2D" parent="." node_paths=PackedStringArray("waiting_point", "exit_point")]
+position = Vector2(-80, 390)
+script = ExtResource("3_spawner")
+customer_scene = ExtResource("2_customer_scene")
+spawn_interval = 3.0
+waiting_point = NodePath("../ShawarmaStand/CustomerWaitingPoint")
+exit_point = NodePath("../ShawarmaStand/CustomerExitPoint")
+
+[node name="SpawnTimer" type="Timer" parent="CustomerSpawner"]
