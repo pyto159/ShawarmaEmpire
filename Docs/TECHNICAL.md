@@ -227,6 +227,15 @@ Planned responsibilities:
 
 ### Recipe System
 
+The first gameplay-facing recipe system is implemented as data-only Godot resources under `res://Resources/Recipes/` and `res://Resources/Ingredients/`.
+Reusable resource scripts live in `res://Scripts/Recipes/`.
+
+Current responsibilities:
+
+- Define `Recipe` resources with display name, base price, preparation time, and required ingredients.
+- Define `Ingredient` resources with display name, optional icon placeholder, and unlock level.
+- Keep recipe and ingredient data separate from customers, orders, cooking, and UI so future systems can consume the same data without scene coupling.
+
 Planned responsibilities:
 
 - Define recipes as data resources.
