@@ -2,6 +2,7 @@ extends Control
 
 const CUSTOMER_QUEUE_PATH: NodePath = NodePath("../CustomerQueue")
 const CUSTOMER_EXIT_OFFSET: Vector2 = Vector2(-160.0, 0.0)
+const FLOATING_COIN_OFFSET: Vector2 = Vector2(0.0, -48.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
 const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 4
 const DEFAULT_QUEUE_CAPACITY: int = 4
@@ -9,12 +10,14 @@ const DEFAULT_QUEUE_CAPACITY: int = 4
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
 @export var queue_capacity: int = DEFAULT_QUEUE_CAPACITY
+@export var floating_coin_feedback_scene: PackedScene
 
 @onready var game_hud: GameHUD = $GameHUD
 @onready var cooking_stand: CookingStand = $World/CookingStand
 @onready var customer_queue: QueueSystem = $World/CustomerQueue
 @onready var customer_spawner: Spawner2D = $World/CustomerSpawner
 @onready var spawned_customers: Node2D = $World/SpawnedCustomers
+@onready var floating_coin_layer: Node2D = $FloatingCoinLayer
 
 var active_customer: Customer
 var _spawn_timer: Timer = Timer.new()
@@ -152,5 +155,21 @@ func _on_cooking_completed(order: Order) -> void:
 	if earned_coins > 0:
 		GameManager.add_coins(earned_coins)
 		game_hud.show_coin_feedback(earned_coins)
+		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
 
 	_update_active_customer()
+
+
+func _show_floating_coin_feedback(source_position: Vector2, amount: int) -> void:
+	if floating_coin_feedback_scene == null or amount <= 0:
+		return
+
+	var feedback: Node = floating_coin_feedback_scene.instantiate()
+	if not feedback is FloatingCoinFeedback:
+		feedback.queue_free()
+		return
+
+	var floating_feedback: FloatingCoinFeedback = feedback as FloatingCoinFeedback
+	floating_coin_layer.add_child(floating_feedback)
+	floating_feedback.global_position = source_position + FLOATING_COIN_OFFSET
+	floating_feedback.play(amount)
