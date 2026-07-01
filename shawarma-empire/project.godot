@@ -10,12 +10,15 @@ config_version=5
 
 [application]
 
-config/name="ShawarmaEmpire"
+config/name="Shawarma Empire"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]
 
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/handheld/orientation=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
@@ -25,4 +28,5 @@ window/stretch/aspect="expand"
 
 [rendering]
 
+renderer/rendering_method="mobile"
 rendering_device/driver.windows="d3d12"
