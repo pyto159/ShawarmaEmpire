@@ -21,6 +21,7 @@ GameManager="*res://Managers/GameManager.gd"
 SaveManager="*res://Managers/SaveManager.gd"
 SceneManager="*res://Managers/SceneManager.gd"
 AudioManager="*res://Managers/AudioManager.tscn"
+EffectsManager="*res://Managers/EffectsManager.gd"
 
 [display]
 
