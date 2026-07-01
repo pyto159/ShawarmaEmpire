@@ -1,10 +1,10 @@
 extends Control
 
 const CUSTOMER_QUEUE_PATH: NodePath = NodePath("../CustomerQueue")
-const CUSTOMER_EXIT_OFFSET: Vector2 = Vector2(-160.0, 0.0)
+const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 700.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
-const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 4
-const DEFAULT_QUEUE_CAPACITY: int = 4
+const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
+const DEFAULT_QUEUE_CAPACITY: int = 5
 
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
@@ -143,7 +143,7 @@ func _on_cooking_completed(order: Order) -> void:
 		_update_active_customer()
 		return
 
-	var leave_target_position: Vector2 = served_customer.global_position + CUSTOMER_EXIT_OFFSET
+	var leave_target_position: Vector2 = CUSTOMER_EXIT_POSITION
 	if not cooking_stand.deliver_completed_order(served_customer, leave_target_position):
 		_update_active_customer()
 		return
