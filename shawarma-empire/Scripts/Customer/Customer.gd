@@ -7,6 +7,7 @@ signal order_created(order: Order)
 signal order_changed(order: Order)
 signal order_completed(order: Order)
 signal food_received(order: Order)
+signal left(customer: Customer)
 
 const DEFAULT_MOVE_SPEED: float = 90.0
 const ARRIVAL_DISTANCE: float = 4.0
@@ -33,6 +34,7 @@ enum CustomerState {
 @export var available_recipes: Array[Recipe] = []
 @export var starting_order: Order
 @export var food_visual_path: NodePath
+@export var free_on_leave_completed: bool = true
 
 var current_state: CustomerState = CustomerState.IDLE
 var _target_position: Vector2 = Vector2.ZERO
@@ -346,16 +348,31 @@ func _move_toward_target() -> void:
 
 	var distance_to_target: float = global_position.distance_to(_target_position)
 	if distance_to_target <= ARRIVAL_DISTANCE:
-		global_position = _target_position
-		_has_target_position = false
-		_stop_moving()
-		if current_state == CustomerState.WALKING:
-			_set_state(CustomerState.WAITING)
+		_finish_movement()
 		return
 
 	var movement_direction: Vector2 = global_position.direction_to(_target_position)
 	velocity = movement_direction * move_speed
 	move_and_slide()
+
+
+func _finish_movement() -> void:
+	var arrived_state: CustomerState = current_state
+	global_position = _target_position
+	_has_target_position = false
+	_stop_moving()
+	if arrived_state == CustomerState.WALKING:
+		_set_state(CustomerState.WAITING)
+	elif arrived_state == CustomerState.LEAVING:
+		_finish_leaving()
+
+
+func _finish_leaving() -> void:
+	left.emit(self)
+	if free_on_leave_completed:
+		queue_free()
+	else:
+		_set_state(CustomerState.IDLE)
 
 
 func _stop_moving() -> void:
