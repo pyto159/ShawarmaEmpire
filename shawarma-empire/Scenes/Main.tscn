@@ -15,7 +15,7 @@
 [sub_resource type="Resource" id="Resource_customer_spawn_definition"]
 script = ExtResource("11_spawn_definition")
 scene = ExtResource("13_customer")
-max_active_instances = 4
+max_active_instances = 5
 
 [sub_resource type="Resource" id="Resource_customer_spawn_pool"]
 script = ExtResource("12_spawn_pool")
@@ -49,30 +49,35 @@ position = Vector2(360, 360)
 
 [node name="CustomerQueue" type="Node" parent="World"]
 script = ExtResource("3_queue_system")
-queue_capacity = 4
+queue_capacity = 5
 
 [node name="service_position" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(200, 8)
+position = Vector2(360, 100)
+script = ExtResource("4_queue_point")
+priority = 40
+
+[node name="waiting_position_1" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(260, 140)
 script = ExtResource("4_queue_point")
 priority = 30
 
-[node name="waiting_position_1" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(112, 64)
+[node name="waiting_position_2" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(160, 180)
 script = ExtResource("4_queue_point")
 priority = 20
 
-[node name="waiting_position_2" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(24, 120)
+[node name="waiting_position_3" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(60, 220)
 script = ExtResource("4_queue_point")
 priority = 10
 
-[node name="waiting_position_3" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(-64, 176)
+[node name="waiting_position_4" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(-40, 260)
 script = ExtResource("4_queue_point")
 priority = 0
 
 [node name="ShawarmaStand" type="Node2D" parent="World"]
-position = Vector2(260, 0)
+position = Vector2(540, 70)
 script = ExtResource("5_stand")
 queue_system_path = NodePath("../CustomerQueue")
 
@@ -84,12 +89,12 @@ offset_bottom = 32.0
 color = Color(0.78, 0.36, 0.14, 1)
 
 [node name="CookingStand" parent="World" instance=ExtResource("6_cooking_stand")]
-position = Vector2(260, -88)
+position = Vector2(540, -18)
 
 [node name="SpawnedCustomers" type="Node2D" parent="World"]
 
 [node name="CustomerSpawner" type="Node2D" parent="World"]
-position = Vector2(-220, 176)
+position = Vector2(-180, 320)
 script = ExtResource("9_spawner")
 spawn_pool = SubResource("Resource_customer_spawn_pool")
 reserve_spawn_points_until_instance_removed = false
