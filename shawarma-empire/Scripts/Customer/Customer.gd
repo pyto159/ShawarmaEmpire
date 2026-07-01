@@ -99,12 +99,15 @@ func clear_order() -> void:
 	order_changed.emit(null)
 
 
-func complete_current_order() -> void:
+func complete_current_order() -> bool:
 	if current_order == null or current_order.is_completed:
-		return
+		return false
 
-	if current_order.complete():
-		order_completed.emit(current_order)
+	if not current_order.complete():
+		return false
+
+	order_completed.emit(current_order)
+	return true
 
 
 func has_active_order() -> bool:

@@ -7,6 +7,7 @@ signal service_completed(reservation: QueueReservation)
 const DEFAULT_SERVICE_DURATION_SECONDS: float = 2.0
 const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not configured."
 const QUEUE_SYSTEM_NOT_FOUND: String = "Queue system was not found."
+const NO_COIN_REWARD: int = 0
 
 @export var queue_system_path: NodePath
 @export var service_duration_seconds: float = DEFAULT_SERVICE_DURATION_SECONDS
@@ -92,13 +93,23 @@ func _complete_active_service() -> void:
 
 	if completed_reservation.requester is Customer:
 		var customer: Customer = completed_reservation.requester as Customer
-		customer.complete_current_order()
+		var earned_coins: int = _complete_customer_order(customer)
+		if earned_coins > NO_COIN_REWARD:
+			GameManager.add_coins(earned_coins)
 		customer.complete_queue_service()
 	else:
 		_queue_system.complete_reservation(completed_reservation)
 
 	service_completed.emit(completed_reservation)
 	_try_start_next_service()
+
+
+func _complete_customer_order(customer: Customer) -> int:
+	var order: Order = customer.current_order
+	if order == null or not customer.complete_current_order():
+		return NO_COIN_REWARD
+
+	return max(order.total_price, NO_COIN_REWARD)
 
 
 func _get_front_ready_reservation() -> QueueReservation:
