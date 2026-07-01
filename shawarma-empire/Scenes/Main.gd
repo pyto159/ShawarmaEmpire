@@ -63,4 +63,10 @@ func _on_cooking_completed(order: Order) -> void:
 		return
 
 	var leave_target_position: Vector2 = active_customer.global_position + CUSTOMER_EXIT_OFFSET
-	cooking_stand.deliver_completed_order(active_customer, leave_target_position)
+	if not cooking_stand.deliver_completed_order(active_customer, leave_target_position):
+		return
+
+	var earned_coins: int = max(order.total_price, 0)
+	if earned_coins > 0:
+		GameManager.add_coins(earned_coins)
+		game_hud.show_coin_feedback(earned_coins)
