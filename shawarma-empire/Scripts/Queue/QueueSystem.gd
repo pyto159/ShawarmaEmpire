@@ -15,6 +15,7 @@ const FIRST_SEQUENCE_NUMBER: int = 1
 
 @export var auto_collect_child_queue_points: bool = true
 @export var keep_full_queue: bool = true
+@export var queue_capacity: int = 3
 
 var queue_points: Array[QueuePoint2D] = []
 var active_reservations: Array[QueueReservation] = []
@@ -62,6 +63,10 @@ func remove_queue_point(queue_point: QueuePoint2D) -> void:
 
 
 func try_reserve(requester: Node, request_priority: int = DEFAULT_REQUEST_PRIORITY) -> QueueReservation:
+	if is_at_capacity():
+		reservation_failed.emit(requester, RESERVATION_FAILED_NO_POINT)
+		return null
+
 	if has_active_reservation(requester) or has_waiting_request(requester):
 		reservation_failed.emit(requester, RESERVATION_FAILED_DUPLICATE_REQUESTER)
 		return null
@@ -128,6 +133,25 @@ func get_reservation_for_queue_point(queue_point: QueuePoint2D) -> QueueReservat
 	return null
 
 
+func has_free_capacity() -> bool:
+	return get_used_capacity() < get_effective_capacity()
+
+
+func is_at_capacity() -> bool:
+	return not has_free_capacity()
+
+
+func get_used_capacity() -> int:
+	return active_reservations.size() + waiting_requests.size()
+
+
+func get_effective_capacity() -> int:
+	if queue_capacity > 0:
+		return queue_capacity
+
+	return queue_points.size()
+
+
 func get_available_queue_point() -> QueuePoint2D:
 	for queue_point: QueuePoint2D in queue_points:
 		if queue_point != null and queue_point.can_reserve():
@@ -157,7 +181,7 @@ func _process_waiting_requests_for_requester(requester: Node) -> QueueReservatio
 
 func _process_waiting_requests() -> void:
 	_sort_waiting_requests()
-	while not waiting_requests.is_empty():
+	while not waiting_requests.is_empty() and active_reservations.size() < get_effective_capacity():
 		var queue_point: QueuePoint2D = get_available_queue_point()
 		if queue_point == null:
 			return

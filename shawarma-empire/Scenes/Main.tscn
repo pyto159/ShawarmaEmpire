@@ -15,7 +15,7 @@
 [sub_resource type="Resource" id="Resource_customer_spawn_definition"]
 script = ExtResource("11_spawn_definition")
 scene = ExtResource("8_customer")
-max_active_instances = 1
+max_active_instances = 5
 
 [sub_resource type="Resource" id="Resource_customer_spawn_pool"]
 script = ExtResource("12_spawn_pool")
@@ -48,6 +48,7 @@ position = Vector2(360, 420)
 
 [node name="CustomerQueue" type="Node" parent="World"]
 script = ExtResource("3_queue_system")
+queue_capacity = 3
 
 [node name="ServicePoint" type="Marker2D" parent="World/CustomerQueue"]
 position = Vector2(0, 0)
