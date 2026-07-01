@@ -9,6 +9,11 @@ func _ready() -> void:
 	_on_currency_changed(GameManager.coins, GameManager.gems)
 
 
+func _exit_tree() -> void:
+	if GameManager.currency_changed.is_connected(_on_currency_changed):
+		GameManager.currency_changed.disconnect(_on_currency_changed)
+
+
 func _on_currency_changed(coins: int, gems: int) -> void:
-	coins_label.text = "Coins: %d" % coins
-	gems_label.text = "Gems: %d" % gems
+	coins_label.text = CurrencyFormatter.format_coins(coins)
+	gems_label.text = CurrencyFormatter.format_gems(gems)
