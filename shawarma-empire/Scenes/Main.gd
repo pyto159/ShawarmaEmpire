@@ -10,7 +10,7 @@ const DEFAULT_QUEUE_CAPACITY: int = 4
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
 @export var queue_capacity: int = DEFAULT_QUEUE_CAPACITY
-@export var floating_coin_feedback_scene: PackedScene
+@export var floating_coin_label_scene: PackedScene
 
 @onready var game_hud: GameHUD = $GameHUD
 @onready var cooking_stand: CookingStand = $World/CookingStand
@@ -161,15 +161,15 @@ func _on_cooking_completed(order: Order) -> void:
 
 
 func _show_floating_coin_feedback(source_position: Vector2, amount: int) -> void:
-	if floating_coin_feedback_scene == null or amount <= 0:
+	if floating_coin_label_scene == null or amount <= 0:
 		return
 
-	var feedback: Node = floating_coin_feedback_scene.instantiate()
-	if not feedback is FloatingCoinFeedback:
+	var feedback: Node = floating_coin_label_scene.instantiate()
+	if not feedback is FloatingCoinLabel:
 		feedback.queue_free()
 		return
 
-	var floating_feedback: FloatingCoinFeedback = feedback as FloatingCoinFeedback
-	floating_coin_layer.add_child(floating_feedback)
-	floating_feedback.global_position = source_position + FLOATING_COIN_OFFSET
-	floating_feedback.play(amount)
+	var floating_label: FloatingCoinLabel = feedback as FloatingCoinLabel
+	floating_coin_layer.add_child(floating_label)
+	floating_label.global_position = source_position + FLOATING_COIN_OFFSET
+	floating_label.play(amount)

@@ -133,6 +133,20 @@ Responsibilities:
 
 UI code should not own gameplay rules. It should display state and forward player intent to gameplay systems or managers.
 
+### Floating Coin Feedback
+
+`FloatingCoinLabel` is a reusable presentation-only reward feedback component. It displays the coin amount passed to it, animates upward, scales in briefly, fades out, and frees itself when complete.
+
+Responsibilities:
+
+- Display positive coin rewards as `+<amount>` text.
+- Animate upward by about 50 pixels over 0.8 seconds.
+- Scale from 0.8 to 1.0 during the first 0.15 seconds.
+- Fade opacity to zero and automatically free itself.
+- Ignore mouse input so feedback labels never block gameplay interactions.
+
+The reusable scene lives in `res://Scenes/UI/FloatingCoinLabel.tscn` with presentation logic in `res://Scripts/UI/FloatingCoinLabel.gd`. It does not know about `GameManager`, customers, queues, or reward ownership. The current main scene composes instances into a dedicated `FloatingCoinLayer` after coins are awarded.
+
 ### Queue System
 
 The queue system is a reusable reservation-based customer flow system.

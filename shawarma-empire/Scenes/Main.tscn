@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/Stand/ShawarmaStand.gd" id="5_stand"]
 [ext_resource type="PackedScene" path="res://Scenes/Stand/CookingStand.tscn" id="6_cooking_stand"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/GameHUD.tscn" id="7_game_hud"]
-[ext_resource type="PackedScene" path="res://Scenes/UI/FloatingCoinFeedback.tscn" id="8_floating_coin_feedback"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/FloatingCoinLabel.tscn" id="8_floating_coin_label"]
 [ext_resource type="PackedScene" path="res://Scenes/Customer/Customer.tscn" id="13_customer"]
 [ext_resource type="Script" path="res://Scripts/Spawning/Spawner2D.gd" id="9_spawner"]
 [ext_resource type="Script" path="res://Scripts/Spawning/SpawnPoint2D.gd" id="10_spawn_point"]
@@ -30,7 +30,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
-floating_coin_feedback_scene = ExtResource("8_floating_coin_feedback")
+floating_coin_label_scene = ExtResource("8_floating_coin_label")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
