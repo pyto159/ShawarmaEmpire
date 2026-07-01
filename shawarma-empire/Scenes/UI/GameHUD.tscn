@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://gamehud"]
+[gd_scene load_steps=3 format=3 uid="uid://gamehud"]
 
 [ext_resource type="Script" path="res://Scripts/UI/GameHUD.gd" id="1_game_hud"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/CookingProgressBar.tscn" id="2_cooking_progress_bar"]
 
 [node name="GameHUD" type="MarginContainer"]
 anchors_preset = 10
@@ -33,6 +34,9 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Prepare"
 
+[node name="CookingProgressBar" parent="Panel/Content" instance=ExtResource("2_cooking_progress_bar")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="CoinFeedbackLabel" type="Label" parent="Panel/Content"]
 unique_name_in_owner = true
