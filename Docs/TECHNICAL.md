@@ -148,6 +148,24 @@ Responsibilities:
 
 Future economy rewards should listen to service completion or be triggered by a dedicated service/reward system instead of hard-coding currency logic directly into queue internals.
 
+### Order System
+
+The order system defines reusable architecture for future customer requests without connecting it to customers, queues, UI, cooking, payments, or the main scene yet.
+
+Primary classes:
+
+- `Order`
+- `OrderGenerator`
+
+Responsibilities:
+
+- Store the selected `Recipe` for an order.
+- Copy recipe-derived total price and preparation time onto the order at creation time.
+- Track order creation time and completion state.
+- Generate new orders by randomly selecting from available recipe resources.
+
+Order data lives in `res://Scripts/Orders/`, with reserved order resources under `res://Resources/Orders/`. Future systems should consume orders through clear APIs instead of coupling order creation directly to customers, queues, UI, cooking, or payments.
+
 ### Spawning System
 
 The spawning system provides reusable scene spawning with weighted definitions and spawn point reservations.
