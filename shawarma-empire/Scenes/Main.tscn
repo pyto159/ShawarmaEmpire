@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://main"]
+[gd_scene load_steps=14 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://Scenes/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://Scripts/Queue/QueueSystem.gd" id="3_queue_system"]
@@ -7,6 +7,19 @@
 [ext_resource type="PackedScene" path="res://Scenes/Stand/CookingStand.tscn" id="6_cooking_stand"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/GameHUD.tscn" id="7_game_hud"]
 [ext_resource type="PackedScene" path="res://Scenes/Customer/Customer.tscn" id="8_customer"]
+[ext_resource type="Script" path="res://Scripts/Spawning/Spawner2D.gd" id="9_spawner"]
+[ext_resource type="Script" path="res://Scripts/Spawning/SpawnPoint2D.gd" id="10_spawn_point"]
+[ext_resource type="Script" path="res://Scripts/Spawning/SpawnDefinition.gd" id="11_spawn_definition"]
+[ext_resource type="Script" path="res://Scripts/Spawning/SpawnPool.gd" id="12_spawn_pool"]
+
+[sub_resource type="Resource" id="Resource_customer_spawn_definition"]
+script = ExtResource("11_spawn_definition")
+scene = ExtResource("8_customer")
+max_active_instances = 1
+
+[sub_resource type="Resource" id="Resource_customer_spawn_pool"]
+script = ExtResource("12_spawn_pool")
+definitions = Array[Resource]([SubResource("Resource_customer_spawn_definition")])
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -29,7 +42,6 @@ color = Color(0.16, 0.09, 0.04, 1)
 [node name="GameHUD" parent="." instance=ExtResource("7_game_hud")]
 layout_mode = 1
 cooking_stand_path = NodePath("../World/CookingStand")
-active_customer_path = NodePath("../World/PlayableCustomer")
 
 [node name="World" type="Node2D" parent="."]
 position = Vector2(360, 420)
@@ -67,5 +79,12 @@ color = Color(0.78, 0.36, 0.14, 1)
 [node name="CookingStand" parent="World" instance=ExtResource("6_cooking_stand")]
 position = Vector2(96, -88)
 
-[node name="PlayableCustomer" parent="World" instance=ExtResource("8_customer")]
-position = Vector2(-96, 0)
+[node name="SpawnedCustomers" type="Node2D" parent="World"]
+
+[node name="CustomerSpawner" type="Node2D" parent="World"]
+position = Vector2(-160, 144)
+script = ExtResource("9_spawner")
+spawn_pool = SubResource("Resource_customer_spawn_pool")
+
+[node name="CustomerSpawnPoint" type="Marker2D" parent="World/CustomerSpawner"]
+script = ExtResource("10_spawn_point")
