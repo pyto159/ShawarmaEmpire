@@ -93,7 +93,7 @@ func _complete_active_service() -> void:
 
 	if completed_reservation.requester is Customer:
 		var customer: Customer = completed_reservation.requester as Customer
-		var earned_coins: int = _complete_customer_order(customer)
+		var earned_coins: int = _serve_customer_order(customer)
 		if earned_coins > NO_COIN_REWARD:
 			GameManager.add_coins(earned_coins)
 		customer.complete_queue_service()
@@ -104,9 +104,9 @@ func _complete_active_service() -> void:
 	_try_start_next_service()
 
 
-func _complete_customer_order(customer: Customer) -> int:
+func _serve_customer_order(customer: Customer) -> int:
 	var order: Order = customer.current_order
-	if order == null or not customer.complete_current_order():
+	if order == null or not customer.receive_food(order):
 		return NO_COIN_REWARD
 
 	return max(order.total_price, NO_COIN_REWARD)

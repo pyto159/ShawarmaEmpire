@@ -6,6 +6,7 @@ signal queue_reservation_changed(reservation: QueueReservation)
 signal order_created(order: Order)
 signal order_changed(order: Order)
 signal order_completed(order: Order)
+signal food_received(order: Order)
 
 const DEFAULT_MOVE_SPEED: float = 90.0
 const ARRIVAL_DISTANCE: float = 4.0
@@ -31,6 +32,7 @@ enum CustomerState {
 @export var create_order_on_ready: bool = true
 @export var available_recipes: Array[Recipe] = []
 @export var starting_order: Order
+@export var food_visual_path: NodePath
 
 var current_state: CustomerState = CustomerState.IDLE
 var _target_position: Vector2 = Vector2.ZERO
@@ -38,12 +40,16 @@ var _has_target_position: bool = false
 var _queue_system: QueueSystem
 var _queue_reservation: QueueReservation
 var current_order: Order
+var received_order: Order
+var has_received_food: bool = false
 var _order_generator: OrderGenerator = OrderGenerator.new()
 var _is_waiting_for_queue_reservation: bool = false
+var _food_visual: CanvasItem
 
 
 func _ready() -> void:
 	_target_position = global_position
+	_set_food_visual(_get_configured_food_visual())
 	_set_queue_system(_get_configured_queue_system())
 	if starting_order != null:
 		assign_order(starting_order)
@@ -100,12 +106,20 @@ func has_order() -> bool:
 
 
 func complete_order() -> bool:
-	if not has_order():
+	return receive_food(current_order)
+
+
+func receive_food(order: Order) -> bool:
+	if order == null or order != current_order or not has_order():
 		return false
 
 	if not current_order.complete():
 		return false
 
+	received_order = current_order
+	has_received_food = true
+	_show_food_visual()
+	food_received.emit(current_order)
 	order_completed.emit(current_order)
 	return true
 
@@ -123,6 +137,9 @@ func assign_order(order: Order) -> void:
 		return
 
 	current_order = order
+	received_order = null
+	has_received_food = false
+	_hide_food_visual()
 	order_created.emit(current_order)
 	order_changed.emit(current_order)
 
@@ -257,6 +274,39 @@ func _move_to_reserved_queue_point() -> void:
 		return
 
 	walk_to(_queue_reservation.queue_point.global_position)
+
+
+func _get_configured_food_visual() -> CanvasItem:
+	if food_visual_path.is_empty():
+		return null
+
+	var node: Node = get_node_or_null(food_visual_path)
+	if node is CanvasItem:
+		return node as CanvasItem
+
+	return null
+
+
+func _set_food_visual(food_visual: CanvasItem) -> void:
+	_food_visual = food_visual
+	if has_received_food:
+		_show_food_visual()
+	else:
+		_hide_food_visual()
+
+
+func _show_food_visual() -> void:
+	if _food_visual == null:
+		return
+
+	_food_visual.visible = true
+
+
+func _hide_food_visual() -> void:
+	if _food_visual == null:
+		return
+
+	_food_visual.visible = false
 
 
 func _get_configured_queue_system() -> QueueSystem:
