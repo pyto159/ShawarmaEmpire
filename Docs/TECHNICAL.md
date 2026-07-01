@@ -166,6 +166,20 @@ Responsibilities:
 
 Order data lives in `res://Scripts/Orders/`, with reserved order resources under `res://Resources/Orders/`. Future systems should consume orders through clear APIs instead of coupling order creation directly to customers, queues, UI, cooking, or payments.
 
+
+### Cooking Station System
+
+`CookingStation` prepares one active order at a time using the order preparation duration.
+
+Responsibilities:
+
+- Accept an incomplete `Order` when idle.
+- Track cooking progress over time with a configurable speed multiplier.
+- Complete the order when preparation reaches zero remaining time.
+- Emit start, progress, completion, and cancellation signals for future UI, audio, and economy systems.
+
+Cooking logic lives in `res://Scripts/Cooking/`, with the reusable station scene in `res://Scenes/Cooking/`. The station owns preparation timing only; customer flow, rewards, and payments should stay in dedicated systems that consume its public API and signals.
+
 ### Spawning System
 
 The spawning system provides reusable scene spawning with weighted definitions and spawn point reservations.

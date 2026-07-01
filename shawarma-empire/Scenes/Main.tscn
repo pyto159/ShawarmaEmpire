@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://main"]
+[gd_scene load_steps=7 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://Scenes/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://UI/CurrencyDisplay.tscn" id="2_currency"]
 [ext_resource type="Script" path="res://Scripts/Queue/QueueSystem.gd" id="3_queue_system"]
 [ext_resource type="Script" path="res://Scripts/Queue/QueuePoint2D.gd" id="4_queue_point"]
 [ext_resource type="Script" path="res://Scripts/Stand/ShawarmaStand.gd" id="5_stand"]
+[ext_resource type="PackedScene" path="res://Scenes/Cooking/CookingStation.tscn" id="6_cooking_station"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -60,3 +61,6 @@ offset_top = -32.0
 offset_right = 48.0
 offset_bottom = 32.0
 color = Color(0.78, 0.36, 0.14, 1)
+
+[node name="CookingStation" parent="World" instance=ExtResource("6_cooking_station")]
+position = Vector2(96, -88)
