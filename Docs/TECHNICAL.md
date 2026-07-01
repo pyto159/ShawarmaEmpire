@@ -19,7 +19,7 @@ High-level responsibilities:
 - **Resources** are reserved for reusable data assets.
 - **Assets** and **Audio** hold production content.
 
-The current main scene is `res://Scenes/Main.tscn`. It creates the initial UI and world composition, including the currency display, a customer queue, queue points, and the shawarma stand.
+The current main scene is `res://Scenes/Main.tscn`. It creates the initial UI and world composition, including the game HUD, a customer queue, queue points, the shawarma stand, a cooking stand, and a placeholder customer for the first playable cooking interaction.
 
 The project currently uses autoload singletons for:
 
@@ -42,6 +42,21 @@ Responsibilities:
 - Provide save data.
 - Apply loaded save data.
 - Notify UI and other listeners when currency changes.
+
+
+### Game HUD
+
+`GameHUD` is the first simple gameplay HUD for the playable cooking interaction. It displays placeholder coin text, the active customer order recipe name, and a single Prepare button.
+
+Responsibilities:
+
+- Resolve a configured `Customer` and `CookingStand` from exported node paths.
+- Display the active order recipe name when the configured customer owns an incomplete order.
+- Forward player intent by calling `CookingStand.start_cooking()` when Prepare is pressed.
+- Disable the Prepare button while the stand is cooking or when no cookable order is available.
+- Emit `order_ready(order)` when the cooking stand finishes the active order.
+
+The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement payments, customer leaving, upgrades, ads, or reward calculation. Future economy and customer-flow systems should listen to `order_ready(order)` or cooking stand signals instead of adding those responsibilities to the HUD.
 
 ### Save System
 
@@ -75,10 +90,11 @@ Scene changes should continue to be routed through this service when transitions
 Responsibilities:
 
 - Host the root `Control` layout.
-- Display the currency UI.
+- Display the game HUD.
 - Create the gameplay world container.
 - Define the current queue points.
-- Place the shawarma stand.
+- Place the shawarma stand and cooking stand.
+- Provide a placeholder customer order for the first playable cooking interaction.
 - Load save data when ready.
 - Save game data on window close.
 
