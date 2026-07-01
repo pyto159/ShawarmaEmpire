@@ -13,6 +13,7 @@ const SPAWN_FAILED_INVALID_PARENT: String = "Spawn parent is not available."
 @export var spawn_parent: Node
 @export var auto_collect_child_spawn_points: bool = true
 @export var randomize_seed_on_ready: bool = true
+@export var reserve_spawn_points_until_instance_removed: bool = true
 
 var spawn_points: Array[SpawnPoint2D] = []
 var active_counts: Dictionary = {}
@@ -103,14 +104,16 @@ func notify_instance_removed(definition: SpawnDefinition) -> void:
 
 func _register_spawn(instance: Node, definition: SpawnDefinition, spawn_point: SpawnPoint2D) -> void:
 	active_counts[definition] = int(active_counts.get(definition, 0)) + 1
-	spawn_point.reserve()
+	if reserve_spawn_points_until_instance_removed:
+		spawn_point.reserve()
+
 	instance.tree_exiting.connect(_on_spawned_instance_tree_exiting.bind(definition, spawn_point), CONNECT_ONE_SHOT)
 	spawn_succeeded.emit(instance, definition, spawn_point)
 
 
 func _on_spawned_instance_tree_exiting(definition: SpawnDefinition, spawn_point: SpawnPoint2D) -> void:
 	notify_instance_removed(definition)
-	if spawn_point != null:
+	if reserve_spawn_points_until_instance_removed and spawn_point != null:
 		spawn_point.release()
 
 
