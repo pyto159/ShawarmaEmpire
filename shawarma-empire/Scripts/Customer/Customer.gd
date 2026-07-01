@@ -118,12 +118,30 @@ func receive_food(order: Order) -> bool:
 	if not current_order.complete():
 		return false
 
+	_mark_food_received()
+	order_completed.emit(current_order)
+	return true
+
+
+func receive_completed_order(order: Order, leave_target_position: Vector2) -> bool:
+	if not can_receive_completed_order(order):
+		return false
+
+	_mark_food_received()
+	leave_to(leave_target_position)
+	return true
+
+
+func can_receive_completed_order(order: Order) -> bool:
+	return order != null and order == current_order and order.is_completed and not has_received_food
+
+
+func _mark_food_received() -> void:
 	received_order = current_order
 	has_received_food = true
 	_show_food_visual()
 	food_received.emit(current_order)
-	order_completed.emit(current_order)
-	return true
+
 
 
 func assign_order(order: Order) -> void:
