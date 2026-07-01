@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://customer_emotion"]
+
+[ext_resource type="Script" path="res://Scripts/Customer/CustomerEmotion.gd" id="1_customer_emotion"]
+
+[node name="CustomerEmotion" type="Node2D"]
+position = Vector2(0, -48)
+z_index = 20
+script = ExtResource("1_customer_emotion")
+
+[node name="EmotionLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+pivot_offset = Vector2(24, 24)
+text = "💭"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_outline_color = Color(0.16, 0.09, 0.04, 0.95)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
