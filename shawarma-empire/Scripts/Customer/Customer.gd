@@ -9,10 +9,10 @@ signal order_completed(order: Order)
 signal food_received(order: Order)
 signal left(customer: Customer)
 
-const DEFAULT_MOVE_SPEED: float = 90.0
+const DEFAULT_MOVE_SPEED: float = 54.0
 const ARRIVAL_DISTANCE: float = 4.0
 const DEFAULT_QUEUE_PRIORITY: int = 0
-const QUEUE_MOVE_DURATION_SECONDS: float = 0.35
+const QUEUE_MOVE_DURATION_SECONDS: float = 0.58
 const QUEUE_MOVE_FOLLOW_DELAY_SECONDS: float = 0.26
 
 const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not configured."
