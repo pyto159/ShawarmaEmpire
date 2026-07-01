@@ -26,6 +26,7 @@ The project currently uses autoload singletons for:
 - `GameManager`
 - `SaveManager`
 - `SceneManager`
+- `AudioManager`
 
 These managers should remain small and focused. New global services should only be added when scene-owned composition or dependency injection would be less maintainable.
 
@@ -44,6 +45,20 @@ Responsibilities:
 - Apply loaded save data.
 - Notify UI and other listeners when currency changes.
 
+
+
+### Audio Management
+
+`AudioManager` is the single global entry point for gameplay and UI sound effects. Other systems should never access `AudioStreamPlayer` nodes directly; they should request sound playback through the public AudioManager methods instead.
+
+Responsibilities:
+
+- Expose assignable `AudioStream` slots for button, coin, cooking, customer, queue, and error sounds.
+- Provide focused playback methods such as `play_button()`, `play_coin()`, and `play_cooking_complete()`.
+- Safely ignore playback requests when a sound slot has no assigned stream.
+- Keep audio player implementation details internal so future audio routing, pooling, buses, or volume controls can be added without changing gameplay systems.
+
+The autoload is backed by `res://Managers/AudioManager.tscn` with logic in `res://Scripts/Managers/AudioManager.gd`. No placeholder audio files are required. Future sounds can be added by assigning streams to the exported fields on the AudioManager scene in the Inspector.
 
 ### Game HUD
 
