@@ -130,7 +130,7 @@ func _get_front_ready_reservation() -> QueueReservation:
 func _is_requester_ready(reservation: QueueReservation) -> bool:
 	if reservation.requester is Customer:
 		var customer: Customer = reservation.requester as Customer
-		return customer.current_state == Customer.CustomerState.WAITING
+		return customer.current_state == Customer.CustomerState.WAITING and not customer.has_active_order()
 
 	return true
 

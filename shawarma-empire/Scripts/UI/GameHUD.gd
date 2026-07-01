@@ -4,6 +4,7 @@ class_name GameHUD
 signal order_ready(order: Order)
 
 const NO_ORDER_TEXT: String = "Order: Waiting"
+const COOKING_ORDER_TEXT: String = "Order: Cooking..."
 const ORDER_PREFIX: String = "Order: "
 const PREPARE_IDLE_TEXT: String = "Prepare"
 const PREPARE_COOKING_TEXT: String = "Cooking..."
@@ -117,6 +118,9 @@ func show_coin_feedback(amount: int) -> void:
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
 func _get_order_text() -> String:
+	if _cooking_stand != null and _cooking_stand.is_cooking():
+		return COOKING_ORDER_TEXT
+
 	if _active_order == null:
 		return NO_ORDER_TEXT
 
