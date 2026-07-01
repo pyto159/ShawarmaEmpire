@@ -9,6 +9,13 @@ var coins: int = STARTING_COINS
 var gems: int = STARTING_GEMS
 
 
+func add_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+
+	set_currency(coins + amount, gems)
+
+
 func set_currency(new_coins: int, new_gems: int) -> void:
 	coins = max(new_coins, 0)
 	gems = max(new_gems, 0)
