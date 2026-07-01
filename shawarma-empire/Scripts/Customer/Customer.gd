@@ -12,6 +12,8 @@ signal left(customer: Customer)
 const DEFAULT_MOVE_SPEED: float = 90.0
 const ARRIVAL_DISTANCE: float = 4.0
 const DEFAULT_QUEUE_PRIORITY: int = 0
+const QUEUE_MOVE_DURATION_SECONDS: float = 0.35
+const QUEUE_MOVE_FOLLOW_DELAY_SECONDS: float = 0.26
 
 const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not configured."
 const QUEUE_SYSTEM_NOT_FOUND: String = "Queue system was not found."
@@ -47,6 +49,8 @@ var has_received_food: bool = false
 var _order_generator: OrderGenerator = OrderGenerator.new()
 var _is_waiting_for_queue_reservation: bool = false
 var _food_visual: CanvasItem
+var _movement_tween: Tween
+var _movement_sequence: int = 0
 
 
 func _ready() -> void:
@@ -77,17 +81,20 @@ func _physics_process(_delta: float) -> void:
 
 
 func walk_to(target_position: Vector2) -> void:
+	_cancel_movement_tween()
 	_target_position = target_position
 	_has_target_position = true
 	_set_state(CustomerState.WALKING)
 
 
 func wait_for_service() -> void:
+	_cancel_movement_tween()
 	_has_target_position = false
 	_set_state(CustomerState.WAITING)
 
 
 func leave_to(target_position: Vector2) -> void:
+	_cancel_movement_tween()
 	leave_queue()
 	_target_position = target_position
 	_has_target_position = true
@@ -95,6 +102,7 @@ func leave_to(target_position: Vector2) -> void:
 
 
 func set_idle() -> void:
+	_cancel_movement_tween()
 	_has_target_position = false
 	_set_state(CustomerState.IDLE)
 
@@ -293,7 +301,8 @@ func _move_to_reserved_queue_point() -> void:
 	if _queue_reservation == null or _queue_reservation.queue_point == null:
 		return
 
-	walk_to(_queue_reservation.queue_point.global_position)
+	var queue_move_delay: float = _get_queue_move_delay(_queue_reservation.queue_point)
+	queue_walk_to(_queue_reservation.queue_point.global_position, queue_move_delay)
 
 
 func _get_configured_food_visual() -> CanvasItem:
@@ -359,7 +368,15 @@ func _on_queue_reservation_released(_reservation: QueueReservation) -> void:
 	set_idle()
 
 
+func queue_walk_to(target_position: Vector2, start_delay_seconds: float = 0.0) -> void:
+	_start_tweened_walk(target_position, start_delay_seconds)
+
+
 func _move_toward_target() -> void:
+	if _movement_tween != null:
+		_stop_moving()
+		return
+
 	if not _has_target_position:
 		_stop_moving()
 		return
@@ -373,6 +390,57 @@ func _move_toward_target() -> void:
 	velocity = movement_direction * move_speed
 	move_and_slide()
 
+
+func _start_tweened_walk(target_position: Vector2, start_delay_seconds: float) -> void:
+	_cancel_movement_tween()
+	_movement_sequence += 1
+	_target_position = target_position
+	_has_target_position = true
+
+	var movement_sequence: int = _movement_sequence
+	_movement_tween = create_tween()
+	_movement_tween.set_trans(Tween.TRANS_SINE)
+	_movement_tween.set_ease(Tween.EASE_OUT)
+	if start_delay_seconds > 0.0:
+		_movement_tween.tween_interval(start_delay_seconds)
+	_movement_tween.tween_callback(_begin_tweened_walk.bind(movement_sequence))
+	_movement_tween.tween_property(self, "global_position", _target_position, QUEUE_MOVE_DURATION_SECONDS)
+	_movement_tween.tween_callback(_finish_tweened_walk.bind(movement_sequence))
+
+
+func _begin_tweened_walk(movement_sequence: int) -> void:
+	if movement_sequence != _movement_sequence or not _has_target_position:
+		return
+
+	_set_state(CustomerState.WALKING)
+
+
+func _finish_tweened_walk(movement_sequence: int) -> void:
+	if movement_sequence != _movement_sequence:
+		return
+
+	_movement_tween = null
+	_finish_movement()
+
+
+func _cancel_movement_tween() -> void:
+	_movement_sequence += 1
+	if _movement_tween == null:
+		return
+
+	_movement_tween.kill()
+	_movement_tween = null
+
+
+func _get_queue_move_delay(queue_point: QueuePoint2D) -> float:
+	if _queue_system == null or queue_point == null:
+		return 0.0
+
+	var queue_point_index: int = _queue_system.queue_points.find(queue_point)
+	if queue_point_index <= 0:
+		return 0.0
+
+	return QUEUE_MOVE_FOLLOW_DELAY_SECONDS * float(queue_point_index)
 
 func _finish_movement() -> void:
 	var arrived_state: CustomerState = current_state
