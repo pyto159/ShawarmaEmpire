@@ -91,7 +91,9 @@ func _complete_active_service() -> void:
 		return
 
 	if completed_reservation.requester is Customer:
-		(completed_reservation.requester as Customer).complete_queue_service()
+		var customer: Customer = completed_reservation.requester as Customer
+		customer.complete_current_order()
+		customer.complete_queue_service()
 	else:
 		_queue_system.complete_reservation(completed_reservation)
 
