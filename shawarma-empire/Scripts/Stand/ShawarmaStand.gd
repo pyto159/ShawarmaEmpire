@@ -5,12 +5,14 @@ signal service_started(reservation: QueueReservation)
 signal service_completed(reservation: QueueReservation)
 
 const DEFAULT_SERVICE_DURATION_SECONDS: float = 2.0
+const DEFAULT_CUSTOMER_EXIT_OFFSET: Vector2 = Vector2(-160.0, 0.0)
 const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not configured."
 const QUEUE_SYSTEM_NOT_FOUND: String = "Queue system was not found."
 const NO_COIN_REWARD: int = 0
 
 @export var queue_system_path: NodePath
 @export var service_duration_seconds: float = DEFAULT_SERVICE_DURATION_SECONDS
+@export var customer_exit_offset: Vector2 = DEFAULT_CUSTOMER_EXIT_OFFSET
 
 var _queue_system: QueueSystem
 var _active_reservation: QueueReservation
@@ -97,6 +99,7 @@ func _complete_active_service() -> void:
 		if earned_coins > NO_COIN_REWARD:
 			GameManager.add_coins(earned_coins)
 		customer.complete_queue_service()
+		customer.leave_to(customer.global_position + customer_exit_offset)
 	else:
 		_queue_system.complete_reservation(completed_reservation)
 
