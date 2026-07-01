@@ -61,6 +61,22 @@ Responsibilities:
 
 The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, upgrades, ads, sounds, reward calculation, or reward ownership. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
 
+
+
+### Cooking Progress UI
+
+`CookingProgressBar` is a reusable presentation component for active cooking progress. It listens only to `CookingStand` cooking signals and does not know about customers, currency, rewards, or order ownership.
+
+Responsibilities:
+
+- Stay hidden while no order is actively cooking.
+- Show when the configured cooking stand emits `cooking_started(order)`.
+- Update its displayed percentage from `cooking_progress_changed(order, remaining_seconds, progress)` every frame while cooking advances.
+- Display a green filled Godot `ProgressBar` with a dark rounded background sized for mobile readability.
+- Hide itself 0.25 seconds after cooking completes so players can briefly see 100% completion.
+
+The reusable scene lives in `res://Scenes/UI/CookingProgressBar.tscn` with presentation logic in `res://Scripts/UI/CookingProgressBar.gd`. The current `GameHUD` instances it and passes the composed `CookingStand` reference into the component; gameplay rules remain in the cooking stand and station systems.
+
 ### Save System
 
 `SaveManager` persists game state to `user://shawarma_empire_save.json`.

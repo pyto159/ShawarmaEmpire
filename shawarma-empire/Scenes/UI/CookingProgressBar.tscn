@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://cookingprogressbar"]
+
+[ext_resource type="Script" path="res://Scripts/UI/CookingProgressBar.gd" id="1_cooking_progress_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.08, 0.08, 0.08, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.18, 0.78, 0.26, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[node name="CookingProgressBar" type="ProgressBar"]
+visible = false
+custom_minimum_size = Vector2(220, 18)
+layout_mode = 2
+size_flags_horizontal = 0
+max_value = 100.0
+show_percentage = true
+theme_override_styles/background = SubResource("StyleBoxFlat_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+script = ExtResource("1_cooking_progress_bar")

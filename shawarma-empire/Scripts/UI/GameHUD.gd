@@ -21,6 +21,7 @@ const FEEDBACK_VISIBLE_SECONDS: float = 1.5
 @onready var prepare_button: Button = %PrepareButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
+@onready var cooking_progress_bar: CookingProgressBar = %CookingProgressBar
 
 var _cooking_stand: CookingStand
 var _active_customer: Customer
@@ -33,6 +34,7 @@ func _ready() -> void:
 	GameManager.currency_changed.connect(_on_currency_changed)
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
+	cooking_progress_bar.set_cooking_stand(_cooking_stand)
 	_refresh_active_order()
 	_update_display()
 
@@ -53,6 +55,7 @@ func set_cooking_stand(cooking_stand: CookingStand) -> void:
 	_disconnect_cooking_stand_signals()
 	_cooking_stand = cooking_stand
 	_connect_cooking_stand_signals()
+	cooking_progress_bar.set_cooking_stand(_cooking_stand)
 	_update_display()
 
 
