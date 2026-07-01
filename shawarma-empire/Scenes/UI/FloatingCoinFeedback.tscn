@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://floating_coin_feedback"]
+
+[ext_resource type="Script" path="res://Scripts/UI/FloatingCoinFeedback.gd" id="1_floating_coin_feedback"]
+
+[node name="FloatingCoinFeedback" type="Node2D"]
+script = ExtResource("1_floating_coin_feedback")
+
+[node name="CoinAmountLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -48.0
+offset_top = -18.0
+offset_right = 48.0
+offset_bottom = 18.0
+pivot_offset = Vector2(48, 18)
+text = "+0 Coins"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 0.86, 0.25, 1)
+theme_override_colors/font_shadow_color = Color(0.22, 0.12, 0.03, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
