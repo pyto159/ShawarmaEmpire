@@ -39,6 +39,7 @@ Responsibilities:
 
 - Store coins and gems.
 - Clamp currency values to non-negative numbers.
+- Add completed cooking rewards through public currency APIs.
 - Provide save data.
 - Apply loaded save data.
 - Notify UI and other listeners when currency changes.
@@ -51,12 +52,14 @@ Responsibilities:
 Responsibilities:
 
 - Resolve a configured `Customer` and `CookingStand` from exported node paths.
+- Display current coins from `GameManager`.
 - Display the active order recipe name when the configured customer owns an incomplete order.
 - Forward player intent by calling `CookingStand.start_cooking()` when Prepare is pressed.
 - Disable the Prepare button while the stand is cooking or when no cookable order is available.
 - Emit `order_ready(order)` when the cooking stand finishes the active order.
+- Show short text-only coin feedback when another system reports an earned coin amount.
 
-The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement payments, customer leaving, upgrades, ads, or reward calculation. Future economy and customer-flow systems should listen to `order_ready(order)` or cooking stand signals instead of adding those responsibilities to the HUD.
+The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, upgrades, ads, sounds, reward calculation, or reward ownership. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
 
 ### Save System
 
@@ -96,6 +99,8 @@ Responsibilities:
 - Place the shawarma stand and cooking stand.
 - Provide a placeholder customer order for the first playable cooking interaction.
 - Load save data when ready.
+- Award `order.total_price` coins when the cooking stand completes an order.
+- Ask the HUD to show text-only coin feedback for completed cooking rewards.
 - Save game data on window close.
 
 The main scene should remain a composition point, not a large gameplay logic container.
@@ -287,9 +292,16 @@ Planned systems should build on existing foundations rather than replace them.
 
 ### Economy and Rewards
 
+Current responsibilities:
+
+- `Main.gd` connects to `CookingStand.cooking_completed(order)` for the first playable cooking loop.
+- Completed orders are marked complete if needed, then `order.total_price` is added to `GameManager` coins.
+- `GameManager.currency_changed` refreshes the HUD coin display.
+- `GameHUD.show_coin_feedback(amount)` displays simple text-only `+X Coins` feedback.
+
 Planned responsibilities:
 
-- Award coins when customers are served.
+- Move broader reward orchestration into a dedicated economy service when the loop grows beyond the initial cooking interaction.
 - Apply recipe values and upgrade modifiers.
 - Emit economy events for UI feedback.
 - Keep reward calculation separate from queue mechanics.

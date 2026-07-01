@@ -3,7 +3,6 @@ class_name GameHUD
 
 signal order_ready(order: Order)
 
-const PLACEHOLDER_COINS: int = 0
 const NO_ORDER_TEXT: String = "Order: Waiting"
 const ORDER_PREFIX: String = "Order: "
 const PREPARE_IDLE_TEXT: String = "Prepare"
@@ -11,14 +10,17 @@ const PREPARE_COOKING_TEXT: String = "Cooking..."
 const UNKNOWN_RECIPE_TEXT: String = "Unknown Recipe"
 const COINS_PREFIX: String = "Coins: "
 const COOKING_STAND_NOT_FOUND: String = "Cooking stand was not found."
+const COIN_FEEDBACK_PREFIX: String = "+"
+const COIN_FEEDBACK_SUFFIX: String = " Coins"
+const FEEDBACK_VISIBLE_SECONDS: float = 1.5
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
-@export var placeholder_coins: int = PLACEHOLDER_COINS
-
 @onready var coins_label: Label = %CoinsLabel
 @onready var order_label: Label = %OrderLabel
 @onready var prepare_button: Button = %PrepareButton
+@onready var coin_feedback_label: Label = %CoinFeedbackLabel
+@onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
 
 var _cooking_stand: CookingStand
 var _active_customer: Customer
@@ -27,6 +29,8 @@ var _active_order: Order
 
 func _ready() -> void:
 	prepare_button.pressed.connect(_on_prepare_button_pressed)
+	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
+	GameManager.currency_changed.connect(_on_currency_changed)
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
 	_refresh_active_order()
@@ -92,11 +96,20 @@ func _refresh_active_order() -> void:
 
 
 func _update_display() -> void:
-	coins_label.text = COINS_PREFIX + str(placeholder_coins)
+	coins_label.text = COINS_PREFIX + str(GameManager.coins)
 	order_label.text = _get_order_text()
 	prepare_button.text = _get_prepare_button_text()
 	prepare_button.disabled = not _can_prepare_order()
 
+
+
+func show_coin_feedback(amount: int) -> void:
+	if amount <= 0:
+		return
+
+	coin_feedback_label.text = COIN_FEEDBACK_PREFIX + str(amount) + COIN_FEEDBACK_SUFFIX
+	coin_feedback_label.visible = true
+	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
 func _get_order_text() -> String:
 	if _active_order == null:
@@ -139,3 +152,11 @@ func _on_cooking_completed(order: Order) -> void:
 	_active_order = null
 	order_ready.emit(order)
 	_update_display()
+
+
+func _on_currency_changed(_coins: int, _gems: int) -> void:
+	_update_display()
+
+
+func _on_coin_feedback_timer_timeout() -> void:
+	coin_feedback_label.visible = false
