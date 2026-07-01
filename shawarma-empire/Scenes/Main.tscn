@@ -15,7 +15,7 @@
 [sub_resource type="Resource" id="Resource_customer_spawn_definition"]
 script = ExtResource("11_spawn_definition")
 scene = ExtResource("8_customer")
-max_active_instances = 5
+max_active_instances = 4
 
 [sub_resource type="Resource" id="Resource_customer_spawn_pool"]
 script = ExtResource("12_spawn_pool")
@@ -48,22 +48,27 @@ position = Vector2(360, 420)
 
 [node name="CustomerQueue" type="Node" parent="World"]
 script = ExtResource("3_queue_system")
-queue_capacity = 3
+queue_capacity = 4
 
-[node name="ServicePoint" type="Marker2D" parent="World/CustomerQueue"]
+[node name="service_position" type="Marker2D" parent="World/CustomerQueue"]
 position = Vector2(0, 0)
 script = ExtResource("4_queue_point")
 priority = 30
 
-[node name="QueuePoint2" type="Marker2D" parent="World/CustomerQueue"]
+[node name="waiting_position_1" type="Marker2D" parent="World/CustomerQueue"]
 position = Vector2(0, 72)
 script = ExtResource("4_queue_point")
 priority = 20
 
-[node name="QueuePoint3" type="Marker2D" parent="World/CustomerQueue"]
+[node name="waiting_position_2" type="Marker2D" parent="World/CustomerQueue"]
 position = Vector2(0, 144)
 script = ExtResource("4_queue_point")
 priority = 10
+
+[node name="waiting_position_3" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(0, 216)
+script = ExtResource("4_queue_point")
+priority = 0
 
 [node name="ShawarmaStand" type="Node2D" parent="World"]
 position = Vector2(96, 0)
@@ -86,6 +91,7 @@ position = Vector2(96, -88)
 position = Vector2(-160, 144)
 script = ExtResource("9_spawner")
 spawn_pool = SubResource("Resource_customer_spawn_pool")
+reserve_spawn_points_until_instance_removed = false
 
 [node name="CustomerSpawnPoint" type="Marker2D" parent="World/CustomerSpawner"]
 script = ExtResource("10_spawn_point")

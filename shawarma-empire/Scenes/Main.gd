@@ -3,8 +3,8 @@ extends Control
 const CUSTOMER_QUEUE_PATH: NodePath = NodePath("../CustomerQueue")
 const CUSTOMER_EXIT_OFFSET: Vector2 = Vector2(-160.0, 0.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
-const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
-const DEFAULT_QUEUE_CAPACITY: int = 3
+const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 4
+const DEFAULT_QUEUE_CAPACITY: int = 4
 
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
