@@ -162,6 +162,7 @@ Responsibilities:
 - Store the selected `Recipe` for an order.
 - Copy recipe-derived total price and preparation time onto the order at creation time.
 - Track order creation time and completion state.
+- Complete orders once, capture completion time, and emit completion signals for consumers.
 - Generate new orders by randomly selecting from available recipe resources.
 
 Order data lives in `res://Scripts/Orders/`, with reserved order resources under `res://Resources/Orders/`. Future systems should consume orders through clear APIs instead of coupling order creation directly to customers, queues, UI, cooking, or payments.
