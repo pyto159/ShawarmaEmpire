@@ -8,7 +8,6 @@ const ORDER_PREFIX: String = "Order: "
 const PREPARE_IDLE_TEXT: String = "Prepare"
 const PREPARE_COOKING_TEXT: String = "Cooking..."
 const UNKNOWN_RECIPE_TEXT: String = "Unknown Recipe"
-const COINS_PREFIX: String = "Coins: "
 const COOKING_STAND_NOT_FOUND: String = "Cooking stand was not found."
 const COIN_FEEDBACK_PREFIX: String = "+"
 const COIN_FEEDBACK_SUFFIX: String = " Coins"
@@ -35,6 +34,12 @@ func _ready() -> void:
 	_connect_cooking_stand_signals()
 	_refresh_active_order()
 	_update_display()
+
+
+func _exit_tree() -> void:
+	_disconnect_cooking_stand_signals()
+	if GameManager.currency_changed.is_connected(_on_currency_changed):
+		GameManager.currency_changed.disconnect(_on_currency_changed)
 
 
 func set_active_customer(customer: Customer) -> void:
@@ -96,7 +101,7 @@ func _refresh_active_order() -> void:
 
 
 func _update_display() -> void:
-	coins_label.text = COINS_PREFIX + str(GameManager.coins)
+	coins_label.text = CurrencyFormatter.format_coins(GameManager.coins)
 	order_label.text = _get_order_text()
 	prepare_button.text = _get_prepare_button_text()
 	prepare_button.disabled = not _can_prepare_order()
