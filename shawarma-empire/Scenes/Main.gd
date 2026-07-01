@@ -1,6 +1,7 @@
 extends Control
 
 const CUSTOMER_QUEUE_PATH: NodePath = NodePath("../CustomerQueue")
+const CUSTOMER_EXIT_OFFSET: Vector2 = Vector2(-160.0, 0.0)
 
 @onready var game_hud: GameHUD = $GameHUD
 @onready var cooking_stand: CookingStand = $World/CookingStand
@@ -58,11 +59,8 @@ func _on_customer_left(_customer: Customer) -> void:
 
 
 func _on_cooking_completed(order: Order) -> void:
-	if order == null:
+	if order == null or active_customer == null:
 		return
 
-	if not order.is_completed:
-		order.complete()
-
-	GameManager.add_coins(order.total_price)
-	game_hud.show_coin_feedback(order.total_price)
+	var leave_target_position: Vector2 = active_customer.global_position + CUSTOMER_EXIT_OFFSET
+	cooking_stand.deliver_completed_order(active_customer, leave_target_position)
