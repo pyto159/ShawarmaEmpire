@@ -150,7 +150,7 @@ Future economy rewards should listen to service completion or be triggered by a 
 
 ### Order System
 
-The order system defines reusable architecture for future customer requests without connecting it to customers, queues, UI, cooking, payments, or the main scene yet.
+The order system defines reusable architecture for customer requests while keeping recipe selection, customer ownership, cooking, payments, UI, and queueing separated.
 
 Primary classes:
 
@@ -165,7 +165,11 @@ Responsibilities:
 - Complete orders once, capture completion time, and emit completion signals for consumers.
 - Generate new orders by randomly selecting from available recipe resources.
 
-Order data lives in `res://Scripts/Orders/`, with reserved order resources under `res://Resources/Orders/`. Future systems should consume orders through clear APIs instead of coupling order creation directly to customers, queues, UI, cooking, or payments.
+`Customer` owns exactly one active order during its lifecycle. When a customer enters the world, it requests an order from `OrderGenerator` using its configured available recipes, stores that order, and exposes it through `get_order()`, `has_order()`, and `complete_order()`. Customer order lifecycle events are emitted through `order_created(order)` and `order_completed(order)`.
+
+Customers must not implement UI, payment, or cooking behavior. They only own and expose their order so dedicated cooking, reward, payment, and presentation systems can consume customer order state through public APIs and signals.
+
+Order data lives in `res://Scripts/Orders/`, with reserved order resources under `res://Resources/Orders/`. Future systems should consume orders through clear APIs instead of coupling order creation directly to queues, UI, cooking, payments, or the main scene.
 
 
 ### Cooking Station System

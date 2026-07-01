@@ -3,6 +3,7 @@ class_name Customer
 
 signal state_changed(new_state: CustomerState)
 signal queue_reservation_changed(reservation: QueueReservation)
+signal order_created(order: Order)
 signal order_changed(order: Order)
 signal order_completed(order: Order)
 
@@ -12,6 +13,8 @@ const DEFAULT_QUEUE_PRIORITY: int = 0
 
 const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not configured."
 const QUEUE_SYSTEM_NOT_FOUND: String = "Queue system was not found."
+const ORDER_NOT_FOUND: String = "Cannot assign a null order."
+const ACTIVE_ORDER_ALREADY_EXISTS: String = "Customer already owns an active order."
 
 
 enum CustomerState {
@@ -25,6 +28,8 @@ enum CustomerState {
 @export var queue_system_path: NodePath
 @export var queue_priority: int = DEFAULT_QUEUE_PRIORITY
 @export var join_queue_on_ready: bool = false
+@export var create_order_on_ready: bool = true
+@export var available_recipes: Array[Recipe] = []
 @export var starting_order: Order
 
 var current_state: CustomerState = CustomerState.IDLE
@@ -33,6 +38,7 @@ var _has_target_position: bool = false
 var _queue_system: QueueSystem
 var _queue_reservation: QueueReservation
 var current_order: Order
+var _order_generator: OrderGenerator = OrderGenerator.new()
 var _is_waiting_for_queue_reservation: bool = false
 
 
@@ -41,6 +47,8 @@ func _ready() -> void:
 	_set_queue_system(_get_configured_queue_system())
 	if starting_order != null:
 		assign_order(starting_order)
+	elif create_order_on_ready:
+		_create_order()
 	if join_queue_on_ready:
 		join_queue(_queue_system)
 
@@ -83,24 +91,16 @@ func set_idle() -> void:
 	_set_state(CustomerState.IDLE)
 
 
-func assign_order(order: Order) -> void:
-	if current_order == order:
-		return
-
-	current_order = order
-	order_changed.emit(current_order)
+func get_order() -> Order:
+	return current_order
 
 
-func clear_order() -> void:
-	if current_order == null:
-		return
-
-	current_order = null
-	order_changed.emit(null)
+func has_order() -> bool:
+	return current_order != null and not current_order.is_completed
 
 
-func complete_current_order() -> bool:
-	if current_order == null or current_order.is_completed:
+func complete_order() -> bool:
+	if not has_order():
 		return false
 
 	if not current_order.complete():
@@ -110,8 +110,41 @@ func complete_current_order() -> bool:
 	return true
 
 
+func assign_order(order: Order) -> void:
+	if order == null:
+		push_warning(ORDER_NOT_FOUND)
+		return
+
+	if current_order == order:
+		return
+
+	if has_order():
+		push_warning(ACTIVE_ORDER_ALREADY_EXISTS)
+		return
+
+	current_order = order
+	order_created.emit(current_order)
+	order_changed.emit(current_order)
+
+
+
+func complete_current_order() -> bool:
+	return complete_order()
+
+
 func has_active_order() -> bool:
-	return current_order != null and not current_order.is_completed
+	return has_order()
+
+
+func _create_order() -> void:
+	if has_order():
+		return
+
+	var generated_order: Order = _order_generator.generate_order(available_recipes)
+	if generated_order == null:
+		return
+
+	assign_order(generated_order)
 
 
 func join_configured_queue() -> QueueReservation:
