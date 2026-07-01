@@ -185,6 +185,22 @@ Responsibilities:
 
 Cooking logic lives in `res://Scripts/Cooking/`, with the reusable station scene in `res://Scenes/Cooking/`. The station owns preparation timing only; customer flow, rewards, and payments should stay in dedicated systems that consume its public API and signals.
 
+
+### Cooking Stand System
+
+`CookingStand` is a reusable stand-level cooking component built on the shared `CookingStation` timing behavior. It accepts one `Order` at a time, starts preparation through an explicit API call, tracks the order preparation time, and completes the order when the timer finishes.
+
+Responsibilities:
+
+- Accept one incomplete `Order` while idle.
+- Expose simple state checks through `has_active_order()` and `can_cook()`.
+- Start cooking through `start_cooking()` without knowing about player input.
+- Complete active cooking through `complete_cooking()` after timing finishes or when called by another gameplay system.
+- Emit `cooking_started(order)` and `cooking_completed(order)` so future UI, audio, reward, and payment systems can react without coupling those concerns to the stand.
+
+Cooking stand logic lives in `res://Scripts/Stand/CookingStand.gd`, with the reusable scene in `res://Scenes/Stand/CookingStand.tscn`. It should remain focused on cooking state and timing only; customer flow, input, UI, payments, coins, and rewards belong in dedicated systems.
+
+
 ### Spawning System
 
 The spawning system provides reusable scene spawning with weighted definitions and spawn point reservations.
