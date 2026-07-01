@@ -3,6 +3,8 @@ class_name Customer
 
 signal state_changed(new_state: CustomerState)
 signal queue_reservation_changed(reservation: QueueReservation)
+signal order_changed(order: Order)
+signal order_completed(order: Order)
 
 const DEFAULT_MOVE_SPEED: float = 90.0
 const ARRIVAL_DISTANCE: float = 4.0
@@ -23,18 +25,22 @@ enum CustomerState {
 @export var queue_system_path: NodePath
 @export var queue_priority: int = DEFAULT_QUEUE_PRIORITY
 @export var join_queue_on_ready: bool = false
+@export var starting_order: Order
 
 var current_state: CustomerState = CustomerState.IDLE
 var _target_position: Vector2 = Vector2.ZERO
 var _has_target_position: bool = false
 var _queue_system: QueueSystem
 var _queue_reservation: QueueReservation
+var current_order: Order
 var _is_waiting_for_queue_reservation: bool = false
 
 
 func _ready() -> void:
 	_target_position = global_position
 	_set_queue_system(_get_configured_queue_system())
+	if starting_order != null:
+		assign_order(starting_order)
 	if join_queue_on_ready:
 		join_queue(_queue_system)
 
@@ -75,6 +81,34 @@ func leave_to(target_position: Vector2) -> void:
 func set_idle() -> void:
 	_has_target_position = false
 	_set_state(CustomerState.IDLE)
+
+
+func assign_order(order: Order) -> void:
+	if current_order == order:
+		return
+
+	current_order = order
+	order_changed.emit(current_order)
+
+
+func clear_order() -> void:
+	if current_order == null:
+		return
+
+	current_order = null
+	order_changed.emit(null)
+
+
+func complete_current_order() -> void:
+	if current_order == null or current_order.is_completed:
+		return
+
+	current_order.complete()
+	order_completed.emit(current_order)
+
+
+func has_active_order() -> bool:
+	return current_order != null and not current_order.is_completed
 
 
 func join_configured_queue() -> QueueReservation:
