@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://main"]
+[gd_scene load_steps=6 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://Scenes/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://UI/CurrencyDisplay.tscn" id="2_currency"]
+[ext_resource type="Script" path="res://Scripts/Queue/QueueSystem.gd" id="3_queue_system"]
+[ext_resource type="Script" path="res://Scripts/Queue/QueuePoint2D.gd" id="4_queue_point"]
+[ext_resource type="Script" path="res://Scripts/Stand/ShawarmaStand.gd" id="5_stand"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -23,3 +26,37 @@ color = Color(0.16, 0.09, 0.04, 1)
 
 [node name="CurrencyDisplay" parent="." instance=ExtResource("2_currency")]
 layout_mode = 1
+
+
+[node name="World" type="Node2D" parent="."]
+position = Vector2(360, 420)
+
+[node name="CustomerQueue" type="Node" parent="World"]
+script = ExtResource("3_queue_system")
+
+[node name="ServicePoint" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(0, 0)
+script = ExtResource("4_queue_point")
+priority = 30
+
+[node name="QueuePoint2" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(0, 72)
+script = ExtResource("4_queue_point")
+priority = 20
+
+[node name="QueuePoint3" type="Marker2D" parent="World/CustomerQueue"]
+position = Vector2(0, 144)
+script = ExtResource("4_queue_point")
+priority = 10
+
+[node name="ShawarmaStand" type="Node2D" parent="World"]
+position = Vector2(96, 0)
+script = ExtResource("5_stand")
+queue_system_path = NodePath("../CustomerQueue")
+
+[node name="StandCounter" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -48.0
+offset_top = -32.0
+offset_right = 48.0
+offset_bottom = 32.0
+color = Color(0.78, 0.36, 0.14, 1)

@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name Customer
 
 signal state_changed(new_state: CustomerState)
 signal queue_reservation_changed(reservation: QueueReservation)
