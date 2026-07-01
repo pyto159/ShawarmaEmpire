@@ -103,8 +103,8 @@ func complete_current_order() -> void:
 	if current_order == null or current_order.is_completed:
 		return
 
-	current_order.complete()
-	order_completed.emit(current_order)
+	if current_order.complete():
+		order_completed.emit(current_order)
 
 
 func has_active_order() -> bool:
