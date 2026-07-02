@@ -10,7 +10,7 @@ const DEFAULT_QUEUE_CAPACITY: int = 5
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
 @export var queue_capacity: int = DEFAULT_QUEUE_CAPACITY
 
-@onready var game_hud: GameHUD = $GameHUD
+@onready var game_hud: GameHUD = $HUDLayer/GameHUD
 @onready var cooking_stand: CookingStand = $World/CookingStand
 @onready var customer_queue: QueueSystem = $World/CustomerQueue
 @onready var customer_spawner: Spawner2D = $World/CustomerSpawner

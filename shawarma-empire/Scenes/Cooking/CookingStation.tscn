@@ -6,6 +6,7 @@
 script = ExtResource("1_cooking_station")
 
 [node name="GrillBase" type="ColorRect" parent="."]
+mouse_filter = 2
 offset_left = -44.0
 offset_top = -24.0
 offset_right = 44.0
@@ -13,6 +14,7 @@ offset_bottom = 24.0
 color = Color(0.18, 0.18, 0.18, 1)
 
 [node name="HeatStrip" type="ColorRect" parent="."]
+mouse_filter = 2
 offset_left = -36.0
 offset_top = -6.0
 offset_right = 36.0

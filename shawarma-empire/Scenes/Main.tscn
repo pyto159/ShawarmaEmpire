@@ -32,6 +32,7 @@ grow_vertical = 2
 script = ExtResource("1_main")
 
 [node name="Background" type="ColorRect" parent="."]
+mouse_filter = 2
 z_index = -100
 layout_mode = 1
 anchors_preset = 15
@@ -41,10 +42,12 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.12, 0.07, 0.04, 1)
 
-[node name="GameHUD" parent="." instance=ExtResource("8_game_hud")]
-z_index = 100
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="GameHUD" parent="HUDLayer" instance=ExtResource("8_game_hud")]
 layout_mode = 1
-cooking_stand_path = NodePath("../World/CookingStand")
+cooking_stand_path = NodePath("../../World/CookingStand")
 
 
 [node name="World" type="Node2D" parent="."]
@@ -55,6 +58,7 @@ position = Vector2(0, 0)
 z_index = -50
 
 [node name="EveningGlow" type="ColorRect" parent="World/BackgroundLayer"]
+mouse_filter = 2
 offset_right = 1280.0
 offset_bottom = 720.0
 color = Color(0.32, 0.19, 0.11, 1)
@@ -79,11 +83,13 @@ polygon = PackedVector2Array(1280, 720, 940, 720, 1280, 480)
 z_index = -40
 
 [node name="PavementBase" type="ColorRect" parent="World/GroundLayer"]
+mouse_filter = 2
 offset_right = 1280.0
 offset_bottom = 720.0
 color = Color(0.5, 0.38, 0.27, 1)
 
 [node name="ClearGameplayArea" type="ColorRect" parent="World/GroundLayer"]
+mouse_filter = 2
 offset_left = 290.0
 offset_top = 138.0
 offset_right = 990.0
@@ -91,6 +97,7 @@ offset_bottom = 704.0
 color = Color(0.61, 0.48, 0.34, 0.78)
 
 [node name="ServiceLane" type="ColorRect" parent="World/GroundLayer"]
+mouse_filter = 2
 offset_left = 570.0
 offset_top = 338.0
 offset_right = 710.0
@@ -108,6 +115,7 @@ color = Color(0.55, 0.2, 0.16, 0.72)
 polygon = PackedVector2Array(-72, -34, 72, -34, 54, -2, -54, -2)
 
 [node name="Counter" type="ColorRect" parent="World/DecorationsLayer/LeftEdgeMarketStall"]
+mouse_filter = 2
 offset_left = -62.0
 offset_top = -2.0
 offset_right = 62.0
@@ -122,6 +130,7 @@ color = Color(0.2, 0.42, 0.24, 0.7)
 polygon = PackedVector2Array(-72, -34, 72, -34, 54, -2, -54, -2)
 
 [node name="Counter" type="ColorRect" parent="World/DecorationsLayer/RightEdgeMarketStall"]
+mouse_filter = 2
 offset_left = -62.0
 offset_top = -2.0
 offset_right = 62.0
@@ -129,6 +138,7 @@ offset_bottom = 42.0
 color = Color(0.35, 0.2, 0.13, 0.72)
 
 [node name="BottomLeftBench" type="ColorRect" parent="World/DecorationsLayer"]
+mouse_filter = 2
 offset_left = 54.0
 offset_top = 646.0
 offset_right = 218.0
@@ -136,6 +146,7 @@ offset_bottom = 668.0
 color = Color(0.32, 0.19, 0.12, 0.68)
 
 [node name="BottomRightBench" type="ColorRect" parent="World/DecorationsLayer"]
+mouse_filter = 2
 offset_left = 1062.0
 offset_top = 646.0
 offset_right = 1226.0
@@ -183,6 +194,7 @@ color = Color(0.08, 0.04, 0.02, 0.28)
 polygon = PackedVector2Array(-170, 0, 170, 0, 140, 20, -140, 20)
 
 [node name="BackWall" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -132.0
 offset_top = -42.0
 offset_right = 132.0
@@ -190,6 +202,7 @@ offset_bottom = 82.0
 color = Color(0.94, 0.69, 0.39, 1)
 
 [node name="SidePanelLeft" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -132.0
 offset_top = -42.0
 offset_right = -108.0
@@ -197,6 +210,7 @@ offset_bottom = 82.0
 color = Color(0.78, 0.36, 0.16, 1)
 
 [node name="SidePanelRight" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 108.0
 offset_top = -42.0
 offset_right = 132.0
@@ -224,6 +238,7 @@ color = Color(0.96, 0.85, 0.56, 1)
 polygon = PackedVector2Array(-28, 0, 28, 0, 20, 42, -20, 42)
 
 [node name="SignBoard" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -86.0
 offset_top = -34.0
 offset_right = 86.0
@@ -243,6 +258,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="GrillPlaceholder" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -98.0
 offset_top = 28.0
 offset_right = -14.0
@@ -250,6 +266,7 @@ offset_bottom = 68.0
 color = Color(0.18, 0.16, 0.14, 1)
 
 [node name="GrillWarmPlate" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -88.0
 offset_top = 36.0
 offset_right = -24.0
@@ -257,6 +274,7 @@ offset_bottom = 44.0
 color = Color(0.95, 0.46, 0.16, 1)
 
 [node name="IngredientBoxGreens" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 12.0
 offset_top = 28.0
 offset_right = 48.0
@@ -264,6 +282,7 @@ offset_bottom = 62.0
 color = Color(0.3, 0.68, 0.28, 1)
 
 [node name="IngredientBoxTomato" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 54.0
 offset_top = 28.0
 offset_right = 90.0
@@ -271,6 +290,7 @@ offset_bottom = 62.0
 color = Color(0.86, 0.18, 0.13, 1)
 
 [node name="SauceBottleGarlic" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 98.0
 offset_top = 18.0
 offset_right = 114.0
@@ -278,6 +298,7 @@ offset_bottom = 62.0
 color = Color(1, 0.93, 0.62, 1)
 
 [node name="SauceBottleHot" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 116.0
 offset_top = 18.0
 offset_right = 132.0
@@ -285,6 +306,7 @@ offset_bottom = 62.0
 color = Color(0.92, 0.21, 0.12, 1)
 
 [node name="StandCounter" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -150.0
 offset_top = 66.0
 offset_right = 150.0
@@ -292,6 +314,7 @@ offset_bottom = 112.0
 color = Color(0.72, 0.31, 0.12, 1)
 
 [node name="CounterTop" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -160.0
 offset_top = 56.0
 offset_right = 160.0
@@ -299,6 +322,7 @@ offset_bottom = 76.0
 color = Color(0.98, 0.74, 0.39, 1)
 
 [node name="MenuBoard" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -150.0
 offset_top = -28.0
 offset_right = -94.0
@@ -316,6 +340,7 @@ text = "MENU\nWrap\nSauce"
 horizontal_alignment = 1
 
 [node name="FlowerPotLeft" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = -188.0
 offset_top = 72.0
 offset_right = -154.0
@@ -323,6 +348,7 @@ offset_bottom = 112.0
 color = Color(0.48, 0.2, 0.1, 1)
 
 [node name="FlowerPotRight" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
 offset_left = 154.0
 offset_top = 72.0
 offset_right = 188.0
