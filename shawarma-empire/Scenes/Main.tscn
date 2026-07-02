@@ -45,39 +45,39 @@ cooking_stand_path = NodePath("../World/CookingStand")
 
 
 [node name="World" type="Node2D" parent="."]
-position = Vector2(360, 360)
+position = Vector2(0, 0)
 
 [node name="CustomerQueue" type="Node" parent="World"]
 script = ExtResource("3_queue_system")
 queue_capacity = 5
 
 [node name="service_position" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(360, 100)
+position = Vector2(640, 300)
 script = ExtResource("4_queue_point")
 priority = 40
 
 [node name="waiting_position_1" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(260, 140)
+position = Vector2(640, 380)
 script = ExtResource("4_queue_point")
 priority = 30
 
 [node name="waiting_position_2" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(160, 180)
+position = Vector2(640, 460)
 script = ExtResource("4_queue_point")
 priority = 20
 
 [node name="waiting_position_3" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(60, 220)
+position = Vector2(640, 540)
 script = ExtResource("4_queue_point")
 priority = 10
 
 [node name="waiting_position_4" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(-40, 260)
+position = Vector2(640, 620)
 script = ExtResource("4_queue_point")
 priority = 0
 
 [node name="ShawarmaStand" type="Node2D" parent="World"]
-position = Vector2(540, 70)
+position = Vector2(640, 180)
 script = ExtResource("5_stand")
 queue_system_path = NodePath("../CustomerQueue")
 
@@ -89,12 +89,12 @@ offset_bottom = 32.0
 color = Color(0.78, 0.36, 0.14, 1)
 
 [node name="CookingStand" parent="World" instance=ExtResource("6_cooking_stand")]
-position = Vector2(540, -18)
+position = Vector2(640, 92)
 
 [node name="SpawnedCustomers" type="Node2D" parent="World"]
 
 [node name="CustomerSpawner" type="Node2D" parent="World"]
-position = Vector2(-180, 320)
+position = Vector2(640, 696)
 script = ExtResource("9_spawner")
 spawn_pool = SubResource("Resource_customer_spawn_pool")
 reserve_spawn_points_until_instance_removed = false
