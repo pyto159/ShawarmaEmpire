@@ -61,6 +61,42 @@ offset_right = 206.0
 offset_bottom = 34.0
 color = Color(1, 0.94, 0.67, 1)
 
+[node name="TomatoSlices" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 92.0
+offset_top = 24.0
+offset_right = 172.0
+offset_bottom = 34.0
+color = Color(0.9, 0.16, 0.12, 1)
+
+[node name="CucumberSlices" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 84.0
+offset_top = 42.0
+offset_right = 180.0
+offset_bottom = 52.0
+color = Color(0.35, 0.78, 0.38, 1)
+
+[node name="SmokeOne" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 114.0
+offset_top = 4.0
+offset_right = 122.0
+offset_bottom = 18.0
+color = Color(1, 0.92, 0.78, 0.28)
+
+[node name="SmokeTwo" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 144.0
+offset_top = 8.0
+offset_right = 152.0
+offset_bottom = 22.0
+color = Color(1, 0.92, 0.78, 0.22)
+
 [node name="RolledShawarma" type="ColorRect" parent="Panel/Board"]
 mouse_filter = 2
 layout_mode = 0

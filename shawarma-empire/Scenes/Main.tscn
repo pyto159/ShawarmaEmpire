@@ -355,6 +355,65 @@ offset_right = 188.0
 offset_bottom = 112.0
 color = Color(0.48, 0.2, 0.1, 1)
 
+[node name="CounterWoodGrainTop" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
+offset_left = -148.0
+offset_top = 84.0
+offset_right = 148.0
+offset_bottom = 88.0
+color = Color(0.46, 0.2, 0.09, 0.55)
+
+[node name="CounterWoodGrainBottom" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
+offset_left = -148.0
+offset_top = 100.0
+offset_right = 148.0
+offset_bottom = 104.0
+color = Color(0.42, 0.18, 0.08, 0.5)
+
+[node name="VerticalMeatGrill" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(-58, 42)
+color = Color(0.78, 0.33, 0.12, 1)
+polygon = PackedVector2Array(-14, -32, 11, -26, 16, 22, 3, 34, -13, 24, -17, -18)
+
+[node name="MeatGrillSkewer" type="ColorRect" parent="World/ShawarmaStand"]
+mouse_filter = 2
+offset_left = -60.0
+offset_top = 4.0
+offset_right = -56.0
+offset_bottom = 76.0
+color = Color(0.9, 0.78, 0.58, 1)
+
+[node name="WarmLampLeft" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(-118, -12)
+color = Color(1, 0.76, 0.28, 1)
+polygon = PackedVector2Array(-8, -5, 8, -5, 5, 6, -5, 6)
+
+[node name="WarmLampRight" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(118, -12)
+color = Color(1, 0.76, 0.28, 1)
+polygon = PackedVector2Array(-8, -5, 8, -5, 5, 6, -5, 6)
+
+[node name="LampGlowLeft" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(-118, 2)
+color = Color(1, 0.63, 0.22, 0.18)
+polygon = PackedVector2Array(-28, 0, 28, 0, 44, 74, -44, 74)
+
+[node name="LampGlowRight" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(118, 2)
+color = Color(1, 0.63, 0.22, 0.18)
+polygon = PackedVector2Array(-28, 0, 28, 0, 44, 74, -44, 74)
+
+[node name="FlowerLeftBlossom" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(-171, 70)
+color = Color(1, 0.35, 0.44, 1)
+polygon = PackedVector2Array(0, -8, 6, -2, 8, 5, 0, 8, -8, 5, -6, -2)
+
+[node name="FlowerRightBlossom" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(171, 70)
+color = Color(1, 0.85, 0.25, 1)
+polygon = PackedVector2Array(0, -8, 6, -2, 8, 5, 0, 8, -8, 5, -6, -2)
+
 [node name="CookingStand" parent="World" instance=ExtResource("6_cooking_stand")]
 position = Vector2(640, 92)
 

@@ -80,6 +80,55 @@ position = Vector2(0, -18)
 color = Color(0.36, 0.12, 0.08, 1)
 polygon = PackedVector2Array(-5, 0, 5, 0, 3, 3, 0, 4, -3, 3)
 
+[node name="Backpack" type="Polygon2D" parent="Body"]
+visible = false
+position = Vector2(-18, 2)
+z_index = -1
+color = Color(0.12, 0.32, 0.52, 1)
+polygon = PackedVector2Array(-6, -10, 6, -8, 8, 16, -7, 18)
+
+[node name="Hat" type="Polygon2D" parent="Body"]
+visible = false
+position = Vector2(0, -39)
+z_index = 2
+color = Color(0.22, 0.46, 0.78, 1)
+polygon = PackedVector2Array(-15, 4, 15, 4, 12, 8, -12, 8, -8, -3, 8, -3, 11, 4, -11, 4)
+
+[node name="Glasses" type="Node2D" parent="Body"]
+visible = false
+position = Vector2(0, -25)
+z_index = 3
+
+[node name="LeftLens" type="Polygon2D" parent="Body/Glasses"]
+color = Color(0.05, 0.04, 0.03, 1)
+polygon = PackedVector2Array(-10, -3, -2, -3, -2, 3, -10, 3)
+
+[node name="Bridge" type="ColorRect" parent="Body/Glasses"]
+mouse_filter = 2
+offset_left = -2.0
+offset_top = -1.0
+offset_right = 2.0
+offset_bottom = 1.0
+color = Color(0.05, 0.04, 0.03, 1)
+
+[node name="RightLens" type="Polygon2D" parent="Body/Glasses"]
+color = Color(0.05, 0.04, 0.03, 1)
+polygon = PackedVector2Array(2, -3, 10, -3, 10, 3, 2, 3)
+
+[node name="Beard" type="Polygon2D" parent="Body"]
+visible = false
+position = Vector2(0, -18)
+z_index = 2
+color = Color(0.12, 0.07, 0.04, 1)
+polygon = PackedVector2Array(-8, -1, 8, -1, 6, 7, 0, 10, -6, 7)
+
+[node name="Handbag" type="Polygon2D" parent="Body"]
+visible = false
+position = Vector2(22, 10)
+z_index = 2
+color = Color(0.5, 0.16, 0.38, 1)
+polygon = PackedVector2Array(-5, -5, 7, -5, 8, 10, -7, 10, -6, -3, -2, -10, 4, -10, 7, -3)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_customer")
 

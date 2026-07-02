@@ -14,6 +14,8 @@ const INGREDIENT_APPEAR_SECONDS: float = 0.09
 const INGREDIENT_SETTLE_SECONDS: float = 0.05
 const INGREDIENT_DELAY_SECONDS: float = 0.025
 const INGREDIENT_ROTATION_DEGREES: float = 5.0
+const SMOKE_FLOAT_PIXELS: float = 16.0
+const SMOKE_PULSE_SECONDS: float = 0.8
 
 
 @export var cooking_stand_path: NodePath
@@ -23,12 +25,16 @@ const INGREDIENT_ROTATION_DEGREES: float = 5.0
 @onready var _lavash: ColorRect = $Panel/Board/Lavash
 @onready var _meat: ColorRect = $Panel/Board/Meat
 @onready var _sauce: ColorRect = $Panel/Board/GarlicSauce
+@onready var _tomato: ColorRect = $Panel/Board/TomatoSlices
+@onready var _cucumber: ColorRect = $Panel/Board/CucumberSlices
 @onready var _rolled_shawarma: ColorRect = $Panel/Board/RolledShawarma
 @onready var _complete_label: Label = $Panel/Board/CompleteLabel
+@onready var _smoke_particles: Array[ColorRect] = [$Panel/Board/SmokeOne, $Panel/Board/SmokeTwo]
 
 var _cooking_stand: CookingStand
 var _hide_timer: Timer = Timer.new()
 var _ingredient_tweens: Dictionary = {}
+var _smoke_tween: Tween
 
 
 func _ready() -> void:
@@ -104,7 +110,7 @@ func _disconnect_cooking_stand_signals() -> void:
 
 
 func _configure_ingredient_pivots() -> void:
-	for ingredient_node: Control in [_lavash, _meat, _sauce, _rolled_shawarma]:
+	for ingredient_node: Control in [_lavash, _meat, _sauce, _tomato, _cucumber, _rolled_shawarma]:
 		ingredient_node.pivot_offset = ingredient_node.size * 0.5
 
 
@@ -114,7 +120,10 @@ func _show_progress_step(progress: float, animate_ingredients: bool = true) -> v
 	_set_ingredient_visible(_lavash, not is_rolled and safe_progress >= LAVASH_STEP_PROGRESS, 0, animate_ingredients)
 	_set_ingredient_visible(_meat, not is_rolled and safe_progress >= MEAT_STEP_PROGRESS, 1, animate_ingredients)
 	_set_ingredient_visible(_sauce, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 2, animate_ingredients)
-	_set_ingredient_visible(_rolled_shawarma, is_rolled, 3, animate_ingredients)
+	_set_ingredient_visible(_tomato, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 3, animate_ingredients)
+	_set_ingredient_visible(_cucumber, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 4, animate_ingredients)
+	_set_ingredient_visible(_rolled_shawarma, is_rolled, 5, animate_ingredients)
+	_set_smoke_visible(safe_progress >= MEAT_STEP_PROGRESS and safe_progress < COMPLETE_STEP_PROGRESS)
 	_complete_label.visible = safe_progress >= COMPLETE_STEP_PROGRESS
 	_update_status_label(safe_progress)
 
@@ -176,11 +185,12 @@ func _reset_ingredient_transform(ingredient_node: Control) -> void:
 
 
 func _hide_all_ingredients() -> void:
-	for ingredient_node: Control in [_lavash, _meat, _sauce, _rolled_shawarma]:
+	for ingredient_node: Control in [_lavash, _meat, _sauce, _tomato, _cucumber, _rolled_shawarma]:
 		_stop_ingredient_tween(ingredient_node)
 		_reset_ingredient_transform(ingredient_node)
 		ingredient_node.visible = false
 	_complete_label.visible = false
+	_set_smoke_visible(false)
 
 
 func _on_ingredient_tween_finished(ingredient_node: Control) -> void:
@@ -233,3 +243,37 @@ func _on_cooking_cancelled(_order: Order) -> void:
 
 func _on_hide_timer_timeout() -> void:
 	_reset_table()
+
+
+func _set_smoke_visible(should_show: bool) -> void:
+	for smoke_particle: ColorRect in _smoke_particles:
+		smoke_particle.visible = should_show
+	if should_show and (_smoke_tween == null or not _smoke_tween.is_valid()):
+		_start_smoke_animation()
+	elif not should_show:
+		_stop_smoke_animation()
+
+
+func _start_smoke_animation() -> void:
+	_stop_smoke_animation()
+	_smoke_tween = create_tween()
+	_smoke_tween.set_loops()
+	for smoke_particle: ColorRect in _smoke_particles:
+		smoke_particle.position = Vector2.ZERO
+		smoke_particle.modulate.a = 0.45
+		_smoke_tween.parallel().tween_property(smoke_particle, "position:y", -SMOKE_FLOAT_PIXELS, SMOKE_PULSE_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_smoke_tween.parallel().tween_property(smoke_particle, "modulate:a", 0.0, SMOKE_PULSE_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_smoke_tween.tween_callback(_reset_smoke_particles)
+
+
+func _reset_smoke_particles() -> void:
+	for smoke_particle: ColorRect in _smoke_particles:
+		smoke_particle.position = Vector2.ZERO
+		smoke_particle.modulate.a = 0.45
+
+
+func _stop_smoke_animation() -> void:
+	if _smoke_tween != null:
+		_smoke_tween.kill()
+		_smoke_tween = null
+	_reset_smoke_particles()

@@ -40,6 +40,11 @@ const HAIR_COLORS: Array[Color] = [
 ]
 const CUSTOMER_SCALE_MIN: float = 0.94
 const CUSTOMER_SCALE_MAX: float = 1.06
+const DETAIL_CHANCE_PERCENT: int = 38
+const BREATHING_SCALE: Vector2 = Vector2(1.018, 0.988)
+const IDLE_SWAY_DEGREES: float = 1.4
+const BODY_BOB_PIXELS: float = 1.2
+const IDLE_ANIMATION_SECONDS: float = 1.35
 
 
 enum CustomerState {
@@ -78,10 +83,20 @@ var _movement_sequence: int = 0
 @onready var _left_arm_visual: Polygon2D = $Body/LeftArm
 @onready var _right_arm_visual: Polygon2D = $Body/RightArm
 @onready var _hair_visual: Polygon2D = $Body/Hair
+@onready var _hat_visual: Polygon2D = $Body/Hat
+@onready var _glasses_visual: Node2D = $Body/Glasses
+@onready var _beard_visual: Polygon2D = $Body/Beard
+@onready var _backpack_visual: Polygon2D = $Body/Backpack
+@onready var _handbag_visual: Polygon2D = $Body/Handbag
+
+var _idle_tween: Tween
+var _idle_body_scale: Vector2 = Vector2.ONE
+var _idle_body_position: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
 	_apply_random_visual_style()
+	_start_idle_animation()
 	_target_position = global_position
 	_set_food_visual(_get_configured_food_visual())
 	_set_queue_system(_get_configured_queue_system())
@@ -94,6 +109,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	_stop_idle_animation()
 	leave_queue()
 	_disconnect_queue_system_signals()
 
@@ -509,10 +525,11 @@ func _apply_random_visual_style() -> void:
 	_right_arm_visual.color = skin_tone
 	_hair_visual.color = _get_random_color(HAIR_COLORS)
 	_body_visual.scale = Vector2.ONE * randf_range(CUSTOMER_SCALE_MIN, CUSTOMER_SCALE_MAX)
-	_apply_random_headwear()
+	_apply_random_hair_style()
+	_apply_random_details()
 
 
-func _apply_random_headwear() -> void:
+func _apply_random_hair_style() -> void:
 	if randi() % 2 == 0:
 		_hair_visual.polygon = PackedVector2Array([
 			Vector2(-11, 2),
@@ -540,3 +557,48 @@ func _get_random_color(colors: Array[Color]) -> Color:
 		return Color.WHITE
 
 	return colors[randi() % colors.size()]
+
+
+func _apply_random_details() -> void:
+	_hide_optional_details()
+	_hat_visual.visible = _roll_detail()
+	_glasses_visual.visible = _roll_detail()
+	_beard_visual.visible = _roll_detail()
+	_backpack_visual.visible = _roll_detail()
+	_handbag_visual.visible = _roll_detail()
+	_hat_visual.color = _get_random_color(BODY_COLORS).darkened(0.12)
+	_backpack_visual.color = _get_random_color(BODY_COLORS).darkened(0.2)
+	_handbag_visual.color = _get_random_color(BODY_COLORS).darkened(0.18)
+
+
+func _hide_optional_details() -> void:
+	for detail_node: CanvasItem in [_hat_visual, _glasses_visual, _beard_visual, _backpack_visual, _handbag_visual]:
+		detail_node.visible = false
+
+
+func _roll_detail() -> bool:
+	return randi() % 100 < DETAIL_CHANCE_PERCENT
+
+
+func _start_idle_animation() -> void:
+	_stop_idle_animation()
+	_idle_body_scale = _body_visual.scale
+	_idle_body_position = _body_visual.position
+	_idle_tween = create_tween()
+	_idle_tween.set_loops()
+	_idle_tween.set_trans(Tween.TRANS_SINE)
+	_idle_tween.set_ease(Tween.EASE_IN_OUT)
+	_idle_tween.tween_property(_body_visual, "scale", _idle_body_scale * BREATHING_SCALE, IDLE_ANIMATION_SECONDS)
+	_idle_tween.parallel().tween_property(_body_visual, "rotation_degrees", IDLE_SWAY_DEGREES, IDLE_ANIMATION_SECONDS)
+	_idle_tween.parallel().tween_property(_body_visual, "position", _idle_body_position + Vector2.UP * BODY_BOB_PIXELS, IDLE_ANIMATION_SECONDS)
+	_idle_tween.tween_property(_body_visual, "scale", _idle_body_scale, IDLE_ANIMATION_SECONDS)
+	_idle_tween.parallel().tween_property(_body_visual, "rotation_degrees", -IDLE_SWAY_DEGREES, IDLE_ANIMATION_SECONDS)
+	_idle_tween.parallel().tween_property(_body_visual, "position", _idle_body_position, IDLE_ANIMATION_SECONDS)
+
+
+func _stop_idle_animation() -> void:
+	if _idle_tween == null:
+		return
+
+	_idle_tween.kill()
+	_idle_tween = null
