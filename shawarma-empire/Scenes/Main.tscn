@@ -52,32 +52,32 @@ script = ExtResource("3_queue_system")
 queue_capacity = 5
 
 [node name="service_position" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(640, 300)
+position = Vector2(640, 410)
 script = ExtResource("4_queue_point")
 priority = 40
 
 [node name="waiting_position_1" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(640, 380)
+position = Vector2(640, 480)
 script = ExtResource("4_queue_point")
 priority = 30
 
 [node name="waiting_position_2" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(640, 460)
+position = Vector2(640, 550)
 script = ExtResource("4_queue_point")
 priority = 20
 
 [node name="waiting_position_3" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(640, 540)
+position = Vector2(640, 620)
 script = ExtResource("4_queue_point")
 priority = 10
 
 [node name="waiting_position_4" type="Marker2D" parent="World/CustomerQueue"]
-position = Vector2(640, 620)
+position = Vector2(640, 670)
 script = ExtResource("4_queue_point")
 priority = 0
 
 [node name="ShawarmaStand" type="Node2D" parent="World"]
-position = Vector2(640, 180)
+position = Vector2(640, 280)
 script = ExtResource("5_stand")
 queue_system_path = NodePath("../CustomerQueue")
 
