@@ -43,6 +43,7 @@ Responsibilities:
 - Add completed cooking rewards through public currency APIs.
 - Provide save data.
 - Apply loaded save data.
+- Own purchased upgrade ids and the current cooking speed multiplier.
 - Notify UI and other listeners when currency changes.
 
 
@@ -62,7 +63,7 @@ The autoload is backed by `res://Managers/AudioManager.tscn` with logic in `res:
 
 ### Game HUD
 
-`GameHUD` is the first simple gameplay HUD for the playable cooking interaction. It displays placeholder coin text, the active customer order recipe name, and a single Prepare button.
+`GameHUD` is the first simple gameplay HUD for the playable cooking interaction. It displays placeholder coin text, the active customer order recipe name, a Prepare button, and the first simple upgrade button.
 
 Responsibilities:
 
@@ -70,11 +71,18 @@ Responsibilities:
 - Display current coins from `GameManager`.
 - Display the active order recipe name when the configured customer owns an incomplete order.
 - Forward player intent by calling `CookingStand.start_cooking()` when Prepare is pressed.
+- Forward Better Grill purchase intent to `GameManager.purchase_upgrade()` when the upgrade button is pressed.
 - Disable the Prepare button while the stand is cooking or when no cookable order is available.
 - Emit `order_ready(order)` when the cooking stand finishes the active order.
 - Show short text-only coin feedback when another system reports an earned coin amount.
 
-The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, upgrades, ads, sounds, reward calculation, or reward ownership. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
+The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, ads, sounds, reward calculation, or reward ownership. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
+
+### Upgrade System
+
+Upgrade definitions use the reusable `UpgradeData` resource type in `res://Scripts/Upgrades/UpgradeData.gd`. Upgrade data contains an id, display name, coin cost, and cooking speed multiplier bonus so future upgrades can be balanced as data without putting presentation strings or costs directly in gameplay code.
+
+The first upgrade is `Better Grill` in `res://Resources/Upgrades/BetterGrill.tres`. It costs 50 coins and adds a 0.1 cooking speed multiplier bonus, making cooking complete 10% faster. `GameManager` owns purchase state, rejects duplicate purchases, rejects purchases when coins are insufficient, subtracts coins through the central currency API, updates the cooking speed multiplier, emits `upgrades_changed`, and includes purchased upgrade ids in save data. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` to active cooking progression.
 
 
 
