@@ -81,12 +81,126 @@ position = Vector2(640, 180)
 script = ExtResource("5_stand")
 queue_system_path = NodePath("../CustomerQueue")
 
-[node name="StandCounter" type="ColorRect" parent="World/ShawarmaStand"]
-offset_left = -48.0
-offset_top = -32.0
+[node name="StandShadow" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(0, 94)
+color = Color(0.08, 0.04, 0.02, 0.28)
+polygon = PackedVector2Array(-170, 0, 170, 0, 140, 20, -140, 20)
+
+[node name="BackWall" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -132.0
+offset_top = -42.0
+offset_right = 132.0
+offset_bottom = 82.0
+color = Color(0.94, 0.69, 0.39, 1)
+
+[node name="SidePanelLeft" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -132.0
+offset_top = -42.0
+offset_right = -108.0
+offset_bottom = 82.0
+color = Color(0.78, 0.36, 0.16, 1)
+
+[node name="SidePanelRight" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = 108.0
+offset_top = -42.0
+offset_right = 132.0
+offset_bottom = 82.0
+color = Color(0.78, 0.36, 0.16, 1)
+
+[node name="Roof" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(0, -88)
+color = Color(0.62, 0.18, 0.12, 1)
+polygon = PackedVector2Array(-156, 0, 156, 0, 126, 42, -126, 42)
+
+[node name="AwningStripeLeft" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(-88, -88)
+color = Color(0.96, 0.85, 0.56, 1)
+polygon = PackedVector2Array(-28, 0, 28, 0, 20, 42, -20, 42)
+
+[node name="AwningStripeCenter" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(0, -88)
+color = Color(0.96, 0.85, 0.56, 1)
+polygon = PackedVector2Array(-30, 0, 30, 0, 24, 42, -24, 42)
+
+[node name="AwningStripeRight" type="Polygon2D" parent="World/ShawarmaStand"]
+position = Vector2(88, -88)
+color = Color(0.96, 0.85, 0.56, 1)
+polygon = PackedVector2Array(-28, 0, 28, 0, 20, 42, -20, 42)
+
+[node name="SignBoard" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -86.0
+offset_top = -34.0
+offset_right = 86.0
+offset_bottom = 8.0
+color = Color(0.43, 0.16, 0.08, 1)
+
+[node name="SignLabel" type="Label" parent="World/ShawarmaStand/SignBoard"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 162.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_font_sizes/font_size = 22
+text = "SHAWARMA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GrillPlaceholder" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -98.0
+offset_top = 28.0
+offset_right = -14.0
+offset_bottom = 68.0
+color = Color(0.18, 0.16, 0.14, 1)
+
+[node name="GrillWarmPlate" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -88.0
+offset_top = 36.0
+offset_right = -24.0
+offset_bottom = 44.0
+color = Color(0.95, 0.46, 0.16, 1)
+
+[node name="IngredientBoxGreens" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = 12.0
+offset_top = 28.0
 offset_right = 48.0
-offset_bottom = 32.0
-color = Color(0.78, 0.36, 0.14, 1)
+offset_bottom = 62.0
+color = Color(0.3, 0.68, 0.28, 1)
+
+[node name="IngredientBoxTomato" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = 54.0
+offset_top = 28.0
+offset_right = 90.0
+offset_bottom = 62.0
+color = Color(0.86, 0.18, 0.13, 1)
+
+[node name="SauceBottleGarlic" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = 98.0
+offset_top = 18.0
+offset_right = 114.0
+offset_bottom = 62.0
+color = Color(1, 0.93, 0.62, 1)
+
+[node name="SauceBottleHot" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = 116.0
+offset_top = 18.0
+offset_right = 132.0
+offset_bottom = 62.0
+color = Color(0.92, 0.21, 0.12, 1)
+
+[node name="StandCounter" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -150.0
+offset_top = 66.0
+offset_right = 150.0
+offset_bottom = 112.0
+color = Color(0.72, 0.31, 0.12, 1)
+
+[node name="CounterTop" type="ColorRect" parent="World/ShawarmaStand"]
+offset_left = -160.0
+offset_top = 56.0
+offset_right = 160.0
+offset_bottom = 76.0
+color = Color(0.98, 0.74, 0.39, 1)
 
 [node name="CookingStand" parent="World" instance=ExtResource("6_cooking_stand")]
 position = Vector2(640, 92)
