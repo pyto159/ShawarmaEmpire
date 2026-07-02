@@ -257,6 +257,7 @@ func _on_prepare_button_up() -> void:
 
 
 func _on_prepare_button_pressed() -> void:
+	AudioManager.play_button()
 	if _cooking_stand == null:
 		return
 
@@ -265,15 +266,19 @@ func _on_prepare_button_pressed() -> void:
 
 
 func _on_upgrade_button_pressed() -> void:
+	AudioManager.play_button()
 	if GameManager.purchase_upgrade(BETTER_GRILL_UPGRADE):
+		AudioManager.play_upgrade()
 		_update_display()
 
 
 func _on_cooking_started(_order: Order) -> void:
+	AudioManager.play_cooking_start()
 	_update_display()
 
 
 func _on_cooking_completed(order: Order) -> void:
+	AudioManager.play_cooking_complete()
 	_active_order = null
 	order_ready.emit(order)
 	_update_display()

@@ -85,20 +85,24 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 	var customer: Customer = instance as Customer
 	customer.queue_system_path = CUSTOMER_QUEUE_PATH
 	customer.left.connect(_on_customer_left, CONNECT_ONE_SHOT)
+	AudioManager.play_customer_arrive()
 	customer.join_queue(customer_queue)
 	_update_active_customer()
 
 
 func _on_customer_left(_customer: Customer) -> void:
+	AudioManager.play_customer_leave()
 	_update_active_customer()
 	call_deferred("_try_spawn_customer")
 
 
 func _on_queue_changed(_reservation: QueueReservation) -> void:
+	AudioManager.play_queue_move()
 	_update_active_customer()
 
 
 func _on_queue_slot_freed(_reservation: QueueReservation) -> void:
+	AudioManager.play_queue_move()
 	_update_active_customer()
 	call_deferred("_try_spawn_customer")
 
@@ -151,6 +155,7 @@ func _on_cooking_completed(order: Order) -> void:
 	var earned_coins: int = max(order.total_price, 0)
 	if earned_coins > 0:
 		GameManager.add_coins(earned_coins)
+		AudioManager.play_coin()
 		game_hud.show_coin_feedback(earned_coins)
 		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
 
