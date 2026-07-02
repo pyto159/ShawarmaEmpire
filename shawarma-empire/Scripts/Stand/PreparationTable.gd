@@ -7,6 +7,14 @@ const MEAT_STEP_PROGRESS: float = 0.2
 const SAUCE_STEP_PROGRESS: float = 0.4
 const ROLL_STEP_PROGRESS: float = 0.6
 const COMPLETE_STEP_PROGRESS: float = 0.8
+const INGREDIENT_APPEAR_SCALE: Vector2 = Vector2(0.7, 0.7)
+const INGREDIENT_SETTLE_SCALE: Vector2 = Vector2.ONE
+const INGREDIENT_BOUNCE_SCALE: Vector2 = Vector2(1.08, 1.08)
+const INGREDIENT_APPEAR_SECONDS: float = 0.09
+const INGREDIENT_SETTLE_SECONDS: float = 0.05
+const INGREDIENT_DELAY_SECONDS: float = 0.025
+const INGREDIENT_ROTATION_DEGREES: float = 5.0
+
 
 @export var cooking_stand_path: NodePath
 
@@ -20,6 +28,7 @@ const COMPLETE_STEP_PROGRESS: float = 0.8
 
 var _cooking_stand: CookingStand
 var _hide_timer: Timer = Timer.new()
+var _ingredient_tweens: Dictionary = {}
 
 
 func _ready() -> void:
@@ -27,7 +36,8 @@ func _ready() -> void:
 	_configure_hide_timer()
 	_resolve_configured_cooking_stand()
 	_connect_cooking_stand_signals()
-	_show_progress_step(LAVASH_STEP_PROGRESS)
+	_configure_ingredient_pivots()
+	_hide_all_ingredients()
 
 
 func _exit_tree() -> void:
@@ -93,15 +103,89 @@ func _disconnect_cooking_stand_signals() -> void:
 		_cooking_stand.cooking_cancelled.disconnect(_on_cooking_cancelled)
 
 
-func _show_progress_step(progress: float) -> void:
+func _configure_ingredient_pivots() -> void:
+	for ingredient_node: Control in [_lavash, _meat, _sauce, _rolled_shawarma]:
+		ingredient_node.pivot_offset = ingredient_node.size * 0.5
+
+
+func _show_progress_step(progress: float, animate_ingredients: bool = true) -> void:
 	var safe_progress: float = clampf(progress, 0.0, 1.0)
 	var is_rolled: bool = safe_progress >= ROLL_STEP_PROGRESS
-	_lavash.visible = not is_rolled and safe_progress >= LAVASH_STEP_PROGRESS
-	_meat.visible = not is_rolled and safe_progress >= MEAT_STEP_PROGRESS
-	_sauce.visible = not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS
-	_rolled_shawarma.visible = is_rolled
+	_set_ingredient_visible(_lavash, not is_rolled and safe_progress >= LAVASH_STEP_PROGRESS, 0, animate_ingredients)
+	_set_ingredient_visible(_meat, not is_rolled and safe_progress >= MEAT_STEP_PROGRESS, 1, animate_ingredients)
+	_set_ingredient_visible(_sauce, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 2, animate_ingredients)
+	_set_ingredient_visible(_rolled_shawarma, is_rolled, 3, animate_ingredients)
 	_complete_label.visible = safe_progress >= COMPLETE_STEP_PROGRESS
 	_update_status_label(safe_progress)
+
+
+func _set_ingredient_visible(ingredient_node: Control, should_show: bool, sequence_index: int, animate_ingredient: bool) -> void:
+	if not should_show:
+		_stop_ingredient_tween(ingredient_node)
+		_reset_ingredient_transform(ingredient_node)
+		ingredient_node.visible = false
+		return
+
+	if ingredient_node.visible:
+		return
+
+	ingredient_node.visible = true
+	if animate_ingredient:
+		_play_ingredient_appear_animation(ingredient_node, sequence_index)
+	else:
+		_reset_ingredient_transform(ingredient_node)
+
+
+func _play_ingredient_appear_animation(ingredient_node: Control, sequence_index: int) -> void:
+	_stop_ingredient_tween(ingredient_node)
+	ingredient_node.scale = INGREDIENT_APPEAR_SCALE
+	ingredient_node.rotation_degrees = _get_ingredient_start_rotation(sequence_index)
+
+	var tween: Tween = create_tween()
+	_ingredient_tweens[ingredient_node] = tween
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_OUT)
+	if sequence_index > 0:
+		tween.tween_interval(INGREDIENT_DELAY_SECONDS * sequence_index)
+	tween.tween_property(ingredient_node, "scale", INGREDIENT_BOUNCE_SCALE, INGREDIENT_APPEAR_SECONDS)
+	tween.parallel().tween_property(ingredient_node, "rotation_degrees", 0.0, INGREDIENT_APPEAR_SECONDS)
+	tween.tween_property(ingredient_node, "scale", INGREDIENT_SETTLE_SCALE, INGREDIENT_SETTLE_SECONDS)
+	tween.finished.connect(_on_ingredient_tween_finished.bind(ingredient_node))
+
+
+func _get_ingredient_start_rotation(sequence_index: int) -> float:
+	if sequence_index % 2 == 0:
+		return -INGREDIENT_ROTATION_DEGREES
+
+	return INGREDIENT_ROTATION_DEGREES
+
+
+func _stop_ingredient_tween(ingredient_node: Control) -> void:
+	if not _ingredient_tweens.has(ingredient_node):
+		return
+
+	var tween: Tween = _ingredient_tweens[ingredient_node]
+	if tween != null and tween.is_valid():
+		tween.kill()
+	_ingredient_tweens.erase(ingredient_node)
+
+
+func _reset_ingredient_transform(ingredient_node: Control) -> void:
+	ingredient_node.scale = INGREDIENT_SETTLE_SCALE
+	ingredient_node.rotation_degrees = 0.0
+
+
+func _hide_all_ingredients() -> void:
+	for ingredient_node: Control in [_lavash, _meat, _sauce, _rolled_shawarma]:
+		_stop_ingredient_tween(ingredient_node)
+		_reset_ingredient_transform(ingredient_node)
+		ingredient_node.visible = false
+	_complete_label.visible = false
+
+
+func _on_ingredient_tween_finished(ingredient_node: Control) -> void:
+	_ingredient_tweens.erase(ingredient_node)
+	_reset_ingredient_transform(ingredient_node)
 
 
 func _update_status_label(progress: float) -> void:
@@ -120,14 +204,15 @@ func _update_status_label(progress: float) -> void:
 func _reset_table() -> void:
 	_hide_timer.stop()
 	visible = false
-	_show_progress_step(LAVASH_STEP_PROGRESS)
+	_hide_all_ingredients()
+	_update_status_label(LAVASH_STEP_PROGRESS)
 
 
 func _on_cooking_started(_order: Order) -> void:
 	_hide_timer.stop()
 	_title_label.text = "Preparation"
-	_show_progress_step(LAVASH_STEP_PROGRESS)
 	visible = true
+	_show_progress_step(LAVASH_STEP_PROGRESS)
 
 
 func _on_cooking_progress_changed(_order: Order, _remaining_seconds: float, progress: float) -> void:
