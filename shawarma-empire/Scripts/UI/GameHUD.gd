@@ -13,12 +13,14 @@ const COOKING_STAND_NOT_FOUND: String = "Cooking stand was not found."
 const COIN_FEEDBACK_PREFIX: String = "+"
 const COIN_FEEDBACK_SUFFIX: String = " Coins"
 const FEEDBACK_VISIBLE_SECONDS: float = 1.5
+const BETTER_GRILL_UPGRADE: UpgradeData = preload("res://Resources/Upgrades/BetterGrill.tres")
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
 @onready var coins_label: Label = %CoinsLabel
 @onready var order_label: Label = %OrderLabel
 @onready var prepare_button: Button = %PrepareButton
+@onready var upgrade_button: Button = %UpgradeButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
 @onready var cooking_progress_bar: CookingProgressBar = %CookingProgressBar
@@ -30,8 +32,10 @@ var _active_order: Order
 
 func _ready() -> void:
 	prepare_button.pressed.connect(_on_prepare_button_pressed)
+	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
 	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
 	GameManager.currency_changed.connect(_on_currency_changed)
+	GameManager.upgrades_changed.connect(_on_upgrades_changed)
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
 	cooking_progress_bar.set_cooking_stand(_cooking_stand)
@@ -43,6 +47,8 @@ func _exit_tree() -> void:
 	_disconnect_cooking_stand_signals()
 	if GameManager.currency_changed.is_connected(_on_currency_changed):
 		GameManager.currency_changed.disconnect(_on_currency_changed)
+	if GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
+		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
 
 
 func set_active_customer(customer: Customer) -> void:
@@ -109,6 +115,8 @@ func _update_display() -> void:
 	order_label.text = _get_order_text()
 	prepare_button.text = _get_prepare_button_text()
 	prepare_button.disabled = not _can_prepare_order()
+	upgrade_button.text = BETTER_GRILL_UPGRADE.get_button_text()
+	upgrade_button.disabled = GameManager.has_upgrade(BETTER_GRILL_UPGRADE.id)
 
 
 
@@ -156,6 +164,11 @@ func _on_prepare_button_pressed() -> void:
 		_update_display()
 
 
+func _on_upgrade_button_pressed() -> void:
+	if GameManager.purchase_upgrade(BETTER_GRILL_UPGRADE):
+		_update_display()
+
+
 func _on_cooking_started(_order: Order) -> void:
 	_update_display()
 
@@ -167,6 +180,10 @@ func _on_cooking_completed(order: Order) -> void:
 
 
 func _on_currency_changed(_coins: int, _gems: int) -> void:
+	_update_display()
+
+
+func _on_upgrades_changed() -> void:
 	_update_display()
 
 

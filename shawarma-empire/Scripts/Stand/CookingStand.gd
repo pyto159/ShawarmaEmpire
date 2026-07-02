@@ -5,6 +5,17 @@ var accepted_order: Order
 var completed_order: Order
 
 
+func _ready() -> void:
+	_apply_cooking_speed_multiplier()
+	if not GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
+		GameManager.upgrades_changed.connect(_on_upgrades_changed)
+
+
+func _exit_tree() -> void:
+	if GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
+		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
+
+
 func accept_order(order: Order) -> bool:
 	if order == null or order.is_completed or has_active_order():
 		return false
@@ -72,3 +83,11 @@ func _complete_order(order: Order) -> bool:
 	completed_order = order
 	cooking_completed.emit(completed_order)
 	return true
+
+
+func _apply_cooking_speed_multiplier() -> void:
+	cooking_speed_multiplier = GameManager.cooking_speed_multiplier
+
+
+func _on_upgrades_changed() -> void:
+	_apply_cooking_speed_multiplier()

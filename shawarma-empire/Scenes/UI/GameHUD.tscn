@@ -34,6 +34,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Prepare"
 
+[node name="UpgradeButton" type="Button" parent="Panel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Better Grill - 50 Coins"
+
 [node name="CookingProgressBar" parent="Panel/Content" instance=ExtResource("2_cooking_progress_bar")]
 unique_name_in_owner = true
 layout_mode = 2
