@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" path="res://Scenes/UI/CookingProgressBar.tscn" id="2_cooking_progress_bar"]
 
 [node name="GameHUD" type="MarginContainer"]
+z_index = 100
+mouse_filter = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 18.0
@@ -13,20 +15,24 @@ offset_bottom = 176.0
 script = ExtResource("1_game_hud")
 
 [node name="Content" type="VBoxContainer" parent="."]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="TopRow" type="HBoxContainer" parent="Content"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="CoinsPanel" type="PanelContainer" parent="Content/TopRow"]
+mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(184, 68)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="CoinsMargin" type="MarginContainer" parent="Content/TopRow/CoinsPanel"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 10
@@ -34,22 +40,26 @@ theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 10
 
 [node name="CoinsRow" type="HBoxContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
 [node name="CoinIcon" type="PanelContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow"]
+mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
 
 [node name="CoinIconLabel" type="Label" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow/CoinIcon"]
+mouse_filter = 2
 layout_mode = 2
 text = "●"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CoinsLabel" type="Label" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow"]
+mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -57,12 +67,14 @@ text = "0"
 vertical_alignment = 1
 
 [node name="OrderPanel" type="PanelContainer" parent="Content/TopRow"]
+mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(230, 68)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="OrderMargin" type="MarginContainer" parent="Content/TopRow/OrderPanel"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 9
@@ -70,31 +82,37 @@ theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 9
 
 [node name="OrderRow" type="HBoxContainer" parent="Content/TopRow/OrderPanel/OrderMargin"]
+mouse_filter = 2
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="RecipeIcon" type="PanelContainer" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow"]
+mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
 
 [node name="RecipeIconLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/RecipeIcon"]
+mouse_filter = 2
 layout_mode = 2
 text = "▣"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="OrderText" type="VBoxContainer" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow"]
+mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
 [node name="OrderLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/OrderText"]
+mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "Waiting"
 
 [node name="OrderTimeLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/OrderText"]
+mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "No active order"
@@ -122,6 +140,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="CoinFeedbackLabel" type="Label" parent="Content"]
+mouse_filter = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
