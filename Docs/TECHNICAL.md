@@ -100,6 +100,20 @@ Responsibilities:
 
 The reusable scene lives in `res://Scenes/UI/CookingProgressBar.tscn` with presentation logic in `res://Scripts/UI/CookingProgressBar.gd`. The current `GameHUD` instances it and passes the composed `CookingStand` reference into the component; gameplay rules remain in the cooking stand and station systems.
 
+### Preparation Table
+
+`PreparationTable` is a lightweight visual-only cooking presentation component that shows the shawarma being assembled while an order is cooking. It listens to `CookingStand` cooking signals, displays warm-colored Godot placeholder shapes for lavash, meat, garlic sauce, rolling, and the completed shawarma, then hides shortly after cooking completes.
+
+Responsibilities:
+
+- Stay hidden while no order is actively cooking.
+- Show when `CookingStand.cooking_started(order)` is emitted.
+- Split the visible assembly sequence evenly across `cooking_progress_changed(order, remaining_seconds, progress)` so upgrade-modified cooking speed remains synchronized with the active order timing.
+- Briefly show the completed shawarma when `CookingStand.cooking_completed(order)` is emitted.
+- Avoid changing cooking, economy, customer, queue, or upgrade logic.
+
+The reusable scene lives in `res://Scenes/Stand/PreparationTable.tscn` with presentation logic in `res://Scripts/Stand/PreparationTable.gd`. `Main.tscn` places it near the shawarma stand and points it at the composed `CookingStand` instance.
+
 ### Save System
 
 `SaveManager` persists game state to `user://shawarma_empire_save.json`.
