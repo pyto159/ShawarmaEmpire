@@ -19,7 +19,7 @@ High-level responsibilities:
 - **Resources** are reserved for reusable data assets.
 - **Assets** and **Audio** hold production content.
 
-The current main scene is `res://Scenes/Main.tscn`. It creates the initial UI and world composition, including the game HUD, a customer queue, queue points, the shawarma stand, a cooking stand, and a placeholder customer for the first playable cooking interaction.
+The current main scene is `res://Scenes/Main.tscn`. It creates the initial UI and world composition, including layered visual market-square presentation, the game HUD, a customer queue, queue points, the shawarma stand, a cooking stand, and spawned customers for the first playable cooking interaction.
 
 The project currently uses autoload singletons for:
 
@@ -148,6 +148,7 @@ Responsibilities:
 - Host the root `Control` layout.
 - Display the game HUD.
 - Create the gameplay world container.
+- Separate the scene into lightweight visual layers for background, ground, decorative market props, gameplay objects, foreground decorations, and HUD.
 - Define the current queue points.
 - Place the shawarma stand and cooking stand.
 - Provide a placeholder customer order for the first playable cooking interaction.
