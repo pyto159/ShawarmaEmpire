@@ -19,6 +19,27 @@ const QUEUE_SYSTEM_PATH_NOT_CONFIGURED: String = "Queue system path is not confi
 const QUEUE_SYSTEM_NOT_FOUND: String = "Queue system was not found."
 const ORDER_NOT_FOUND: String = "Cannot assign a null order."
 const ACTIVE_ORDER_ALREADY_EXISTS: String = "Customer already owns an active order."
+const BODY_COLORS: Array[Color] = [
+	Color(0.93, 0.36, 0.22, 1.0),
+	Color(0.22, 0.56, 0.84, 1.0),
+	Color(0.24, 0.68, 0.46, 1.0),
+	Color(0.72, 0.36, 0.86, 1.0),
+	Color(0.95, 0.62, 0.20, 1.0),
+]
+const SKIN_TONES: Array[Color] = [
+	Color(0.96, 0.72, 0.52, 1.0),
+	Color(0.84, 0.58, 0.39, 1.0),
+	Color(0.68, 0.42, 0.27, 1.0),
+	Color(0.48, 0.29, 0.19, 1.0),
+]
+const HAIR_COLORS: Array[Color] = [
+	Color(0.16, 0.09, 0.04, 1.0),
+	Color(0.36, 0.22, 0.10, 1.0),
+	Color(0.08, 0.07, 0.06, 1.0),
+	Color(0.82, 0.58, 0.26, 1.0),
+]
+const CUSTOMER_SCALE_MIN: float = 0.94
+const CUSTOMER_SCALE_MAX: float = 1.06
 
 
 enum CustomerState {
@@ -51,9 +72,16 @@ var _is_waiting_for_queue_reservation: bool = false
 var _food_visual: CanvasItem
 var _movement_tween: Tween
 var _movement_sequence: int = 0
+@onready var _body_visual: Node2D = $Body
+@onready var _shirt_visual: Polygon2D = $Body/Shirt
+@onready var _head_visual: Polygon2D = $Body/Head
+@onready var _left_arm_visual: Polygon2D = $Body/LeftArm
+@onready var _right_arm_visual: Polygon2D = $Body/RightArm
+@onready var _hair_visual: Polygon2D = $Body/Hair
 
 
 func _ready() -> void:
+	_apply_random_visual_style()
 	_target_position = global_position
 	_set_food_visual(_get_configured_food_visual())
 	_set_queue_system(_get_configured_queue_system())
@@ -471,3 +499,44 @@ func _set_state(new_state: CustomerState) -> void:
 
 	current_state = new_state
 	state_changed.emit(current_state)
+
+
+func _apply_random_visual_style() -> void:
+	var skin_tone: Color = _get_random_color(SKIN_TONES)
+	_shirt_visual.color = _get_random_color(BODY_COLORS)
+	_head_visual.color = skin_tone
+	_left_arm_visual.color = skin_tone
+	_right_arm_visual.color = skin_tone
+	_hair_visual.color = _get_random_color(HAIR_COLORS)
+	_body_visual.scale = Vector2.ONE * randf_range(CUSTOMER_SCALE_MIN, CUSTOMER_SCALE_MAX)
+	_apply_random_headwear()
+
+
+func _apply_random_headwear() -> void:
+	if randi() % 2 == 0:
+		_hair_visual.polygon = PackedVector2Array([
+			Vector2(-11, 2),
+			Vector2(-7, -4),
+			Vector2(0, -6),
+			Vector2(8, -4),
+			Vector2(12, 1),
+			Vector2(8, 5),
+			Vector2(1, 3),
+			Vector2(-5, 6),
+		])
+	else:
+		_hair_visual.polygon = PackedVector2Array([
+			Vector2(-13, 2),
+			Vector2(-10, -4),
+			Vector2(10, -4),
+			Vector2(13, 2),
+			Vector2(8, 6),
+			Vector2(-8, 6),
+		])
+
+
+func _get_random_color(colors: Array[Color]) -> Color:
+	if colors.is_empty():
+		return Color.WHITE
+
+	return colors[randi() % colors.size()]
