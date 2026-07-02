@@ -123,3 +123,7 @@ Exit criteria for each update:
 - Performance remains within target limits.
 - Player-facing changes are documented.
 - Regression checks pass before release.
+
+## Sprint 4: Visual Polish
+
+Visual Polish sprint has started. This sprint is focused only on improving the current playable prototype presentation with Godot-native 2D shapes, labels, colors, tweens, and lightweight effects, while preserving existing gameplay, economy, queue, cooking, order, upgrade, and HUD behavior.

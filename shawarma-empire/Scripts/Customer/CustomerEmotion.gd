@@ -5,12 +5,13 @@ const HAPPY_EMOJIS: Array[String] = ["🙂", "😋", "🤩", "❤️", "👍"]
 const WAITING_EMOJIS: Array[String] = ["🤔", "🙂", "😐", "😴", "💭"]
 const ANGRY_EMOJIS: Array[String] = ["😠", "😤", "🙄"]
 
-const FLOAT_DISTANCE: float = 18.0
+const FLOAT_DISTANCE: float = 28.0
 const FADE_IN_SECONDS: float = 0.12
 const DEFAULT_HOLD_SECONDS: float = 0.55
 const HAPPY_HOLD_SECONDS: float = 1.0
 const FADE_OUT_SECONDS: float = 0.28
-const START_SCALE: Vector2 = Vector2(0.85, 0.85)
+const START_SCALE: Vector2 = Vector2(0.72, 0.72)
+const BOUNCE_SCALE: Vector2 = Vector2(1.18, 1.18)
 const END_SCALE: Vector2 = Vector2.ONE
 
 @onready var emotion_label: Label = %EmotionLabel
@@ -78,11 +79,13 @@ func _play_emotion(emoji: String, hold_seconds: float) -> void:
 	_emotion_tween = create_tween()
 	_emotion_tween.set_parallel(true)
 	_emotion_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_SECONDS)
-	_emotion_tween.tween_property(self, "scale", END_SCALE, FADE_IN_SECONDS).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_emotion_tween.tween_property(self, "scale", BOUNCE_SCALE, FADE_IN_SECONDS).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_emotion_tween.tween_property(self, "position", end_position, FADE_IN_SECONDS + hold_seconds + FADE_OUT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_emotion_tween.set_parallel(false)
+	_emotion_tween.tween_property(self, "scale", END_SCALE, 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_emotion_tween.tween_interval(hold_seconds)
 	_emotion_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_emotion_tween.parallel().tween_property(self, "scale", START_SCALE, FADE_OUT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	_emotion_tween.tween_callback(_hide_emotion)
 
 

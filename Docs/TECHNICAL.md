@@ -475,3 +475,7 @@ When adding or changing systems:
 - Preserve save compatibility or document migration requirements.
 - Validate the project for parser errors after code changes.
 - Profile and simplify before adding expensive visual or simulation features.
+
+### Sprint 4 Visual Polish Note
+
+Visual Polish sprint has started. Technical work in this sprint should remain presentation-only, use lightweight Godot 2D nodes and tweens, avoid external assets, and keep all economy, queue, cooking, order, upgrade, and HUD behavior unchanged.
