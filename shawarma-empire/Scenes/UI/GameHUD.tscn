@@ -6,44 +6,122 @@
 [node name="GameHUD" type="MarginContainer"]
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = 180.0
+offset_left = 18.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 176.0
 script = ExtResource("1_game_hud")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TopRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CoinsPanel" type="PanelContainer" parent="Content/TopRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(184, 68)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CoinsMargin" type="MarginContainer" parent="Content/TopRow/CoinsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="CoinsRow" type="HBoxContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="CoinIcon" type="PanelContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
 
-[node name="Content" type="VBoxContainer" parent="Panel"]
+[node name="CoinIconLabel" type="Label" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow/CoinIcon"]
 layout_mode = 2
-theme_override_constants/separation = 12
+text = "●"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="CoinsLabel" type="Label" parent="Panel/Content"]
+[node name="CoinsLabel" type="Label" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Coins: 0"
+size_flags_horizontal = 3
+text = "0"
+vertical_alignment = 1
 
-[node name="OrderLabel" type="Label" parent="Panel/Content"]
+[node name="OrderPanel" type="PanelContainer" parent="Content/TopRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 68)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OrderMargin" type="MarginContainer" parent="Content/TopRow/OrderPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 9
+
+[node name="OrderRow" type="HBoxContainer" parent="Content/TopRow/OrderPanel/OrderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RecipeIcon" type="PanelContainer" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+
+[node name="RecipeIconLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/RecipeIcon"]
+layout_mode = 2
+text = "▣"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OrderText" type="VBoxContainer" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="OrderLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/OrderText"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Order: Waiting"
+text = "Waiting"
 
-[node name="PrepareButton" type="Button" parent="Panel/Content"]
+[node name="OrderTimeLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/OrderText"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "No active order"
+
+[node name="ButtonRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PrepareButton" type="Button" parent="Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Prepare"
 
-[node name="UpgradeButton" type="Button" parent="Panel/Content"]
+[node name="UpgradeButton" type="Button" parent="Content/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Better Grill\n50 Coins"
+
+[node name="CookingProgressBar" parent="Content" instance=ExtResource("2_cooking_progress_bar")]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Better Grill - 50 Coins"
 
-[node name="CookingProgressBar" parent="Panel/Content" instance=ExtResource("2_cooking_progress_bar")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="CoinFeedbackLabel" type="Label" parent="Panel/Content"]
+[node name="CoinFeedbackLabel" type="Label" parent="Content"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
