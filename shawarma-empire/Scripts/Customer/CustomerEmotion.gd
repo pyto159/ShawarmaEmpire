@@ -1,10 +1,9 @@
 extends Node2D
 class_name CustomerEmotion
 
-const HAPPY_EMOJI: String = "🙂"
-const WAITING_EMOJI: String = "🤔"
-const ANGRY_EMOJI: String = "😠"
-const THINKING_EMOJI: String = "💭"
+const HAPPY_EMOJIS: Array[String] = ["🙂", "😋", "🤩", "❤️", "👍"]
+const WAITING_EMOJIS: Array[String] = ["🤔", "🙂", "😐", "😴", "💭"]
+const ANGRY_EMOJIS: Array[String] = ["😠", "😤", "🙄"]
 
 const FLOAT_DISTANCE: float = 18.0
 const FADE_IN_SECONDS: float = 0.12
@@ -28,19 +27,19 @@ func _ready() -> void:
 
 
 func show_happy() -> void:
-	_play_emotion(HAPPY_EMOJI, HAPPY_HOLD_SECONDS)
+	_play_emotion(_get_random_emotion(HAPPY_EMOJIS), HAPPY_HOLD_SECONDS)
 
 
 func show_waiting() -> void:
-	_play_emotion(WAITING_EMOJI, DEFAULT_HOLD_SECONDS)
+	_play_emotion(_get_random_emotion(WAITING_EMOJIS), DEFAULT_HOLD_SECONDS)
 
 
 func show_angry() -> void:
-	_play_emotion(ANGRY_EMOJI, DEFAULT_HOLD_SECONDS)
+	_play_emotion(_get_random_emotion(ANGRY_EMOJIS), DEFAULT_HOLD_SECONDS)
 
 
 func show_thinking() -> void:
-	_play_emotion(THINKING_EMOJI, DEFAULT_HOLD_SECONDS)
+	show_waiting()
 
 
 func _connect_parent_customer() -> void:
@@ -85,6 +84,13 @@ func _play_emotion(emoji: String, hold_seconds: float) -> void:
 	_emotion_tween.tween_interval(hold_seconds)
 	_emotion_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_SECONDS).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_emotion_tween.tween_callback(_hide_emotion)
+
+
+func _get_random_emotion(emotions: Array[String]) -> String:
+	if emotions.is_empty():
+		return ""
+
+	return emotions[randi() % emotions.size()]
 
 
 func _cancel_animation() -> void:
