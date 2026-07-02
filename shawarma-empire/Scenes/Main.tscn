@@ -32,6 +32,7 @@ grow_vertical = 2
 script = ExtResource("1_main")
 
 [node name="Background" type="ColorRect" parent="."]
+z_index = -100
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,7 +48,7 @@ cooking_stand_path = NodePath("../World/CookingStand")
 
 
 [node name="World" type="Node2D" parent="."]
-z_index = -10
+z_index = 0
 position = Vector2(0, 0)
 
 [node name="BackgroundLayer" type="Node2D" parent="World"]
@@ -80,409 +81,66 @@ z_index = -40
 [node name="PavementBase" type="ColorRect" parent="World/GroundLayer"]
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.57, 0.43, 0.29, 1)
+color = Color(0.5, 0.38, 0.27, 1)
 
-[node name="PavementTile_0_0" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 2.0
-offset_top = 2.0
-offset_right = 158.0
-offset_bottom = 118.0
-color = Color(0.62, 0.48, 0.33, 1)
+[node name="ClearGameplayArea" type="ColorRect" parent="World/GroundLayer"]
+offset_left = 290.0
+offset_top = 138.0
+offset_right = 990.0
+offset_bottom = 704.0
+color = Color(0.61, 0.48, 0.34, 0.78)
 
-[node name="PavementTile_0_1" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 162.0
-offset_top = 2.0
-offset_right = 318.0
-offset_bottom = 118.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_0_2" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 322.0
-offset_top = 2.0
-offset_right = 478.0
-offset_bottom = 118.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_0_3" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 482.0
-offset_top = 2.0
-offset_right = 638.0
-offset_bottom = 118.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_0_4" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 642.0
-offset_top = 2.0
-offset_right = 798.0
-offset_bottom = 118.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_0_5" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 802.0
-offset_top = 2.0
-offset_right = 958.0
-offset_bottom = 118.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_0_6" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 962.0
-offset_top = 2.0
-offset_right = 1118.0
-offset_bottom = 118.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_0_7" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 1122.0
-offset_top = 2.0
-offset_right = 1278.0
-offset_bottom = 118.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_1_0" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 2.0
-offset_top = 122.0
-offset_right = 158.0
-offset_bottom = 238.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_1_1" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 162.0
-offset_top = 122.0
-offset_right = 318.0
-offset_bottom = 238.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_1_2" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 322.0
-offset_top = 122.0
-offset_right = 478.0
-offset_bottom = 238.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_1_3" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 482.0
-offset_top = 122.0
-offset_right = 638.0
-offset_bottom = 238.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_1_4" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 642.0
-offset_top = 122.0
-offset_right = 798.0
-offset_bottom = 238.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_1_5" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 802.0
-offset_top = 122.0
-offset_right = 958.0
-offset_bottom = 238.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_1_6" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 962.0
-offset_top = 122.0
-offset_right = 1118.0
-offset_bottom = 238.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_1_7" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 1122.0
-offset_top = 122.0
-offset_right = 1278.0
-offset_bottom = 238.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_2_0" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 2.0
-offset_top = 242.0
-offset_right = 158.0
-offset_bottom = 358.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_2_1" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 162.0
-offset_top = 242.0
-offset_right = 318.0
-offset_bottom = 358.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_2_2" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 322.0
-offset_top = 242.0
-offset_right = 478.0
-offset_bottom = 358.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_2_3" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 482.0
-offset_top = 242.0
-offset_right = 638.0
-offset_bottom = 358.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_2_4" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 642.0
-offset_top = 242.0
-offset_right = 798.0
-offset_bottom = 358.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_2_5" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 802.0
-offset_top = 242.0
-offset_right = 958.0
-offset_bottom = 358.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_2_6" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 962.0
-offset_top = 242.0
-offset_right = 1118.0
-offset_bottom = 358.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_2_7" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 1122.0
-offset_top = 242.0
-offset_right = 1278.0
-offset_bottom = 358.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_3_0" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 2.0
-offset_top = 362.0
-offset_right = 158.0
-offset_bottom = 478.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_3_1" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 162.0
-offset_top = 362.0
-offset_right = 318.0
-offset_bottom = 478.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_3_2" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 322.0
-offset_top = 362.0
-offset_right = 478.0
-offset_bottom = 478.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_3_3" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 482.0
-offset_top = 362.0
-offset_right = 638.0
-offset_bottom = 478.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_3_4" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 642.0
-offset_top = 362.0
-offset_right = 798.0
-offset_bottom = 478.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_3_5" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 802.0
-offset_top = 362.0
-offset_right = 958.0
-offset_bottom = 478.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_3_6" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 962.0
-offset_top = 362.0
-offset_right = 1118.0
-offset_bottom = 478.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_3_7" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 1122.0
-offset_top = 362.0
-offset_right = 1278.0
-offset_bottom = 478.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_4_0" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 2.0
-offset_top = 482.0
-offset_right = 158.0
-offset_bottom = 598.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_4_1" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 162.0
-offset_top = 482.0
-offset_right = 318.0
-offset_bottom = 598.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_4_2" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 322.0
-offset_top = 482.0
-offset_right = 478.0
-offset_bottom = 598.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_4_3" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 482.0
-offset_top = 482.0
-offset_right = 638.0
-offset_bottom = 598.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementTile_4_4" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 642.0
-offset_top = 482.0
-offset_right = 798.0
-offset_bottom = 598.0
-color = Color(0.62, 0.48, 0.33, 1)
-
-[node name="PavementTile_4_5" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 802.0
-offset_top = 482.0
-offset_right = 958.0
-offset_bottom = 598.0
-color = Color(0.53, 0.39, 0.27, 1)
-
-[node name="PavementTile_4_6" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 962.0
-offset_top = 482.0
-offset_right = 1118.0
-offset_bottom = 598.0
-color = Color(0.68, 0.53, 0.37, 1)
-
-[node name="PavementTile_4_7" type="ColorRect" parent="World/GroundLayer"]
-offset_left = 1122.0
-offset_top = 482.0
-offset_right = 1278.0
-offset_bottom = 598.0
-color = Color(0.58, 0.45, 0.32, 1)
-
-[node name="PavementCrack_0" type="Line2D" parent="World/GroundLayer"]
-position = Vector2(180, 164)
-points = PackedVector2Array(0, 0, 32, 8, 58, -4)
-default_color = Color(0.23, 0.16, 0.11, 0.6)
-width = 3.0
-
-[node name="PavementCrack_1" type="Line2D" parent="World/GroundLayer"]
-position = Vector2(760, 520)
-points = PackedVector2Array(0, 0, -26, 18, -68, 12)
-default_color = Color(0.23, 0.16, 0.11, 0.6)
-width = 3.0
-
-[node name="PavementCrack_2" type="Line2D" parent="World/GroundLayer"]
-position = Vector2(1010, 210)
-points = PackedVector2Array(0, 0, 34, -14, 72, -8)
-default_color = Color(0.23, 0.16, 0.11, 0.6)
-width = 3.0
-
-[node name="PavementCrack_3" type="Line2D" parent="World/GroundLayer"]
-position = Vector2(420, 610)
-points = PackedVector2Array(0, 0, 42, 18, 78, 12)
-default_color = Color(0.23, 0.16, 0.11, 0.6)
-width = 3.0
+[node name="ServiceLane" type="ColorRect" parent="World/GroundLayer"]
+offset_left = 570.0
+offset_top = 338.0
+offset_right = 710.0
+offset_bottom = 704.0
+color = Color(0.66, 0.53, 0.38, 0.72)
 
 [node name="DecorationsLayer" type="Node2D" parent="World"]
 z_index = -20
 
-[node name="QueueGuidePath" type="Line2D" parent="World/DecorationsLayer"]
-points = PackedVector2Array(640, 690, 640, 410, 640, 336)
-default_color = Color(0.98, 0.78, 0.45, 0.28)
-width = 46.0
+[node name="LeftEdgeMarketStall" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(104, 250)
 
-[node name="FruitStand" type="Node2D" parent="World/DecorationsLayer"]
-position = Vector2(182, 236)
-[node name="Canopy" type="Polygon2D" parent="World/DecorationsLayer/FruitStand"]
-color = Color(0.82, 0.18, 0.13, 1)
-polygon = PackedVector2Array(-88, -48, 88, -48, 68, -8, -68, -8)
-[node name="Counter" type="ColorRect" parent="World/DecorationsLayer/FruitStand"]
-offset_left = -78.0
-offset_top = -8.0
-offset_right = 78.0
-offset_bottom = 50.0
-color = Color(0.45, 0.22, 0.1, 1)
-[node name="FruitLabel" type="Label" parent="World/DecorationsLayer/FruitStand"]
-offset_left = -56.0
+[node name="Canopy" type="Polygon2D" parent="World/DecorationsLayer/LeftEdgeMarketStall"]
+color = Color(0.55, 0.2, 0.16, 0.72)
+polygon = PackedVector2Array(-72, -34, 72, -34, 54, -2, -54, -2)
+
+[node name="Counter" type="ColorRect" parent="World/DecorationsLayer/LeftEdgeMarketStall"]
+offset_left = -62.0
 offset_top = -2.0
-offset_right = 58.0
-offset_bottom = 26.0
-theme_override_font_sizes/font_size = 16
-text = "FRUIT"
-horizontal_alignment = 1
+offset_right = 62.0
+offset_bottom = 42.0
+color = Color(0.35, 0.2, 0.13, 0.72)
 
-[node name="VegStand" type="Node2D" parent="World/DecorationsLayer"]
-position = Vector2(1090, 246)
-[node name="Umbrella" type="Polygon2D" parent="World/DecorationsLayer/VegStand"]
-color = Color(0.16, 0.5, 0.24, 1)
-polygon = PackedVector2Array(-86, -42, 0, -86, 86, -42)
-[node name="Crates" type="ColorRect" parent="World/DecorationsLayer/VegStand"]
-offset_left = -82.0
-offset_top = -20.0
-offset_right = 82.0
-offset_bottom = 48.0
-color = Color(0.49, 0.27, 0.13, 1)
-[node name="VegLabel" type="Label" parent="World/DecorationsLayer/VegStand"]
-offset_left = -58.0
-offset_top = -16.0
-offset_right = 58.0
-offset_bottom = 20.0
-theme_override_font_sizes/font_size = 16
-text = "VEG"
-horizontal_alignment = 1
+[node name="RightEdgeMarketStall" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(1176, 250)
 
-[node name="ExpansionReservations" type="Node2D" parent="World/DecorationsLayer"]
-[node name="DrinkStandSpace" type="Label" parent="World/DecorationsLayer/ExpansionReservations"]
-position = Vector2(84, 430)
-theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 0.75)
-theme_override_font_sizes/font_size = 18
-text = "future drinks"
-[node name="FriesStandSpace" type="Label" parent="World/DecorationsLayer/ExpansionReservations"]
-position = Vector2(1000, 430)
-theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 0.75)
-theme_override_font_sizes/font_size = 18
-text = "future fries"
-[node name="DessertStandSpace" type="Label" parent="World/DecorationsLayer/ExpansionReservations"]
-position = Vector2(1010, 560)
-theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 0.75)
-theme_override_font_sizes/font_size = 18
-text = "desserts soon"
-[node name="DeliveryParkingSpace" type="Label" parent="World/DecorationsLayer/ExpansionReservations"]
-position = Vector2(78, 592)
-theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 0.75)
-theme_override_font_sizes/font_size = 18
-text = "delivery parking"
-[node name="EventSquareSpace" type="Label" parent="World/DecorationsLayer/ExpansionReservations"]
-position = Vector2(524, 166)
-theme_override_colors/font_color = Color(0.3, 0.2, 0.12, 0.72)
-theme_override_font_sizes/font_size = 18
-text = "event square"
+[node name="Canopy" type="Polygon2D" parent="World/DecorationsLayer/RightEdgeMarketStall"]
+color = Color(0.2, 0.42, 0.24, 0.7)
+polygon = PackedVector2Array(-72, -34, 72, -34, 54, -2, -54, -2)
 
-[node name="ForegroundDecorationsLayer" type="Node2D" parent="World"]
-z_index = 30
-[node name="LeftBench" type="ColorRect" parent="World/ForegroundDecorationsLayer"]
-offset_left = 166.0
-offset_top = 650.0
-offset_right = 350.0
-offset_bottom = 674.0
-color = Color(0.42, 0.21, 0.09, 1)
-[node name="RightBench" type="ColorRect" parent="World/ForegroundDecorationsLayer"]
-offset_left = 936.0
-offset_top = 650.0
-offset_right = 1120.0
-offset_bottom = 674.0
-color = Color(0.42, 0.21, 0.09, 1)
-[node name="LanternGlowLeft" type="Polygon2D" parent="World/ForegroundDecorationsLayer"]
-position = Vector2(424, 360)
-color = Color(1, 0.6, 0.18, 0.18)
-polygon = PackedVector2Array(0, -70, 70, 0, 0, 70, -70, 0)
-[node name="LanternGlowRight" type="Polygon2D" parent="World/ForegroundDecorationsLayer"]
-position = Vector2(856, 360)
-color = Color(1, 0.6, 0.18, 0.18)
-polygon = PackedVector2Array(0, -70, 70, 0, 0, 70, -70, 0)
+[node name="Counter" type="ColorRect" parent="World/DecorationsLayer/RightEdgeMarketStall"]
+offset_left = -62.0
+offset_top = -2.0
+offset_right = 62.0
+offset_bottom = 42.0
+color = Color(0.35, 0.2, 0.13, 0.72)
+
+[node name="BottomLeftBench" type="ColorRect" parent="World/DecorationsLayer"]
+offset_left = 54.0
+offset_top = 646.0
+offset_right = 218.0
+offset_bottom = 668.0
+color = Color(0.32, 0.19, 0.12, 0.68)
+
+[node name="BottomRightBench" type="ColorRect" parent="World/DecorationsLayer"]
+offset_left = 1062.0
+offset_top = 646.0
+offset_right = 1226.0
+offset_bottom = 668.0
+color = Color(0.32, 0.19, 0.12, 0.68)
 
 
 [node name="CustomerQueue" type="Node" parent="World"]
