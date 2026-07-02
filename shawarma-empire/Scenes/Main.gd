@@ -1,7 +1,7 @@
 extends Control
 
 const CUSTOMER_QUEUE_PATH: NodePath = NodePath("../CustomerQueue")
-const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 700.0)
+const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 640.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
 const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
 const DEFAULT_QUEUE_CAPACITY: int = 5
