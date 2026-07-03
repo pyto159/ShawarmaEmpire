@@ -4,7 +4,6 @@ const DEFAULT_SOUND_VOLUME_DB: float = -8.0
 const DEFAULT_DEBOUNCE_SECONDS: float = 0.08
 const CUSTOMER_SOUND_DEBOUNCE_SECONDS: float = 0.16
 const COIN_SOUND_DEBOUNCE_SECONDS: float = 0.10
-const SAMPLE_RATE: int = 22050
 const PLAYER_POOL_SIZE: int = 4
 const MIN_VOLUME_DB: float = -80.0
 const MAX_VOLUME_DB: float = 6.0
@@ -36,7 +35,6 @@ var _last_played_msec_by_sound: Dictionary = {}
 
 func _ready() -> void:
 	_ensure_audio_players()
-	_assign_default_sounds()
 	_update_player_volumes()
 
 
@@ -118,47 +116,3 @@ func _update_player_volumes() -> void:
 
 	for audio_player: AudioStreamPlayer in _audio_players:
 		audio_player.volume_db = volume_db
-
-
-func _assign_default_sounds() -> void:
-	if button_sound == null:
-		button_sound = _create_tone_sound(580.0, 700.0, 0.06, 0.35)
-	if coin_sound == null:
-		coin_sound = _create_tone_sound(1200.0, 1680.0, 0.12, 0.45)
-	if cooking_start_sound == null:
-		cooking_start_sound = _create_tone_sound(300.0, 460.0, 0.14, 0.30)
-	if cooking_complete_sound == null:
-		cooking_complete_sound = _create_tone_sound(820.0, 1320.0, 0.16, 0.42)
-	if customer_arrive_sound == null:
-		customer_arrive_sound = _create_tone_sound(430.0, 560.0, 0.09, 0.28)
-	if customer_leave_sound == null:
-		customer_leave_sound = _create_tone_sound(520.0, 330.0, 0.10, 0.28)
-	if queue_move_sound == null:
-		queue_move_sound = _create_tone_sound(650.0, 760.0, 0.05, 0.24)
-	if upgrade_sound == null:
-		upgrade_sound = _create_tone_sound(700.0, 1500.0, 0.20, 0.42)
-	if error_sound == null:
-		error_sound = _create_tone_sound(180.0, 120.0, 0.12, 0.34)
-
-
-func _create_tone_sound(start_frequency: float, end_frequency: float, duration_seconds: float, amplitude: float) -> AudioStreamWAV:
-	var sample_count: int = int(float(SAMPLE_RATE) * duration_seconds)
-	var data: PackedByteArray = PackedByteArray()
-	data.resize(sample_count * 2)
-	var write_index: int = 0
-	for sample_index: int in range(sample_count):
-		var progress: float = float(sample_index) / float(maxi(sample_count - 1, 1))
-		var frequency: float = lerpf(start_frequency, end_frequency, progress)
-		var envelope: float = sin(progress * PI)
-		var wave: float = sin(TAU * frequency * float(sample_index) / float(SAMPLE_RATE))
-		var sample_value: int = int(wave * envelope * amplitude * 32767.0)
-		data[write_index] = sample_value & 0xff
-		data[write_index + 1] = (sample_value >> 8) & 0xff
-		write_index += 2
-
-	var audio_stream: AudioStreamWAV = AudioStreamWAV.new()
-	audio_stream.format = AudioStreamWAV.FORMAT_16_BITS
-	audio_stream.mix_rate = SAMPLE_RATE
-	audio_stream.stereo = false
-	audio_stream.data = data
-	return audio_stream
