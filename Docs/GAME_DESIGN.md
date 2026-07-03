@@ -95,12 +95,19 @@ Planned recipe attributes may include:
 - Unlock cost.
 - Upgrade level.
 
+Current Sprint 6 starter menu:
+
+- **Classic Shawarma:** Lavash, Chicken, Tomato, Cucumber, Garlic Sauce. Sells for 15 coins and takes 3 seconds to prepare.
+- **Spicy Shawarma:** Lavash, Chicken, Jalapeño, Spicy Sauce. Sells for 22 coins and takes 3.5 seconds to prepare.
+- **Cheese Shawarma:** Lavash, Chicken, Cheese, Garlic Sauce. Sells for 30 coins and takes 4 seconds to prepare.
+
 Recipe principles:
 
 - Recipes should be data-driven where possible.
 - New recipes should add strategic variety instead of only increasing numbers.
 - Recipe unlocks should be clear milestone rewards.
 - Recipe UI should emphasize value, unlock requirements, and upgrade impact.
+- Preparation visuals should be generated from each recipe ingredient sequence rather than hardcoded per recipe.
 
 ## Employees
 
