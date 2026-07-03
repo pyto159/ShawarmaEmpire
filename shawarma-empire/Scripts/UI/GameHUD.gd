@@ -14,14 +14,12 @@ const COIN_FEEDBACK_SUFFIX: String = " Coins"
 const FEEDBACK_VISIBLE_SECONDS: float = 1.5
 const NO_ORDER_TIME_TEXT: String = "No active order"
 const ORDER_TIME_SUFFIX: String = " sec prep"
-const PURCHASED_UPGRADE_TEXT: String = "Purchased"
 const PANEL_CORNER_RADIUS: int = 22
 const BUTTON_CORNER_RADIUS: int = 18
 const ICON_CORNER_RADIUS: int = 21
 const BUTTON_PRESSED_SCALE: Vector2 = Vector2(0.97, 0.97)
 const BUTTON_NORMAL_SCALE: Vector2 = Vector2.ONE
 const BUTTON_ANIMATION_SECONDS: float = 0.08
-const BETTER_GRILL_UPGRADE: UpgradeData = preload("res://Resources/Upgrades/BetterGrill.tres")
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
@@ -192,10 +190,8 @@ func _update_display() -> void:
 	order_time_label.text = _get_order_time_text()
 	prepare_button.text = _get_prepare_button_text()
 	prepare_button.disabled = not _can_prepare_order()
-	var has_better_grill: bool = GameManager.has_upgrade(BETTER_GRILL_UPGRADE.id)
-	upgrade_button.text = _get_upgrade_button_text(has_better_grill)
-	upgrade_button.disabled = has_better_grill
-
+	upgrade_button.text = _get_upgrade_button_text()
+	upgrade_button.disabled = GameManager.is_max_grill_level()
 
 
 func show_coin_feedback(amount: int) -> void:
@@ -206,11 +202,8 @@ func show_coin_feedback(amount: int) -> void:
 	coin_feedback_label.visible = true
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
-func _get_upgrade_button_text(has_better_grill: bool) -> String:
-	if has_better_grill:
-		return PURCHASED_UPGRADE_TEXT
-
-	return BETTER_GRILL_UPGRADE.get_button_text().replace(" - ", "\n")
+func _get_upgrade_button_text() -> String:
+	return GameManager.get_next_grill_button_text().replace(" - ", "\n")
 
 
 func _get_order_text() -> String:
@@ -267,7 +260,7 @@ func _on_prepare_button_pressed() -> void:
 
 func _on_upgrade_button_pressed() -> void:
 	AudioManager.play_button()
-	if GameManager.purchase_upgrade(BETTER_GRILL_UPGRADE):
+	if GameManager.purchase_next_grill_level():
 		AudioManager.play_upgrade()
 		_update_display()
 

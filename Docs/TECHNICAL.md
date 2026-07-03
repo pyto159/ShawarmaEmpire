@@ -43,7 +43,7 @@ Responsibilities:
 - Add completed cooking rewards through public currency APIs.
 - Provide save data.
 - Apply loaded save data.
-- Own purchased upgrade ids and the current cooking speed multiplier.
+- Own purchased upgrade ids, the current grill level, and the current cooking speed multiplier.
 - Notify UI and other listeners when currency changes.
 
 
@@ -74,8 +74,9 @@ Responsibilities:
 - Forward player intent by calling `CookingStand.start_cooking()` when Prepare is pressed.
 - Request AudioManager button feedback when the Prepare or upgrade button is pressed.
 - Request AudioManager cooking feedback when cooking starts and completes.
-- Forward Better Grill purchase intent to `GameManager.purchase_upgrade()` when the upgrade button is pressed.
-- Request AudioManager upgrade feedback when Better Grill is purchased successfully.
+- Show the next grill upgrade or `Max Grill` when the grill is fully upgraded.
+- Forward grill upgrade purchase intent to `GameManager.purchase_next_grill_level()` when the upgrade button is pressed.
+- Request AudioManager upgrade feedback when a grill level is purchased successfully.
 - Disable the Prepare button while the stand is cooking or when no cookable order is available.
 - Emit `order_ready(order)` when the cooking stand finishes the active order.
 - Show short text-only coin feedback when another system reports an earned coin amount.
@@ -84,9 +85,11 @@ The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res:
 
 ### Upgrade System
 
-Upgrade definitions use the reusable `UpgradeData` resource type in `res://Scripts/Upgrades/UpgradeData.gd`. Upgrade data contains an id, display name, coin cost, and cooking speed multiplier bonus so future upgrades can be balanced as data without putting presentation strings or costs directly in gameplay code.
+Upgrade definitions still support the reusable `UpgradeData` resource type in `res://Scripts/Upgrades/UpgradeData.gd` for future upgrade categories. The active grill progression is currently owned by `GameManager` as a compact multi-level table so the HUD can show the next grill upgrade without adding a shop screen.
 
-The first upgrade is `Better Grill` in `res://Resources/Upgrades/BetterGrill.tres`. It costs 50 coins and adds a 0.1 cooking speed multiplier bonus, making cooking complete 10% faster. `GameManager` owns purchase state, rejects duplicate purchases, rejects purchases when coins are insufficient, subtracts coins through the central currency API, updates the cooking speed multiplier, emits `upgrades_changed`, and includes purchased upgrade ids in save data. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` to active cooking progression.
+Grill progression starts at Level 1 `Basic Grill` with a 1.00 cooking speed multiplier. The next levels are Level 2 `Better Grill` for 50 coins with a 0.90 multiplier, Level 3 `Fast Grill` for 150 coins with a 0.75 multiplier, and Level 4 `Pro Grill` for 400 coins with a 0.60 multiplier. `GameManager.purchase_next_grill_level()` rejects purchases past the max level, rejects purchases when coins are insufficient, subtracts coins through the central currency API, applies the new grill level, updates the cooking speed multiplier, and emits `upgrades_changed`. The HUD displays the next grill upgrade and switches to `Max Grill` when Level 4 is reached.
+
+`GameManager` includes `grill_level` in save data. Older saves that only contain purchased upgrade ids are migrated by treating any saved legacy upgrade as Level 2, preserving the original one-time Better Grill purchase as closely as possible. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` to active cooking progression. `CookingStation` treats the multiplier as a duration multiplier, so lower grill multipliers complete cooking faster without changing recipe data.
 
 
 

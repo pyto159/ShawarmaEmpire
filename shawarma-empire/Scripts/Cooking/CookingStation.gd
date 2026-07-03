@@ -52,7 +52,7 @@ func advance_cooking(delta: float) -> void:
 		return
 
 	var safe_speed_multiplier: float = max(cooking_speed_multiplier, MINIMUM_COOKING_SPEED_MULTIPLIER)
-	remaining_seconds = max(remaining_seconds - (delta * safe_speed_multiplier), DEFAULT_PREPARATION_SECONDS)
+	remaining_seconds = max(remaining_seconds - (delta / safe_speed_multiplier), DEFAULT_PREPARATION_SECONDS)
 	_emit_progress_changed()
 
 	if is_zero_approx(remaining_seconds):
