@@ -40,7 +40,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.07, 0.04, 1)
+color = Color(0.93, 0.72, 0.45, 1)
 
 [node name="HUDLayer" type="CanvasLayer" parent="."]
 layer = 100
@@ -57,26 +57,26 @@ position = Vector2(0, 0)
 [node name="BackgroundLayer" type="Node2D" parent="World"]
 z_index = -50
 
-[node name="EveningGlow" type="ColorRect" parent="World/BackgroundLayer"]
+[node name="SunlitSkyWash" type="ColorRect" parent="World/BackgroundLayer"]
 mouse_filter = 2
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.32, 0.19, 0.11, 1)
+color = Color(0.98, 0.74, 0.43, 1)
 
-[node name="CornerShadeTopLeft" type="Polygon2D" parent="World/BackgroundLayer"]
-color = Color(0.06, 0.035, 0.025, 0.34)
+[node name="WarmSunCornerTopLeft" type="Polygon2D" parent="World/BackgroundLayer"]
+color = Color(1, 0.86, 0.5, 0.28)
 polygon = PackedVector2Array(0, 0, 340, 0, 0, 240)
 
-[node name="CornerShadeTopRight" type="Polygon2D" parent="World/BackgroundLayer"]
-color = Color(0.06, 0.035, 0.025, 0.3)
+[node name="WarmSunCornerTopRight" type="Polygon2D" parent="World/BackgroundLayer"]
+color = Color(1, 0.88, 0.56, 0.22)
 polygon = PackedVector2Array(1280, 0, 940, 0, 1280, 250)
 
-[node name="CornerShadeBottomLeft" type="Polygon2D" parent="World/BackgroundLayer"]
-color = Color(0.06, 0.035, 0.025, 0.28)
+[node name="SoftShadeBottomLeft" type="Polygon2D" parent="World/BackgroundLayer"]
+color = Color(0.48, 0.31, 0.17, 0.16)
 polygon = PackedVector2Array(0, 720, 330, 720, 0, 500)
 
-[node name="CornerShadeBottomRight" type="Polygon2D" parent="World/BackgroundLayer"]
-color = Color(0.06, 0.035, 0.025, 0.32)
+[node name="SoftShadeBottomRight" type="Polygon2D" parent="World/BackgroundLayer"]
+color = Color(0.48, 0.31, 0.17, 0.18)
 polygon = PackedVector2Array(1280, 720, 940, 720, 1280, 480)
 
 [node name="GroundLayer" type="Node2D" parent="World"]
@@ -86,7 +86,7 @@ z_index = -40
 mouse_filter = 2
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.5, 0.38, 0.27, 1)
+color = Color(0.71, 0.64, 0.52, 1)
 
 [node name="ClearGameplayArea" type="ColorRect" parent="World/GroundLayer"]
 mouse_filter = 2
@@ -94,7 +94,7 @@ offset_left = 290.0
 offset_top = 138.0
 offset_right = 990.0
 offset_bottom = 704.0
-color = Color(0.61, 0.48, 0.34, 0.78)
+color = Color(0.79, 0.7, 0.56, 0.86)
 
 [node name="ServiceLane" type="ColorRect" parent="World/GroundLayer"]
 mouse_filter = 2
@@ -102,7 +102,34 @@ offset_left = 570.0
 offset_top = 338.0
 offset_right = 710.0
 offset_bottom = 704.0
-color = Color(0.66, 0.53, 0.38, 0.72)
+color = Color(0.84, 0.75, 0.6, 0.78)
+
+[node name="StonePaverRows" type="Node2D" parent="World/GroundLayer"]
+z_index = 1
+
+[node name="PaverRowTop" type="ColorRect" parent="World/GroundLayer/StonePaverRows"]
+mouse_filter = 2
+offset_left = 304.0
+offset_top = 174.0
+offset_right = 976.0
+offset_bottom = 180.0
+color = Color(0.58, 0.51, 0.42, 0.32)
+
+[node name="PaverRowMiddle" type="ColorRect" parent="World/GroundLayer/StonePaverRows"]
+mouse_filter = 2
+offset_left = 296.0
+offset_top = 354.0
+offset_right = 984.0
+offset_bottom = 360.0
+color = Color(0.58, 0.51, 0.42, 0.28)
+
+[node name="PaverRowBottom" type="ColorRect" parent="World/GroundLayer/StonePaverRows"]
+mouse_filter = 2
+offset_left = 300.0
+offset_top = 534.0
+offset_right = 980.0
+offset_bottom = 540.0
+color = Color(0.58, 0.51, 0.42, 0.26)
 
 [node name="DecorationsLayer" type="Node2D" parent="World"]
 z_index = -20
@@ -152,6 +179,74 @@ offset_top = 646.0
 offset_right = 1226.0
 offset_bottom = 668.0
 color = Color(0.32, 0.19, 0.12, 0.68)
+
+
+[node name="LeftPlasterBuilding" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(110, 88)
+
+[node name="Wall" type="ColorRect" parent="World/DecorationsLayer/LeftPlasterBuilding"]
+mouse_filter = 2
+offset_left = -96.0
+offset_top = -46.0
+offset_right = 96.0
+offset_bottom = 54.0
+color = Color(0.96, 0.91, 0.79, 0.92)
+
+[node name="TerracottaRoof" type="Polygon2D" parent="World/DecorationsLayer/LeftPlasterBuilding"]
+color = Color(0.72, 0.29, 0.13, 0.95)
+polygon = PackedVector2Array(-112, -54, 112, -54, 90, -22, -90, -22)
+
+[node name="CafeAwning" type="Polygon2D" parent="World/DecorationsLayer/LeftPlasterBuilding"]
+position = Vector2(0, 20)
+color = Color(0.16, 0.48, 0.62, 0.82)
+polygon = PackedVector2Array(-78, -16, 78, -16, 62, 12, -62, 12)
+
+[node name="RightPlasterBuilding" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(1170, 92)
+
+[node name="Wall" type="ColorRect" parent="World/DecorationsLayer/RightPlasterBuilding"]
+mouse_filter = 2
+offset_left = -92.0
+offset_top = -48.0
+offset_right = 92.0
+offset_bottom = 56.0
+color = Color(0.98, 0.93, 0.82, 0.9)
+
+[node name="TerracottaRoof" type="Polygon2D" parent="World/DecorationsLayer/RightPlasterBuilding"]
+color = Color(0.76, 0.32, 0.14, 0.95)
+polygon = PackedVector2Array(-108, -56, 108, -56, 86, -22, -86, -22)
+
+[node name="OliveTreeLeft" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(230, 610)
+
+[node name="Trunk" type="ColorRect" parent="World/DecorationsLayer/OliveTreeLeft"]
+mouse_filter = 2
+offset_left = -8.0
+offset_top = -4.0
+offset_right = 8.0
+offset_bottom = 50.0
+color = Color(0.42, 0.25, 0.13, 0.9)
+
+[node name="Canopy" type="Polygon2D" parent="World/DecorationsLayer/OliveTreeLeft"]
+position = Vector2(0, -12)
+color = Color(0.38, 0.53, 0.31, 0.9)
+polygon = PackedVector2Array(0, -46, 40, -22, 46, 16, 14, 38, -30, 30, -48, -8, -26, -36)
+
+[node name="OliveTreeRight" type="Node2D" parent="World/DecorationsLayer"]
+position = Vector2(1050, 610)
+
+[node name="Trunk" type="ColorRect" parent="World/DecorationsLayer/OliveTreeRight"]
+mouse_filter = 2
+offset_left = -8.0
+offset_top = -4.0
+offset_right = 8.0
+offset_bottom = 50.0
+color = Color(0.42, 0.25, 0.13, 0.9)
+
+[node name="Canopy" type="Polygon2D" parent="World/DecorationsLayer/OliveTreeRight"]
+position = Vector2(0, -12)
+color = Color(0.36, 0.51, 0.3, 0.9)
+polygon = PackedVector2Array(0, -46, 40, -22, 46, 16, 14, 38, -30, 30, -48, -8, -26, -36)
 
 
 [node name="CustomerQueue" type="Node" parent="World"]

@@ -75,12 +75,15 @@ Environments should feel like a cozy marketplace where shawarma, people, and sma
 
 Environment direction:
 
-- Cozy marketplace layout.
-- Trees that soften the scene and add life.
+- Cozy Mediterranean street-market layout with a sunny vacation feeling.
+- Warm sunlight over white plaster buildings and terracotta roof shapes.
+- Natural stone pavement with simple, low-contrast paver detail.
+- Trees that soften the scene and add life, especially olive trees near walkways.
 - Lanterns that create warm golden pools of light.
-- Flower pots near stalls, walkways, and entrances.
-- Wooden stalls with friendly handmade charm.
-- Small decorative props such as crates, baskets, rugs, chalkboards, plants, and food displays.
+- Flower pots near stalls, walkways, café edges, and entrances.
+- Wooden kiosks and stalls with friendly handmade charm.
+- Colorful awnings that add market personality without competing with gameplay.
+- Cozy café props such as benches, small tables, chalkboards, crates, baskets, rugs, plants, and food displays.
 
 Environment principles:
 
