@@ -4,3 +4,11 @@
 
 [node name="AudioManager" type="Node"]
 script = ExtResource("1_audio_manager")
+
+[node name="SfxPlayer1" type="AudioStreamPlayer" parent="."]
+
+[node name="SfxPlayer2" type="AudioStreamPlayer" parent="."]
+
+[node name="SfxPlayer3" type="AudioStreamPlayer" parent="."]
+
+[node name="SfxPlayer4" type="AudioStreamPlayer" parent="."]
