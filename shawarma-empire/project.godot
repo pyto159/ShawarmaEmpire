@@ -20,7 +20,7 @@ run/main_scene="res://Scenes/Main.tscn"
 GameManager="*res://Managers/GameManager.gd"
 SaveManager="*res://Managers/SaveManager.gd"
 SceneManager="*res://Managers/SceneManager.gd"
-AudioManager="*res://Managers/AudioManager.tscn"
+AudioManager="*res://Scripts/Managers/AudioManager.gd"
 EffectsManager="*res://Managers/EffectsManager.gd"
 
 [display]
