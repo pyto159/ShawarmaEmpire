@@ -54,12 +54,13 @@ Responsibilities:
 
 Responsibilities:
 
-- Expose assignable `AudioStream` slots for button, coin, cooking, customer, queue, and error sounds.
-- Provide focused playback methods such as `play_button()`, `play_coin()`, and `play_cooking_complete()`.
-- Safely ignore playback requests when a sound slot has no assigned stream.
+- Expose assignable `AudioStream` slots for button, coin, cooking start, cooking complete, customer arrival, customer leave, queue movement, upgrade, and error sounds.
+- Provide focused playback methods such as `play_button()`, `play_coin()`, `play_cooking_start()`, `play_cooking_complete()`, `play_customer_arrive()`, `play_customer_leave()`, `play_queue_move()`, and `play_upgrade()`.
+- Safely ignore playback requests when a sound slot has no assigned stream, so the game remains playable before final `.wav` or `.ogg` assets are assigned.
+- Apply simple per-sound debounce windows to prevent button, reward, customer, and queue sound spam during repeated or clustered events.
 - Keep audio player implementation details internal so future audio routing, pooling, buses, or volume controls can be added without changing gameplay systems.
 
-The autoload is backed by `res://Managers/AudioManager.tscn` with logic in `res://Scripts/Managers/AudioManager.gd`. No placeholder audio files are required. Future sounds can be added by assigning streams to the exported fields on the AudioManager scene in the Inspector.
+The autoload is backed by `res://Managers/AudioManager.tscn` with logic in `res://Scripts/Managers/AudioManager.gd`. No placeholder audio files are required and no fallback tones are generated. Future sounds can be added by assigning streams to the exported fields on the AudioManager scene in the Inspector.
 
 ### Game HUD
 
@@ -71,12 +72,15 @@ Responsibilities:
 - Display current coins from `GameManager`.
 - Display the active order recipe name when the configured customer owns an incomplete order.
 - Forward player intent by calling `CookingStand.start_cooking()` when Prepare is pressed.
+- Request AudioManager button feedback when the Prepare or upgrade button is pressed.
+- Request AudioManager cooking feedback when cooking starts and completes.
 - Forward Better Grill purchase intent to `GameManager.purchase_upgrade()` when the upgrade button is pressed.
+- Request AudioManager upgrade feedback when Better Grill is purchased successfully.
 - Disable the Prepare button while the stand is cooking or when no cookable order is available.
 - Emit `order_ready(order)` when the cooking stand finishes the active order.
 - Show short text-only coin feedback when another system reports an earned coin amount.
 
-The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, ads, sounds, reward calculation, or reward ownership. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
+The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res://Scripts/UI/GameHUD.gd`. It intentionally does not implement customer leaving, ads, reward calculation, or reward ownership. Sound feedback is limited to AudioManager requests for UI button, cooking, and successful upgrade events. Economy systems should listen to cooking stand signals and then ask the HUD to display presentation-only feedback when needed.
 
 ### Upgrade System
 
@@ -154,6 +158,7 @@ Responsibilities:
 - Provide a placeholder customer order for the first playable cooking interaction.
 - Load save data when ready.
 - Award `order.total_price` coins when the cooking stand completes an order.
+- Request AudioManager feedback for spawned customers, customers leaving, queue changes, and earned coins.
 - Ask the HUD to show text-only coin feedback for completed cooking rewards.
 - Save game data on window close.
 
