@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Recipe" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Recipes/Recipe.gd" id="1_recipe"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Lavash.tres" id="2_lavash"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Chicken.tres" id="3_chicken"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Cheese.tres" id="4_cheese"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/GarlicSauce.tres" id="5_garlic_sauce"]
+
+[resource]
+script = ExtResource("1_recipe")
+display_name = "Cheese Shawarma"
+base_price = 30
+preparation_time = 4.0
+required_ingredients = Array[Resource]([ExtResource("2_lavash"), ExtResource("3_chicken"), ExtResource("4_cheese"), ExtResource("5_garlic_sauce")])

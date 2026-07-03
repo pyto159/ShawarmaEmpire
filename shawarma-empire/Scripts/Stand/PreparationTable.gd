@@ -2,10 +2,8 @@ extends Node2D
 class_name PreparationTable
 
 const COMPLETED_HIDE_DELAY_SECONDS: float = 0.45
-const LAVASH_STEP_PROGRESS: float = 0.0
-const MEAT_STEP_PROGRESS: float = 0.2
-const SAUCE_STEP_PROGRESS: float = 0.4
-const ROLL_STEP_PROGRESS: float = 0.6
+const FIRST_STEP_PROGRESS: float = 0.0
+const ROLL_FALLBACK_PROGRESS: float = 0.6
 const COMPLETE_STEP_PROGRESS: float = 0.8
 const INGREDIENT_APPEAR_SCALE: Vector2 = Vector2(0.7, 0.7)
 const INGREDIENT_SETTLE_SCALE: Vector2 = Vector2.ONE
@@ -24,9 +22,12 @@ const SMOKE_PULSE_SECONDS: float = 0.8
 @onready var _status_label: Label = $Panel/StatusLabel
 @onready var _lavash: ColorRect = $Panel/Board/Lavash
 @onready var _meat: ColorRect = $Panel/Board/Meat
-@onready var _sauce: ColorRect = $Panel/Board/GarlicSauce
+@onready var _garlic_sauce: ColorRect = $Panel/Board/GarlicSauce
+@onready var _spicy_sauce: ColorRect = $Panel/Board/SpicySauce
 @onready var _tomato: ColorRect = $Panel/Board/TomatoSlices
 @onready var _cucumber: ColorRect = $Panel/Board/CucumberSlices
+@onready var _jalapeno: ColorRect = $Panel/Board/JalapenoSlices
+@onready var _cheese: ColorRect = $Panel/Board/Cheese
 @onready var _rolled_shawarma: ColorRect = $Panel/Board/RolledShawarma
 @onready var _complete_label: Label = $Panel/Board/CompleteLabel
 @onready var _smoke_particles: Array[ColorRect] = [$Panel/Board/SmokeOne, $Panel/Board/SmokeTwo]
@@ -35,6 +36,8 @@ var _cooking_stand: CookingStand
 var _hide_timer: Timer = Timer.new()
 var _ingredient_tweens: Dictionary = {}
 var _smoke_tween: Tween
+var _active_ingredient_nodes: Array[Control] = []
+var _active_ingredient_names: Array[String] = []
 
 
 func _ready() -> void:
@@ -110,23 +113,24 @@ func _disconnect_cooking_stand_signals() -> void:
 
 
 func _configure_ingredient_pivots() -> void:
-	for ingredient_node: Control in [_lavash, _meat, _sauce, _tomato, _cucumber, _rolled_shawarma]:
+	for ingredient_node: Control in _get_visual_ingredient_nodes():
 		ingredient_node.pivot_offset = ingredient_node.size * 0.5
 
 
 func _show_progress_step(progress: float, animate_ingredients: bool = true) -> void:
 	var safe_progress: float = clampf(progress, 0.0, 1.0)
-	var is_rolled: bool = safe_progress >= ROLL_STEP_PROGRESS
-	_set_ingredient_visible(_lavash, not is_rolled and safe_progress >= LAVASH_STEP_PROGRESS, 0, animate_ingredients)
-	_set_ingredient_visible(_meat, not is_rolled and safe_progress >= MEAT_STEP_PROGRESS, 1, animate_ingredients)
-	_set_ingredient_visible(_sauce, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 2, animate_ingredients)
-	_set_ingredient_visible(_tomato, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 3, animate_ingredients)
-	_set_ingredient_visible(_cucumber, not is_rolled and safe_progress >= SAUCE_STEP_PROGRESS, 4, animate_ingredients)
-	_set_ingredient_visible(_rolled_shawarma, is_rolled, 5, animate_ingredients)
-	_set_smoke_visible(safe_progress >= MEAT_STEP_PROGRESS and safe_progress < COMPLETE_STEP_PROGRESS)
+	var roll_progress: float = _get_roll_progress()
+	var is_rolled: bool = safe_progress >= roll_progress
+
+	for ingredient_index: int in range(_active_ingredient_nodes.size()):
+		var ingredient_node: Control = _active_ingredient_nodes[ingredient_index]
+		var ingredient_progress: float = _get_ingredient_progress(ingredient_index)
+		_set_ingredient_visible(ingredient_node, not is_rolled and safe_progress >= ingredient_progress, ingredient_index, animate_ingredients)
+
+	_set_ingredient_visible(_rolled_shawarma, is_rolled, _active_ingredient_nodes.size(), animate_ingredients)
+	_set_smoke_visible(_should_show_smoke(safe_progress, roll_progress))
 	_complete_label.visible = safe_progress >= COMPLETE_STEP_PROGRESS
 	_update_status_label(safe_progress)
-
 
 func _set_ingredient_visible(ingredient_node: Control, should_show: bool, sequence_index: int, animate_ingredient: bool) -> void:
 	if not should_show:
@@ -185,7 +189,7 @@ func _reset_ingredient_transform(ingredient_node: Control) -> void:
 
 
 func _hide_all_ingredients() -> void:
-	for ingredient_node: Control in [_lavash, _meat, _sauce, _tomato, _cucumber, _rolled_shawarma]:
+	for ingredient_node: Control in _get_visual_ingredient_nodes():
 		_stop_ingredient_tween(ingredient_node)
 		_reset_ingredient_transform(ingredient_node)
 		ingredient_node.visible = false
@@ -201,28 +205,107 @@ func _on_ingredient_tween_finished(ingredient_node: Control) -> void:
 func _update_status_label(progress: float) -> void:
 	if progress >= COMPLETE_STEP_PROGRESS:
 		_status_label.text = "Ready shawarma!"
-	elif progress >= ROLL_STEP_PROGRESS:
+		return
+
+	if progress >= _get_roll_progress():
 		_status_label.text = "Rolling wrap"
-	elif progress >= SAUCE_STEP_PROGRESS:
-		_status_label.text = "Adding garlic sauce"
-	elif progress >= MEAT_STEP_PROGRESS:
-		_status_label.text = "Adding chicken"
-	else:
+		return
+
+	var current_ingredient_name: String = _get_current_ingredient_name(progress)
+	if current_ingredient_name.is_empty():
+		_status_label.text = "Preparing ingredients"
+		return
+
+	if current_ingredient_name == "Lavash":
 		_status_label.text = "Laying lavash"
+	else:
+		_status_label.text = "Adding %s" % current_ingredient_name.to_lower()
 
 
 func _reset_table() -> void:
 	_hide_timer.stop()
 	visible = false
 	_hide_all_ingredients()
-	_update_status_label(LAVASH_STEP_PROGRESS)
+	_update_status_label(FIRST_STEP_PROGRESS)
+
+func _set_active_recipe(order: Order) -> void:
+	_active_ingredient_nodes.clear()
+	_active_ingredient_names.clear()
+	if order == null or order.selected_recipe == null:
+		return
+
+	for ingredient: Ingredient in order.selected_recipe.required_ingredients:
+		var ingredient_node: Control = _get_ingredient_node(ingredient)
+		if ingredient_node == null:
+			continue
+
+		_active_ingredient_nodes.append(ingredient_node)
+		_active_ingredient_names.append(ingredient.display_name)
 
 
-func _on_cooking_started(_order: Order) -> void:
+func _get_ingredient_node(ingredient: Ingredient) -> Control:
+	if ingredient == null:
+		return null
+
+	match ingredient.display_name:
+		"Lavash":
+			return _lavash
+		"Chicken":
+			return _meat
+		"Garlic Sauce":
+			return _garlic_sauce
+		"Spicy Sauce":
+			return _spicy_sauce
+		"Tomato":
+			return _tomato
+		"Cucumber":
+			return _cucumber
+		"Jalapeño":
+			return _jalapeno
+		"Cheese":
+			return _cheese
+
+	return null
+
+
+func _get_visual_ingredient_nodes() -> Array[Control]:
+	return [_lavash, _meat, _garlic_sauce, _spicy_sauce, _tomato, _cucumber, _jalapeno, _cheese, _rolled_shawarma]
+
+
+func _get_ingredient_progress(ingredient_index: int) -> float:
+	if _active_ingredient_nodes.is_empty():
+		return FIRST_STEP_PROGRESS
+
+	var step_count: int = _active_ingredient_nodes.size() + 1
+	return COMPLETE_STEP_PROGRESS * float(ingredient_index) / float(step_count)
+
+
+func _get_roll_progress() -> float:
+	if _active_ingredient_nodes.is_empty():
+		return ROLL_FALLBACK_PROGRESS
+
+	var step_count: int = _active_ingredient_nodes.size() + 1
+	return COMPLETE_STEP_PROGRESS * float(_active_ingredient_nodes.size()) / float(step_count)
+
+
+func _should_show_smoke(progress: float, roll_progress: float) -> bool:
+	return progress >= _get_ingredient_progress(1) and progress < roll_progress
+
+
+func _get_current_ingredient_name(progress: float) -> String:
+	for ingredient_index: int in range(_active_ingredient_names.size() - 1, -1, -1):
+		if progress >= _get_ingredient_progress(ingredient_index):
+			return _active_ingredient_names[ingredient_index]
+
+	return ""
+
+
+func _on_cooking_started(order: Order) -> void:
 	_hide_timer.stop()
+	_set_active_recipe(order)
 	_title_label.text = "Preparation"
 	visible = true
-	_show_progress_step(LAVASH_STEP_PROGRESS)
+	_show_progress_step(FIRST_STEP_PROGRESS)
 
 
 func _on_cooking_progress_changed(_order: Order, _remaining_seconds: float, progress: float) -> void:

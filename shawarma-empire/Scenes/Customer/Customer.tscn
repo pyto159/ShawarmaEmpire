@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://customer"]
+[gd_scene load_steps=7 format=3 uid="uid://customer"]
 
 [ext_resource type="Script" path="res://Scripts/Customer/Customer.gd" id="1_customer"]
 [ext_resource type="Resource" path="res://Resources/Recipes/ClassicShawarma.tres" id="2_classic_shawarma"]
+[ext_resource type="Resource" path="res://Resources/Recipes/SpicyShawarma.tres" id="4_spicy_shawarma"]
+[ext_resource type="Resource" path="res://Resources/Recipes/CheeseShawarma.tres" id="5_cheese_shawarma"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CustomerEmotion.tscn" id="3_customer_emotion"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_customer"]
@@ -10,7 +12,7 @@ height = 48.0
 
 [node name="Customer" type="CharacterBody2D"]
 script = ExtResource("1_customer")
-available_recipes = Array[Resource]([ExtResource("2_classic_shawarma")])
+available_recipes = Array[Resource]([ExtResource("2_classic_shawarma"), ExtResource("4_spicy_shawarma"), ExtResource("5_cheese_shawarma")])
 food_visual_path = NodePath("Food")
 
 [node name="Body" type="Node2D" parent="."]

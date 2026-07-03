@@ -109,12 +109,13 @@ The reusable scene lives in `res://Scenes/UI/CookingProgressBar.tscn` with prese
 
 ### Preparation Table
 
-`PreparationTable` is a lightweight visual-only cooking presentation component that shows the shawarma being assembled while an order is cooking. It listens to `CookingStand` cooking signals, displays warm-colored Godot placeholder shapes for lavash, meat, garlic sauce, rolling, and the completed shawarma, then hides shortly after cooking completes.
+`PreparationTable` is a lightweight visual-only cooking presentation component that shows the shawarma being assembled while an order is cooking. It listens to `CookingStand` cooking signals, reads the active order recipe, maps each `Ingredient` resource in order to a lightweight placeholder visual, displays the resulting ingredient sequence, rolls the shawarma near the end of the cooking progress, and hides shortly after cooking completes.
 
 Responsibilities:
 
 - Stay hidden while no order is actively cooking.
 - Show when `CookingStand.cooking_started(order)` is emitted.
+- Build the visible assembly sequence from `order.selected_recipe.required_ingredients` so different recipe resources produce different preparation visuals.
 - Split the visible assembly sequence evenly across `cooking_progress_changed(order, remaining_seconds, progress)` so upgrade-modified cooking speed remains synchronized with the active order timing.
 - Briefly show the completed shawarma when `CookingStand.cooking_completed(order)` is emitted.
 - Avoid changing cooking, economy, customer, queue, or upgrade logic.
@@ -145,6 +146,16 @@ Responsibilities:
 - Report scene change failures.
 
 Scene changes should continue to be routed through this service when transitions become more complex.
+
+### Recipe and Order Data
+
+Recipes use `Recipe` resources in `res://Resources/Recipes/`, and ingredients use `Ingredient` resources in `res://Resources/Ingredients/`. `OrderGenerator.generate_order()` receives the currently available unlocked recipe list from each customer and randomly selects one resource from that list. `Order.create()` copies the selected recipe price and preparation time into the order, so completed cooking rewards continue to pay `order.total_price`.
+
+Current recipe resources:
+
+- `ClassicShawarma.tres`: Lavash, Chicken, Tomato, Cucumber, Garlic Sauce; 15 coins; 3 seconds.
+- `SpicyShawarma.tres`: Lavash, Chicken, Jalapeño, Spicy Sauce; 22 coins; 3.5 seconds.
+- `CheeseShawarma.tres`: Lavash, Chicken, Cheese, Garlic Sauce; 30 coins; 4 seconds.
 
 ### Main Scene
 

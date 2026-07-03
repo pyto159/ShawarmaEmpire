@@ -61,6 +61,15 @@ offset_right = 206.0
 offset_bottom = 34.0
 color = Color(1, 0.94, 0.67, 1)
 
+[node name="SpicySauce" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 58.0
+offset_top = 36.0
+offset_right = 206.0
+offset_bottom = 46.0
+color = Color(0.82, 0.1, 0.04, 1)
+
 [node name="TomatoSlices" type="ColorRect" parent="Panel/Board"]
 mouse_filter = 2
 layout_mode = 0
@@ -78,6 +87,24 @@ offset_top = 42.0
 offset_right = 180.0
 offset_bottom = 52.0
 color = Color(0.35, 0.78, 0.38, 1)
+
+[node name="JalapenoSlices" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 108.0
+offset_top = 20.0
+offset_right = 156.0
+offset_bottom = 30.0
+color = Color(0.16, 0.62, 0.16, 1)
+
+[node name="Cheese" type="ColorRect" parent="Panel/Board"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = 76.0
+offset_top = 52.0
+offset_right = 188.0
+offset_bottom = 64.0
+color = Color(1, 0.84, 0.18, 1)
 
 [node name="SmokeOne" type="ColorRect" parent="Panel/Board"]
 mouse_filter = 2
