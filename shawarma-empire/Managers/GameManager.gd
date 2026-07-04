@@ -20,7 +20,7 @@ var gems: int = STARTING_GEMS
 var purchased_upgrade_ids: Array[StringName] = []
 var grill_level: int = DEFAULT_GRILL_LEVEL
 var cooking_speed_multiplier: float = DEFAULT_COOKING_SPEED_MULTIPLIER
-var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
+var economy_config: EconomyConfig = EconomyConfig.load_or_default(ECONOMY_CONFIG_PATH)
 
 
 func initialize_new_game() -> void:
