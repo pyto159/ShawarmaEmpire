@@ -29,6 +29,7 @@ const NEXT_INGREDIENT_PREFIX: String = "Next: "
 const PANEL_WIDTH: float = 430.0
 const PANEL_TOP: float = 160.0
 const PANEL_ROW_SEPARATION: int = 8
+const PANEL_HEIGHT: float = 520.0
 const UNLOCKED_TEXT: String = "Unlocked"
 const LOCKED_TEXT: String = "Locked"
 
@@ -226,7 +227,7 @@ func _start_upgrade_feedback_animation() -> void:
 
 
 func _create_progression_panels() -> void:
-	_recipes_panel = _create_base_panel("Recipe Menu")
+	_recipes_panel = _create_base_panel("Recipe Menu", true)
 	_ingredients_panel = _create_base_panel("Ingredient Shop")
 	add_child(_recipes_panel)
 	add_child(_ingredients_panel)
@@ -234,9 +235,10 @@ func _create_progression_panels() -> void:
 	_ingredients_panel.hide()
 
 
-func _create_base_panel(title: String) -> PanelContainer:
+func _create_base_panel(title: String, has_scrollable_rows: bool = false) -> PanelContainer:
 	var panel: PanelContainer = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0.0)
+	panel.custom_minimum_size = Vector2(PANEL_WIDTH, PANEL_HEIGHT)
+	panel.size = Vector2(PANEL_WIDTH, PANEL_HEIGHT)
 	panel.position = Vector2(14.0, PANEL_TOP)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
@@ -265,14 +267,29 @@ func _create_base_panel(title: String) -> PanelContainer:
 	close_button.pressed.connect(Callable(panel, "hide"))
 	header.add_child(close_button)
 
+	if has_scrollable_rows:
+		var scroll_container: ScrollContainer = ScrollContainer.new()
+		scroll_container.name = "RowsScroll"
+		scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll_container.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll_container.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+		content.add_child(scroll_container)
+
+		var rows: VBoxContainer = VBoxContainer.new()
+		rows.name = "Rows"
+		rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rows.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
+		scroll_container.add_child(rows)
+
 	return panel
 
 
 func _populate_recipe_panel() -> void:
-	var content: VBoxContainer = _get_panel_content(_recipes_panel)
-	_clear_panel_rows(content)
+	var rows: VBoxContainer = _get_panel_rows(_recipes_panel)
+	_clear_rows(rows)
 	for recipe: Recipe in IngredientManager.get_all_recipes():
-		content.add_child(_create_recipe_row(recipe))
+		rows.add_child(_create_recipe_row(recipe))
 
 
 func _create_recipe_row(recipe: Recipe) -> Label:
@@ -323,11 +340,25 @@ func _get_panel_content(panel: PanelContainer) -> VBoxContainer:
 	return panel.get_node("PanelMargin/PanelContent") as VBoxContainer
 
 
+func _get_panel_rows(panel: PanelContainer) -> VBoxContainer:
+	var scroll_rows: Node = panel.get_node_or_null("PanelMargin/PanelContent/RowsScroll/Rows")
+	if scroll_rows is VBoxContainer:
+		return scroll_rows as VBoxContainer
+
+	return _get_panel_content(panel)
+
+
 func _clear_panel_rows(content: VBoxContainer) -> void:
 	for index: int in range(content.get_child_count() - 1, 0, -1):
 		var row: Node = content.get_child(index)
 		content.remove_child(row)
 		row.queue_free()
+
+
+func _clear_rows(rows: VBoxContainer) -> void:
+	for child: Node in rows.get_children():
+		rows.remove_child(child)
+		child.queue_free()
 
 
 func _refresh_open_progression_panel() -> void:
