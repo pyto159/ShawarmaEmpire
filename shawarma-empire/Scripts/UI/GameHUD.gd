@@ -14,9 +14,6 @@ const COIN_FEEDBACK_SUFFIX: String = " Coins"
 const FEEDBACK_VISIBLE_SECONDS: float = 1.5
 const NO_ORDER_TIME_TEXT: String = "No active order"
 const ORDER_TIME_SUFFIX: String = " sec prep"
-const PANEL_CORNER_RADIUS: int = 22
-const BUTTON_CORNER_RADIUS: int = 18
-const ICON_CORNER_RADIUS: int = 21
 const BUTTON_PRESSED_SCALE: Vector2 = Vector2(0.97, 0.97)
 const BUTTON_NORMAL_SCALE: Vector2 = Vector2.ONE
 const BUTTON_ANIMATION_SECONDS: float = 0.08
@@ -25,16 +22,11 @@ const NEXT_INGREDIENT_PREFIX: String = "Next: "
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
-@onready var coins_panel: PanelContainer = %CoinsPanel
-@onready var coin_icon: PanelContainer = %CoinIcon
-@onready var recipe_icon: PanelContainer = %RecipeIcon
-@onready var order_panel: PanelContainer = %OrderPanel
 @onready var coins_label: Label = %CoinsLabel
 @onready var order_label: Label = %OrderLabel
 @onready var order_time_label: Label = %OrderTimeLabel
 @onready var prepare_button: Button = %PrepareButton
 @onready var upgrade_button: Button = %UpgradeButton
-@onready var ingredient_panel: PanelContainer = %IngredientPanel
 @onready var ingredient_label: Label = %IngredientLabel
 @onready var ingredient_cost_label: Label = %IngredientCostLabel
 @onready var ingredient_unlock_button: Button = %IngredientUnlockButton
@@ -48,7 +40,7 @@ var _active_order: Order
 
 
 func _ready() -> void:
-	_apply_mobile_hud_theme()
+	_apply_mobile_hud_layout()
 	prepare_button.pressed.connect(_on_prepare_button_pressed)
 	prepare_button.button_down.connect(_on_prepare_button_down)
 	prepare_button.button_up.connect(_on_prepare_button_up)
@@ -89,67 +81,16 @@ func set_cooking_stand(cooking_stand: CookingStand) -> void:
 	_update_display()
 
 
-func _apply_mobile_hud_theme() -> void:
+func _apply_mobile_hud_layout() -> void:
 	add_theme_constant_override("margin_left", 18)
 	add_theme_constant_override("margin_top", 18)
 	add_theme_constant_override("margin_right", 18)
 	add_theme_constant_override("margin_bottom", 18)
-	coins_panel.add_theme_stylebox_override("panel", _create_panel_style(Color(1.0, 0.78, 0.28, 0.96), Color(0.46, 0.24, 0.05, 0.20)))
-	order_panel.add_theme_stylebox_override("panel", _create_panel_style(Color(1.0, 0.93, 0.82, 0.96), Color(0.32, 0.16, 0.06, 0.16)))
-	coin_icon.add_theme_stylebox_override("panel", _create_icon_style(Color(1.0, 0.66, 0.08, 1.0)))
-	recipe_icon.add_theme_stylebox_override("panel", _create_icon_style(Color(0.95, 0.52, 0.22, 1.0)))
-	prepare_button.add_theme_stylebox_override("normal", _create_button_style(Color(0.25, 0.78, 0.34, 1.0), Color(0.06, 0.25, 0.09, 0.24)))
-	prepare_button.add_theme_stylebox_override("hover", _create_button_style(Color(0.30, 0.84, 0.39, 1.0), Color(0.06, 0.25, 0.09, 0.24)))
-	prepare_button.add_theme_stylebox_override("pressed", _create_button_style(Color(0.18, 0.62, 0.26, 1.0), Color(0.03, 0.12, 0.05, 0.18)))
-	prepare_button.add_theme_stylebox_override("disabled", _create_button_style(Color(0.48, 0.50, 0.48, 1.0), Color(0.12, 0.12, 0.12, 0.10)))
-	upgrade_button.add_theme_stylebox_override("normal", _create_button_style(Color(0.20, 0.50, 0.92, 1.0), Color(0.04, 0.12, 0.28, 0.22)))
-	upgrade_button.add_theme_stylebox_override("hover", _create_button_style(Color(0.25, 0.58, 0.98, 1.0), Color(0.04, 0.12, 0.28, 0.22)))
-	upgrade_button.add_theme_stylebox_override("pressed", _create_button_style(Color(0.13, 0.36, 0.72, 1.0), Color(0.02, 0.07, 0.18, 0.16)))
-	upgrade_button.add_theme_stylebox_override("disabled", _create_button_style(Color(0.36, 0.46, 0.58, 1.0), Color(0.08, 0.10, 0.12, 0.10)))
-	ingredient_panel.add_theme_stylebox_override("panel", _create_panel_style(Color(0.90, 0.98, 0.80, 0.96), Color(0.15, 0.28, 0.06, 0.16)))
-	ingredient_unlock_button.add_theme_stylebox_override("normal", _create_button_style(Color(0.22, 0.68, 0.38, 1.0), Color(0.04, 0.16, 0.08, 0.22)))
-	ingredient_unlock_button.add_theme_stylebox_override("hover", _create_button_style(Color(0.28, 0.76, 0.44, 1.0), Color(0.04, 0.16, 0.08, 0.22)))
-	ingredient_unlock_button.add_theme_stylebox_override("pressed", _create_button_style(Color(0.16, 0.50, 0.28, 1.0), Color(0.02, 0.08, 0.04, 0.16)))
-	ingredient_unlock_button.add_theme_stylebox_override("disabled", _create_button_style(Color(0.44, 0.54, 0.44, 1.0), Color(0.08, 0.10, 0.08, 0.10)))
 	coins_label.add_theme_font_size_override("font_size", 28)
 	order_label.add_theme_font_size_override("font_size", 20)
 	order_time_label.add_theme_font_size_override("font_size", 14)
-	prepare_button.add_theme_font_size_override("font_size", 22)
-	upgrade_button.add_theme_font_size_override("font_size", 18)
 	ingredient_label.add_theme_font_size_override("font_size", 17)
 	ingredient_cost_label.add_theme_font_size_override("font_size", 14)
-	ingredient_unlock_button.add_theme_font_size_override("font_size", 16)
-
-
-func _create_panel_style(color: Color, shadow_color: Color) -> StyleBoxFlat:
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = color
-	style.corner_radius_top_left = PANEL_CORNER_RADIUS
-	style.corner_radius_top_right = PANEL_CORNER_RADIUS
-	style.corner_radius_bottom_left = PANEL_CORNER_RADIUS
-	style.corner_radius_bottom_right = PANEL_CORNER_RADIUS
-	style.shadow_color = shadow_color
-	style.shadow_size = 8
-	style.shadow_offset = Vector2(0, 4)
-	return style
-
-
-func _create_icon_style(color: Color) -> StyleBoxFlat:
-	var style: StyleBoxFlat = _create_panel_style(color, Color(0, 0, 0, 0.12))
-	style.corner_radius_top_left = ICON_CORNER_RADIUS
-	style.corner_radius_top_right = ICON_CORNER_RADIUS
-	style.corner_radius_bottom_left = ICON_CORNER_RADIUS
-	style.corner_radius_bottom_right = ICON_CORNER_RADIUS
-	return style
-
-
-func _create_button_style(color: Color, shadow_color: Color) -> StyleBoxFlat:
-	var style: StyleBoxFlat = _create_panel_style(color, shadow_color)
-	style.corner_radius_top_left = BUTTON_CORNER_RADIUS
-	style.corner_radius_top_right = BUTTON_CORNER_RADIUS
-	style.corner_radius_bottom_left = BUTTON_CORNER_RADIUS
-	style.corner_radius_bottom_right = BUTTON_CORNER_RADIUS
-	return style
 
 
 func _animate_prepare_button(target_scale: Vector2) -> void:
