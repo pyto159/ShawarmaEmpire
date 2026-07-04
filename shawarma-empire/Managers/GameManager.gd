@@ -101,6 +101,19 @@ func add_coins(amount: int) -> void:
 	set_currency(coins + amount, gems)
 
 
+func set_coins(amount: int) -> void:
+	set_currency(amount, gems)
+	SaveManager.queue_save_game()
+
+
+func add_dev_coins(amount: int) -> void:
+	if amount <= 0:
+		return
+
+	add_coins(amount)
+	SaveManager.queue_save_game()
+
+
 func spend_coins(amount: int) -> bool:
 	if amount <= 0 or coins < amount:
 		return false
@@ -162,6 +175,11 @@ func set_grill_level(level: int) -> void:
 	grill_level = clampi(level, DEFAULT_GRILL_LEVEL, economy_config.get_max_grill_level())
 	cooking_speed_multiplier = _get_grill_level_multiplier(grill_level)
 	upgrades_changed.emit()
+
+
+func set_grill_level_for_testing(level: int) -> void:
+	set_grill_level(level)
+	SaveManager.queue_save_game()
 
 
 func purchase_upgrade(upgrade: UpgradeData) -> bool:

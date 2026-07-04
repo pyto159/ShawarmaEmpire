@@ -87,12 +87,16 @@ func unlock_ingredient(ingredient_id: String) -> bool:
 	if not GameManager.spend_coins(get_unlock_cost(ingredient_id)):
 		return false
 
-	unlocked_ingredient_ids.append(ingredient_id)
-	ingredient_unlocked.emit(ingredient_id)
-	ingredients_changed.emit()
-	GameManager.recipes_changed.emit()
+	_add_unlocked_ingredient(ingredient_id)
 	SaveManager.queue_save_game()
 	return true
+
+
+func unlock_all_ingredients_for_testing() -> void:
+	for ingredient_id: String in INGREDIENT_UNLOCK_ORDER:
+		if _has_ingredient_definition(ingredient_id) and not is_unlocked(ingredient_id):
+			_add_unlocked_ingredient(ingredient_id)
+	SaveManager.queue_save_game()
 
 
 func apply_unlocked_ingredient_ids(saved_ingredient_ids: Variant) -> void:
@@ -186,6 +190,13 @@ func _is_recipe_available(recipe: Recipe) -> bool:
 			return false
 
 	return true
+
+
+func _add_unlocked_ingredient(ingredient_id: String) -> void:
+	unlocked_ingredient_ids.append(ingredient_id)
+	ingredient_unlocked.emit(ingredient_id)
+	ingredients_changed.emit()
+	GameManager.recipes_changed.emit()
 
 
 func _has_ingredient_definition(ingredient_id: String) -> bool:
