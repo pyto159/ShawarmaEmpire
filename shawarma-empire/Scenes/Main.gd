@@ -18,6 +18,7 @@ const DEFAULT_QUEUE_CAPACITY: int = 5
 
 var active_customer: Customer
 var _spawn_timer: Timer = Timer.new()
+var _order_generator: OrderGenerator = OrderGenerator.new()
 
 
 func _ready() -> void:
@@ -83,12 +84,23 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 		return
 
 	var customer: Customer = instance as Customer
-	customer.available_recipes = GameManager.get_unlocked_recipes()
+	_assign_customer_order(customer)
 	customer.queue_system_path = CUSTOMER_QUEUE_PATH
 	customer.left.connect(_on_customer_left, CONNECT_ONE_SHOT)
 	AudioManager.play_customer_arrive()
 	customer.join_queue(customer_queue)
 	_update_active_customer()
+
+
+func _assign_customer_order(customer: Customer) -> void:
+	var available_recipes: Array[Recipe] = GameManager.get_unlocked_recipes()
+	customer.available_recipes = available_recipes
+	if customer.has_order():
+		return
+
+	var order: Order = _order_generator.generate_order(available_recipes)
+	if order != null:
+		customer.assign_order(order)
 
 
 func _on_customer_left(_customer: Customer) -> void:
