@@ -50,3 +50,23 @@ Kiosk upgrade costs and effects live in `res://Resources/Economy/EconomyConfig.t
 | Decorations | 340 coins | +10% tip chance |
 
 Kiosk upgrades are one-time purchases and are independent from Grill progression. The tip chance currently rolls a 20% bonus tip on served-order rewards when Decorations succeeds.
+
+## Business Reputation Balance
+
+Reputation is a permanent progression value independent from coins. Players start at 0 Reputation and there is no maximum cap.
+
+| Source | Reputation |
+| --- | ---: |
+| Successfully served customer | +1 |
+| Rare Order completed | +2 bonus |
+| Favorite Recipe served | +2 bonus |
+
+Business Level thresholds and bonuses:
+
+| Business Level | Reputation Required | Bonus |
+| --- | ---: | --- |
+| Level 1 | 0 | Starting level |
+| Level 2 | 25 | +1 Queue Slot |
+| Level 3 | 75 | +5% Rare Order Chance |
+| Level 4 | 150 | +10% Customer Spawn Rate |
+| Level 5 | 300 | Future content hook; no gameplay bonus yet |
