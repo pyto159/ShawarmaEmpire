@@ -2,9 +2,9 @@ extends Resource
 class_name EconomyConfig
 
 const DEFAULT_GRILL_LEVEL: int = 1
-const DEFAULT_COOKING_SPEED_MULTIPLIER: float = 1.0
+const DEFAULT_COOKING_SPEED_MULTIPLIER: float = 1.00
 const DEFAULT_RECIPE_REWARD: int = 0
-const DEFAULT_RECIPE_PREPARATION_TIME: float = 1.0
+const DEFAULT_RECIPE_PREPARATION_TIME: float = 1.00
 const DEFAULT_INGREDIENT_COST: int = 0
 const DEFAULT_GRILL_COST: int = 0
 const FALLBACK_GRILL_DISPLAY_NAME: String = "Basic Grill"
@@ -26,15 +26,15 @@ const FALLBACK_RECIPE_REWARDS: Dictionary = {
 	"res://Resources/Recipes/CheeseShawarma.tres": 35,
 }
 const FALLBACK_RECIPE_PREPARATION_TIMES: Dictionary = {
-	"res://Resources/Recipes/ClassicShawarma.tres": 3.0,
-	"res://Resources/Recipes/SpicyShawarma.tres": 3.6,
-	"res://Resources/Recipes/CheeseShawarma.tres": 4.0,
+	"res://Resources/Recipes/ClassicShawarma.tres": 3.00,
+	"res://Resources/Recipes/SpicyShawarma.tres": 3.60,
+	"res://Resources/Recipes/CheeseShawarma.tres": 4.00,
 }
 const FALLBACK_COOKING_MULTIPLIERS: Dictionary = {
-	1: 1.0,
-	2: 0.9,
+	1: 1.00,
+	2: 0.90,
 	3: 0.75,
-	4: 0.6,
+	4: 0.60,
 	5: 0.45,
 }
 
