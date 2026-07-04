@@ -27,15 +27,15 @@ recipe_rewards = {
 "res://Resources/Recipes/CheeseShawarma.tres": 35
 }
 recipe_preparation_times = {
-"res://Resources/Recipes/ClassicShawarma.tres": 3.0,
-"res://Resources/Recipes/SpicyShawarma.tres": 3.6,
-"res://Resources/Recipes/CheeseShawarma.tres": 4.0
+"res://Resources/Recipes/ClassicShawarma.tres": 3.00,
+"res://Resources/Recipes/SpicyShawarma.tres": 3.60,
+"res://Resources/Recipes/CheeseShawarma.tres": 4.00
 }
 cooking_multipliers = {
-1: 1.0,
-2: 0.9,
+1: 1.00,
+2: 0.90,
 3: 0.75,
-4: 0.6,
+4: 0.60,
 5: 0.45
 }
 future_employee_costs = {}
