@@ -498,3 +498,15 @@ When adding or changing systems:
 ### Sprint 4 Visual Polish Note
 
 Visual Polish sprint has started. Technical work in this sprint should remain presentation-only, use lightweight Godot 2D nodes and tweens, avoid external assets, and keep all economy, queue, cooking, order, upgrade, and HUD behavior unchanged.
+
+### Sprint 8 Persistent Save and Main Menu
+
+`SaveManager` is the only system that reads, writes, or deletes persistent progression files. It stores a single JSON save at `user://shawarma_empire_save.json`, exposes `save_game()`, `load_game()`, `delete_save()`, `has_save()`, and `initialize_new_game()`, and also provides deferred `queue_save_game()` calls so save requests can be coalesced after gameplay events without blocking moment-to-moment play.
+
+The saved payload currently includes coins, gems, grill level, legacy purchased upgrade ids, unlocked recipe resource paths, unlocked ingredient ids for future ingredient progression, and the current game version. Future progression fields should be added through explicit `GameManager` save/apply fields and then routed through `SaveManager`; gameplay, UI, queue, cooking, and spawning systems should not access save files directly.
+
+`GameManager.initialize_new_game()` resets coins, gems, grill level, legacy upgrades, unlocked recipes, and unlocked ingredients to default values. The default recipe set currently matches existing gameplay by unlocking Classic Shawarma, Spicy Shawarma, and Cheese Shawarma at new-game start. `GameManager.get_unlocked_recipes()` resolves saved recipe paths into recipe resources for spawned customers.
+
+`MainMenu.tscn` is now the configured project entry scene. It shows `Continue` only when `SaveManager.has_save()` is true, always shows `New Game`, and confirms destructive new-game starts when a save exists with the message: `Start a new game? Your current progress will be permanently deleted.` Confirming a new game deletes the previous save, initializes default progression, writes a fresh save, and enters `Main.tscn` through `SceneManager`.
+
+`Main.tscn` remains the gameplay composition scene. It loads save data on ready, assigns currently unlocked recipes to spawned customers, saves after completed paid orders, and saves on the window close notification. Grill upgrade purchases also queue a save after successful purchase.

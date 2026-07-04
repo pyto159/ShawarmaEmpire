@@ -83,6 +83,7 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 		return
 
 	var customer: Customer = instance as Customer
+	customer.available_recipes = GameManager.get_unlocked_recipes()
 	customer.queue_system_path = CUSTOMER_QUEUE_PATH
 	customer.left.connect(_on_customer_left, CONNECT_ONE_SHOT)
 	AudioManager.play_customer_arrive()
@@ -158,6 +159,7 @@ func _on_cooking_completed(order: Order) -> void:
 		AudioManager.play_coin()
 		game_hud.show_coin_feedback(earned_coins)
 		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
+		SaveManager.queue_save_game()
 
 	_update_active_customer()
 
