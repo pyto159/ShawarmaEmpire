@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Recipe" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Recipes/Recipe.gd" id="1_recipe"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Lavash.tres" id="2_lavash"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/DoubleChicken.tres" id="3_double_chicken"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/GarlicSauce.tres" id="4_garlic_sauce"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Tomato.tres" id="5_tomato"]
+
+[resource]
+script = ExtResource("1_recipe")
+display_name = "Double Meat Shawarma"
+required_ingredients = Array[Resource]([ExtResource("2_lavash"), ExtResource("3_double_chicken"), ExtResource("4_garlic_sauce"), ExtResource("5_tomato")])
