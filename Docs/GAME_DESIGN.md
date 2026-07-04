@@ -247,3 +247,11 @@ Current kiosk upgrades:
 - **Decorations:** improves atmosphere with **+10% tip chance**.
 
 The Business panel displays purchased kiosk upgrades, available kiosk upgrades, descriptions, and upgrade costs so players can plan expansion separately from cooking speed progression.
+
+## Business Reputation
+
+Business Reputation represents how popular the shawarma stand is and is a permanent progression system independent from coins. Every successfully served customer increases Reputation, with extra Reputation awarded when the player completes Rare Orders or serves a customer's Favorite Recipe.
+
+Reputation automatically determines the current Business Level. Business Levels create clear popularity milestones for the stand: Level 1 starts at 0 Reputation, Level 2 at 25, Level 3 at 75, Level 4 at 150, and Level 5 at 300. There is no maximum Reputation cap.
+
+Business Level bonuses are intentionally simple and operational: Level 2 adds one queue slot, Level 3 increases Rare Order chance, Level 4 increases customer spawn rate, and Level 5 exposes a future content hook without changing gameplay yet. The HUD displays both Reputation and Business Level compactly so players can track long-term popularity without opening menus.

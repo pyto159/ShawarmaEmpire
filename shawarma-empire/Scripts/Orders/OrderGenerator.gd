@@ -20,7 +20,7 @@ func generate_order(available_recipes: Array[Recipe]) -> Order:
 
 	var recipe_index: int = randi_range(0, recipe_options.size() - 1)
 	var selected_recipe: Recipe = recipe_options[recipe_index]
-	var rare_order_chance: float = DEFAULT_RARE_ORDER_CHANCE + KioskUpgradeManager.get_rare_order_chance_bonus()
+	var rare_order_chance: float = DEFAULT_RARE_ORDER_CHANCE + KioskUpgradeManager.get_rare_order_chance_bonus() + ReputationManager.get_rare_order_chance_bonus()
 	var is_rare_order: bool = randf() < rare_order_chance
 	var reward_multiplier: float = RARE_ORDER_REWARD_MULTIPLIER if is_rare_order else Order.DEFAULT_REWARD_MULTIPLIER
 	var bonus_label: String = RARE_ORDER_BONUS_LABEL if is_rare_order else Order.EMPTY_BONUS_LABEL

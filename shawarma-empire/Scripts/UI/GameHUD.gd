@@ -33,10 +33,16 @@ const PANEL_HEIGHT: float = 520.0
 const UNLOCKED_TEXT: String = "Unlocked"
 const LOCKED_TEXT: String = "Locked"
 const RARE_ORDER_TEXT: String = "Rare Order!"
+const REPUTATION_FEEDBACK_PREFIX: String = "⭐ Reputation +"
+const BUSINESS_LEVEL_UP_TITLE: String = "🏆 Business Level Up!"
+const BUSINESS_LEVEL_PREFIX: String = "Level "
+const BUSINESS_LEVEL_FEEDBACK_SECONDS: float = 2.0
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
 @onready var coins_label: Label = %CoinsLabel
+@onready var reputation_label: Label = %ReputationLabel
+@onready var business_level_label: Label = %BusinessLevelLabel
 @onready var order_label: Label = %OrderLabel
 @onready var order_time_label: Label = %OrderTimeLabel
 @onready var prepare_button: Button = %PrepareButton
@@ -73,6 +79,8 @@ func _ready() -> void:
 	GameManager.currency_changed.connect(_on_currency_changed)
 	GameManager.upgrades_changed.connect(_on_upgrades_changed)
 	GameManager.grill_upgraded.connect(_on_grill_upgraded)
+	ReputationManager.reputation_changed.connect(_on_reputation_changed)
+	ReputationManager.business_level_changed.connect(_on_business_level_changed)
 	KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
 	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
 	GameManager.recipes_changed.connect(_on_recipes_changed)
@@ -92,6 +100,10 @@ func _exit_tree() -> void:
 		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
 	if GameManager.grill_upgraded.is_connected(_on_grill_upgraded):
 		GameManager.grill_upgraded.disconnect(_on_grill_upgraded)
+	if ReputationManager.reputation_changed.is_connected(_on_reputation_changed):
+		ReputationManager.reputation_changed.disconnect(_on_reputation_changed)
+	if ReputationManager.business_level_changed.is_connected(_on_business_level_changed):
+		ReputationManager.business_level_changed.disconnect(_on_business_level_changed)
 	if KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
 		KioskUpgradeManager.kiosk_upgrades_changed.disconnect(_on_kiosk_upgrades_changed)
 	if IngredientManager.ingredients_changed.is_connected(_on_ingredients_changed):
@@ -120,6 +132,8 @@ func _apply_mobile_hud_layout() -> void:
 	add_theme_constant_override("margin_right", 14)
 	add_theme_constant_override("margin_bottom", 14)
 	coins_label.add_theme_font_size_override("font_size", 24)
+	reputation_label.add_theme_font_size_override("font_size", 16)
+	business_level_label.add_theme_font_size_override("font_size", 16)
 	order_label.add_theme_font_size_override("font_size", 18)
 	order_time_label.add_theme_font_size_override("font_size", 12)
 	cooking_status_label.add_theme_font_size_override("font_size", 16)
@@ -182,6 +196,8 @@ func _refresh_active_order() -> void:
 
 func _update_display() -> void:
 	coins_label.text = CurrencyFormatter.format_coins(GameManager.coins)
+	reputation_label.text = "⭐ Reputation: %d" % ReputationManager.reputation
+	business_level_label.text = "🏪 Business Level: %d" % ReputationManager.business_level
 	order_label.text = _get_order_text()
 	order_time_label.text = _get_order_time_text()
 	prepare_button.text = _get_prepare_button_text()
@@ -202,6 +218,27 @@ func show_coin_feedback(amount: int, bonus_label: String = "") -> void:
 		coin_feedback_label.text += "\n" + bonus_label
 	coin_feedback_label.visible = true
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
+
+
+func show_reputation_feedback(amount: int) -> void:
+	if amount <= 0:
+		return
+
+	coin_feedback_label.text = REPUTATION_FEEDBACK_PREFIX + str(amount)
+	coin_feedback_label.visible = true
+	coin_feedback_label.modulate.a = 1.0
+	coin_feedback_label.position = _coin_feedback_base_position
+	_start_upgrade_feedback_animation()
+	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
+
+
+func show_business_level_feedback(level: int) -> void:
+	coin_feedback_label.text = "%s\n%s%d" % [BUSINESS_LEVEL_UP_TITLE, BUSINESS_LEVEL_PREFIX, level]
+	coin_feedback_label.visible = true
+	coin_feedback_label.modulate.a = 1.0
+	coin_feedback_label.position = _coin_feedback_base_position
+	_start_feedback_animation(BUSINESS_LEVEL_FEEDBACK_SECONDS)
+	coin_feedback_timer.start(BUSINESS_LEVEL_FEEDBACK_SECONDS)
 
 
 func show_upgrade_feedback(level: int, speed_improvement_percent: int) -> void:
@@ -229,11 +266,15 @@ func _get_upgrade_feedback_text(level: int, speed_improvement_percent: int) -> S
 
 
 func _start_upgrade_feedback_animation() -> void:
+	_start_feedback_animation(UPGRADE_FEEDBACK_SECONDS)
+
+
+func _start_feedback_animation(duration_seconds: float) -> void:
 	_reset_feedback_animation()
 	_feedback_tween = create_tween()
 	_feedback_tween.set_parallel(true)
-	_feedback_tween.tween_property(coin_feedback_label, "position", _coin_feedback_base_position + Vector2.UP * UPGRADE_FEEDBACK_RISE_PIXELS, UPGRADE_FEEDBACK_SECONDS)
-	_feedback_tween.tween_property(coin_feedback_label, "modulate:a", 0.0, UPGRADE_FEEDBACK_FADE_SECONDS).set_delay(UPGRADE_FEEDBACK_SECONDS - UPGRADE_FEEDBACK_FADE_SECONDS)
+	_feedback_tween.tween_property(coin_feedback_label, "position", _coin_feedback_base_position + Vector2.UP * UPGRADE_FEEDBACK_RISE_PIXELS, duration_seconds)
+	_feedback_tween.tween_property(coin_feedback_label, "modulate:a", 0.0, UPGRADE_FEEDBACK_FADE_SECONDS).set_delay(duration_seconds - UPGRADE_FEEDBACK_FADE_SECONDS)
 
 
 func _create_progression_panels() -> void:
@@ -514,6 +555,16 @@ func _on_business_button_pressed() -> void:
 	_ingredients_panel.hide()
 	_populate_business_panel()
 	_business_panel.visible = not _business_panel.visible
+
+
+func _on_reputation_changed(_reputation: int, _business_level: int, amount_added: int) -> void:
+	_update_display()
+	show_reputation_feedback(amount_added)
+
+
+func _on_business_level_changed(business_level: int) -> void:
+	_update_display()
+	show_business_level_feedback(business_level)
 
 
 func _on_ingredient_purchase_pressed(ingredient_id: String) -> void:

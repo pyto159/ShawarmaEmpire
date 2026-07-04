@@ -561,3 +561,11 @@ The manager exposes gameplay bonus accessors for customer patience, customer spa
 `GameHUD` creates a lightweight Business panel beside the existing Recipes, Ingredients, and Grill upgrade controls. The panel is presentation-only: it displays purchased upgrades, available upgrades, descriptions, and costs, then forwards purchase requests to `KioskUpgradeManager`.
 
 Kiosk upgrade save data is included in `GameManager.get_save_data()` under `purchased_kiosk_upgrades`, restored through `GameManager.apply_save_data()`, and reset by `GameManager.initialize_new_game()`.
+
+## Reputation System
+
+`ReputationManager` is an autoload at `res://Managers/ReputationManager.gd` and is the only system that owns Reputation and Business Level state. Other systems must request Reputation changes through `add_reputation(amount)` or the order helper `add_order_reputation(order, customer)` instead of modifying Reputation directly.
+
+`GameManager.get_save_data()` includes `reputation` and `business_level`, and `GameManager.apply_save_data()` restores Reputation through `ReputationManager.apply_save_data()`. New Game calls `ReputationManager.reset_to_defaults()`, which resets Reputation to 0 and Business Level to 1.
+
+The runtime integrations are intentionally thin: `Main.gd` awards order Reputation after a successful delivery, adds the Business Level queue-slot bonus to the configured queue capacity, and multiplies customer spawn rate by the Reputation spawn-rate bonus. `OrderGenerator` includes the Reputation rare-order bonus when rolling new orders. `GameHUD` listens to Reputation signals, displays compact Reputation and Business Level labels, and shows short feedback for Reputation gains and Business Level ups.
