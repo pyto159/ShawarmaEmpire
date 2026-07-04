@@ -255,3 +255,11 @@ Business Reputation represents how popular the shawarma stand is and is a perman
 Reputation automatically determines the current Business Level. Business Levels create clear popularity milestones for the stand: Level 1 starts at 0 Reputation, Level 2 at 25, Level 3 at 75, Level 4 at 150, and Level 5 at 300. There is no maximum Reputation cap.
 
 Business Level bonuses are intentionally simple and operational: Level 2 adds one queue slot, Level 3 increases Rare Order chance, Level 4 increases customer spawn rate, and Level 5 exposes a future content hook without changing gameplay yet. The HUD displays both Reputation and Business Level compactly so players can track long-term popularity without opening menus.
+
+## Tips and Combo Streak Rewards
+
+Served orders can now produce extra reward beats without changing the core loop. Every correct completed order can roll a tip, displays floating reward feedback, and advances a temporary combo streak.
+
+Combo streaks reward consecutive successful service. A streak increases only when the customer receives the correct completed recipe before leaving angry. The streak resets when a customer leaves, a queue reservation or order is cancelled, a wrong recipe is served, or any future failed-order mechanic marks service as failed. Combo is session-only and is intentionally not saved, so restarting the game always begins with no active streak.
+
+Reward feedback should keep the earning moment readable on mobile by showing the total coins first, then optional lines such as tip amount, current combo, and “Combo Increased!” when the streak advances.

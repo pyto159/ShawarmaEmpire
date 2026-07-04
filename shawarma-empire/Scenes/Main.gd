@@ -5,7 +5,6 @@ const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 640.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
 const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
 const DEFAULT_QUEUE_CAPACITY: int = 5
-const FAVORITE_FEEDBACK_TEXT: String = "Favorite!"
 
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
@@ -47,8 +46,8 @@ func _configure_customer_queue() -> void:
 	customer_queue.collect_child_queue_points()
 	if not customer_queue.reservation_created.is_connected(_on_queue_changed):
 		customer_queue.reservation_created.connect(_on_queue_changed)
-	if not customer_queue.reservation_cancelled.is_connected(_on_queue_slot_freed):
-		customer_queue.reservation_cancelled.connect(_on_queue_slot_freed)
+	if not customer_queue.reservation_cancelled.is_connected(_on_queue_reservation_cancelled):
+		customer_queue.reservation_cancelled.connect(_on_queue_reservation_cancelled)
 	if not customer_queue.reservation_completed.is_connected(_on_queue_slot_freed):
 		customer_queue.reservation_completed.connect(_on_queue_slot_freed)
 
@@ -141,6 +140,7 @@ func _refresh_customer_recipe_options() -> void:
 
 
 func _on_customer_left(_customer: Customer) -> void:
+	GameManager.reset_combo()
 	AudioManager.play_customer_leave()
 	_update_active_customer()
 	call_deferred("_try_spawn_customer")
@@ -149,6 +149,11 @@ func _on_customer_left(_customer: Customer) -> void:
 func _on_queue_changed(_reservation: QueueReservation) -> void:
 	AudioManager.play_queue_move()
 	_update_active_customer()
+
+
+func _on_queue_reservation_cancelled(reservation: QueueReservation) -> void:
+	GameManager.reset_combo()
+	_on_queue_slot_freed(reservation)
 
 
 func _on_queue_slot_freed(_reservation: QueueReservation) -> void:
@@ -236,13 +241,13 @@ func _on_cooking_completed(order: Order) -> void:
 		_update_active_customer()
 		return
 
-	var earned_coins: int = GameManager.calculate_order_reward(order, served_customer)
+	var reward_details: Dictionary = GameManager.calculate_order_reward_details(order, served_customer)
+	var earned_coins: int = int(reward_details.get(GameManager.REWARD_TOTAL_KEY, 0))
 	if earned_coins > 0:
 		GameManager.add_coins(earned_coins)
 		AudioManager.play_coin()
-		var bonus_label: String = FAVORITE_FEEDBACK_TEXT if served_customer.is_favorite_order(order) else ""
-		game_hud.show_coin_feedback(earned_coins, bonus_label)
-		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
+		game_hud.show_reward_feedback(reward_details)
+		_show_floating_reward_feedback(served_customer.global_position, reward_details)
 
 	ReputationManager.add_order_reputation(order, served_customer)
 	SaveManager.queue_save_game()
@@ -250,5 +255,5 @@ func _on_cooking_completed(order: Order) -> void:
 	_update_active_customer()
 
 
-func _show_floating_coin_feedback(source_position: Vector2, amount: int) -> void:
-	EffectsManager.spawn_coin_popup(source_position, amount)
+func _show_floating_reward_feedback(source_position: Vector2, reward_details: Dictionary) -> void:
+	EffectsManager.spawn_coin_popup(source_position, int(reward_details.get(GameManager.REWARD_TOTAL_KEY, 0)))

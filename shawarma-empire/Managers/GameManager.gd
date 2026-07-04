@@ -4,6 +4,7 @@ signal currency_changed(coins: int, gems: int)
 signal upgrades_changed
 signal grill_upgraded(level: int, speed_improvement_percent: int)
 signal recipes_changed
+signal combo_changed(combo_level: int)
 
 const STARTING_COINS: int = 0
 const STARTING_GEMS: int = 0
@@ -20,12 +21,22 @@ const SAVE_KEY_BUSINESS_LEVEL: String = "business_level"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
 const FAVORITE_RECIPE_REWARD_MULTIPLIER: float = 1.25
+const DEFAULT_COMBO_LEVEL: int = 0
+const REWARD_BASE_KEY: String = "base_coins"
+const REWARD_TIP_KEY: String = "tip_coins"
+const REWARD_COMBO_BONUS_KEY: String = "combo_bonus_coins"
+const REWARD_RARE_BONUS_KEY: String = "rare_bonus_coins"
+const REWARD_FAVORITE_BONUS_KEY: String = "favorite_bonus_coins"
+const REWARD_TOTAL_KEY: String = "total_coins"
+const REWARD_COMBO_LEVEL_KEY: String = "combo_level"
+const REWARD_COMBO_INCREASED_KEY: String = "combo_increased"
 var coins: int = STARTING_COINS
 var gems: int = STARTING_GEMS
 var purchased_upgrade_ids: Array[StringName] = []
 var grill_level: int = DEFAULT_GRILL_LEVEL
 var cooking_speed_multiplier: float = DEFAULT_COOKING_SPEED_MULTIPLIER
 var economy_config: EconomyConfig = EconomyConfig.load_or_default(ECONOMY_CONFIG_PATH)
+var combo_level: int = DEFAULT_COMBO_LEVEL
 
 
 func initialize_new_game() -> void:
@@ -35,20 +46,52 @@ func initialize_new_game() -> void:
 	KioskUpgradeManager.reset_to_defaults()
 	ReputationManager.reset_to_defaults()
 	set_grill_level(DEFAULT_GRILL_LEVEL)
+	reset_combo()
 	recipes_changed.emit()
 
 
 func calculate_order_reward(order: Order, customer: Customer = null) -> int:
+	return calculate_order_reward_details(order, customer).get(REWARD_TOTAL_KEY, 0)
+
+
+func calculate_order_reward_details(order: Order, customer: Customer = null) -> Dictionary:
 	if order == null:
-		return 0
+		return _create_empty_reward_details(false)
 
-	var final_reward: float = float(max(order.total_price, 0)) * max(order.reward_multiplier, Order.DEFAULT_REWARD_MULTIPLIER)
-	if customer != null and customer.is_favorite_order(order):
-		final_reward *= FAVORITE_RECIPE_REWARD_MULTIPLIER
-	if randf() < KioskUpgradeManager.get_tip_chance_bonus():
-		final_reward *= 1.0 + KioskUpgradeManager.get_tip_reward_multiplier()
+	var combo_increased: bool = increase_combo()
+	var base_coins: int = max(order.total_price, 0)
+	var rare_bonus_coins: int = _calculate_rare_bonus(base_coins, order.reward_multiplier)
+	var favorite_bonus_coins: int = _calculate_favorite_bonus(base_coins, customer, order)
+	var combo_bonus_coins: int = roundi(float(base_coins) * economy_config.get_combo_bonus_percent(combo_level))
+	var tip_coins: int = _roll_tip_coins(base_coins)
+	var total_coins: int = base_coins + rare_bonus_coins + favorite_bonus_coins + combo_bonus_coins + tip_coins
 
-	return roundi(final_reward)
+	return {
+		REWARD_BASE_KEY: base_coins,
+		REWARD_TIP_KEY: tip_coins,
+		REWARD_COMBO_BONUS_KEY: combo_bonus_coins,
+		REWARD_RARE_BONUS_KEY: rare_bonus_coins,
+		REWARD_FAVORITE_BONUS_KEY: favorite_bonus_coins,
+		REWARD_TOTAL_KEY: total_coins,
+		REWARD_COMBO_LEVEL_KEY: combo_level,
+		REWARD_COMBO_INCREASED_KEY: combo_increased,
+	}
+
+
+func increase_combo() -> bool:
+	var previous_combo: int = combo_level
+	combo_level = clampi(combo_level + 1, DEFAULT_COMBO_LEVEL, economy_config.get_max_combo_level())
+	combo_changed.emit(combo_level)
+	return combo_level > previous_combo
+
+
+func reset_combo() -> void:
+	if combo_level == DEFAULT_COMBO_LEVEL:
+		combo_changed.emit(combo_level)
+		return
+
+	combo_level = DEFAULT_COMBO_LEVEL
+	combo_changed.emit(combo_level)
 
 
 func add_coins(amount: int) -> void:
@@ -168,6 +211,7 @@ func apply_save_data(save_data: Dictionary) -> void:
 	KioskUpgradeManager.apply_save_data(save_data.get(SAVE_KEY_PURCHASED_KIOSK_UPGRADES, []))
 	ReputationManager.apply_save_data(save_data.get(SAVE_KEY_REPUTATION, ReputationManager.STARTING_REPUTATION), save_data.get(SAVE_KEY_BUSINESS_LEVEL, ReputationManager.STARTING_BUSINESS_LEVEL))
 	_apply_grill_level_save_data(save_data)
+	reset_combo()
 
 
 func _get_purchased_upgrade_save_ids() -> Array[String]:
@@ -205,6 +249,40 @@ func _apply_grill_level_save_data(save_data: Dictionary) -> void:
 
 func _get_grill_level_multiplier(level: int) -> float:
 	return economy_config.get_cooking_multiplier(level)
+
+
+func _create_empty_reward_details(combo_increased: bool) -> Dictionary:
+	return {
+		REWARD_BASE_KEY: 0,
+		REWARD_TIP_KEY: 0,
+		REWARD_COMBO_BONUS_KEY: 0,
+		REWARD_RARE_BONUS_KEY: 0,
+		REWARD_FAVORITE_BONUS_KEY: 0,
+		REWARD_TOTAL_KEY: 0,
+		REWARD_COMBO_LEVEL_KEY: combo_level,
+		REWARD_COMBO_INCREASED_KEY: combo_increased,
+	}
+
+
+func _calculate_rare_bonus(base_coins: int, reward_multiplier: float) -> int:
+	var bonus_multiplier: float = max(reward_multiplier, Order.DEFAULT_REWARD_MULTIPLIER) - Order.DEFAULT_REWARD_MULTIPLIER
+	return roundi(float(base_coins) * max(bonus_multiplier, 0.0))
+
+
+func _calculate_favorite_bonus(base_coins: int, customer: Customer, order: Order) -> int:
+	if customer == null or not customer.is_favorite_order(order):
+		return 0
+
+	return roundi(float(base_coins) * (FAVORITE_RECIPE_REWARD_MULTIPLIER - 1.0))
+
+
+func _roll_tip_coins(base_coins: int) -> int:
+	var total_tip_chance: float = clampf(economy_config.get_tip_chance() + KioskUpgradeManager.get_tip_chance_bonus(), 0.0, 1.0)
+	if base_coins <= 0 or randf() >= total_tip_chance:
+		return 0
+
+	var tip_percent: float = randf_range(economy_config.get_tip_min_percent(), economy_config.get_tip_max_percent())
+	return maxi(roundi(float(base_coins) * tip_percent), 1)
 
 
 func _get_speed_improvement_percent(previous_multiplier: float, current_multiplier: float) -> int:
