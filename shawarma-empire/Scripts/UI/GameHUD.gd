@@ -27,8 +27,7 @@ const NEXT_INGREDIENT_PREFIX: String = "Next: "
 @onready var order_time_label: Label = %OrderTimeLabel
 @onready var prepare_button: Button = %PrepareButton
 @onready var upgrade_button: Button = %UpgradeButton
-@onready var ingredient_label: Label = %IngredientLabel
-@onready var ingredient_cost_label: Label = %IngredientCostLabel
+@onready var cooking_status_label: Label = %CookingStatusLabel
 @onready var ingredient_unlock_button: Button = %IngredientUnlockButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
@@ -82,15 +81,17 @@ func set_cooking_stand(cooking_stand: CookingStand) -> void:
 
 
 func _apply_mobile_hud_layout() -> void:
-	add_theme_constant_override("margin_left", 18)
-	add_theme_constant_override("margin_top", 18)
-	add_theme_constant_override("margin_right", 18)
-	add_theme_constant_override("margin_bottom", 18)
-	coins_label.add_theme_font_size_override("font_size", 28)
-	order_label.add_theme_font_size_override("font_size", 20)
-	order_time_label.add_theme_font_size_override("font_size", 14)
-	ingredient_label.add_theme_font_size_override("font_size", 17)
-	ingredient_cost_label.add_theme_font_size_override("font_size", 14)
+	add_theme_constant_override("margin_left", 14)
+	add_theme_constant_override("margin_top", 14)
+	add_theme_constant_override("margin_right", 14)
+	add_theme_constant_override("margin_bottom", 14)
+	coins_label.add_theme_font_size_override("font_size", 24)
+	order_label.add_theme_font_size_override("font_size", 18)
+	order_time_label.add_theme_font_size_override("font_size", 12)
+	cooking_status_label.add_theme_font_size_override("font_size", 16)
+	prepare_button.add_theme_font_size_override("font_size", 17)
+	upgrade_button.add_theme_font_size_override("font_size", 15)
+	ingredient_unlock_button.add_theme_font_size_override("font_size", 15)
 
 
 func _animate_prepare_button(target_scale: Vector2) -> void:
@@ -149,6 +150,7 @@ func _update_display() -> void:
 	order_time_label.text = _get_order_time_text()
 	prepare_button.text = _get_prepare_button_text()
 	prepare_button.disabled = not _can_prepare_order()
+	cooking_status_label.text = _get_cooking_status_text()
 	upgrade_button.text = _get_upgrade_button_text()
 	upgrade_button.disabled = GameManager.is_max_grill_level()
 	_update_ingredient_unlock_display()
@@ -163,22 +165,28 @@ func show_coin_feedback(amount: int) -> void:
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
 func _get_upgrade_button_text() -> String:
-	return GameManager.get_next_grill_button_text().replace(" - ", "\n")
+	return GameManager.get_next_grill_button_text().replace(" - ", " ")
 
 
 func _update_ingredient_unlock_display() -> void:
 	var ingredient_id: String = IngredientManager.get_next_locked_ingredient_id()
 	if ingredient_id.is_empty():
-		ingredient_label.text = ALL_INGREDIENTS_UNLOCKED_TEXT
-		ingredient_cost_label.text = ""
 		ingredient_unlock_button.disabled = true
 		ingredient_unlock_button.text = "Done"
 		return
 
-	ingredient_label.text = NEXT_INGREDIENT_PREFIX + IngredientManager.get_display_name(ingredient_id)
-	ingredient_cost_label.text = str(IngredientManager.get_unlock_cost(ingredient_id)) + " Coins"
 	ingredient_unlock_button.disabled = not IngredientManager.can_unlock(ingredient_id)
-	ingredient_unlock_button.text = "Unlock"
+	ingredient_unlock_button.text = "Unlock " + IngredientManager.get_display_name(ingredient_id) + " " + str(IngredientManager.get_unlock_cost(ingredient_id))
+
+
+func _get_cooking_status_text() -> String:
+	if _cooking_stand != null and _cooking_stand.is_cooking():
+		return COOKING_ORDER_TEXT
+
+	if _cooking_stand != null and _cooking_stand.can_cook():
+		return "Ready to cook"
+
+	return "Idle"
 
 
 func _get_order_text() -> String:
