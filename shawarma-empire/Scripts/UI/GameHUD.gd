@@ -219,7 +219,10 @@ func _update_ingredient_unlock_display() -> void:
 		return
 
 	ingredient_unlock_button.disabled = not IngredientManager.can_unlock(ingredient_id)
-	ingredient_unlock_button.text = "Unlock " + IngredientManager.get_display_name(ingredient_id) + " " + str(IngredientManager.get_unlock_cost(ingredient_id))
+	ingredient_unlock_button.text = "Unlock %s\n%d Coins" % [
+		IngredientManager.get_display_label(ingredient_id),
+		IngredientManager.get_unlock_cost(ingredient_id),
+	]
 
 
 func _get_cooking_status_text() -> String:

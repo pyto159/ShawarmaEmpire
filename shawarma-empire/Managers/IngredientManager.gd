@@ -31,18 +31,18 @@ const DEFAULT_UNLOCKED_INGREDIENT_IDS: Array[String] = [
 	INGREDIENT_ID_CUCUMBER,
 ]
 const INGREDIENT_DEFINITIONS: Dictionary = {
-	INGREDIENT_ID_LAVASH: {"display_name": "Lavash"},
-	INGREDIENT_ID_CHICKEN: {"display_name": "Chicken"},
-	INGREDIENT_ID_GARLIC_SAUCE: {"display_name": "Garlic Sauce"},
-	INGREDIENT_ID_TOMATO: {"display_name": "Tomato"},
-	INGREDIENT_ID_CUCUMBER: {"display_name": "Cucumber"},
-	INGREDIENT_ID_JALAPENO: {"display_name": "Jalapeño"},
-	INGREDIENT_ID_SPICY_SAUCE: {"display_name": "Spicy Sauce"},
-	INGREDIENT_ID_CHEESE: {"display_name": "Cheese"},
-	INGREDIENT_ID_BBQ_SAUCE: {"display_name": "BBQ Sauce"},
-	INGREDIENT_ID_ONION: {"display_name": "Onion"},
-	INGREDIENT_ID_DOUBLE_CHICKEN: {"display_name": "Double Chicken"},
-	INGREDIENT_ID_LETTUCE: {"display_name": "Lettuce"},
+	INGREDIENT_ID_LAVASH: {"display_name": "Lavash", "icon": "🌯"},
+	INGREDIENT_ID_CHICKEN: {"display_name": "Chicken", "icon": "🍗"},
+	INGREDIENT_ID_GARLIC_SAUCE: {"display_name": "Garlic Sauce", "icon": "🧄"},
+	INGREDIENT_ID_TOMATO: {"display_name": "Tomato", "icon": "🍅"},
+	INGREDIENT_ID_CUCUMBER: {"display_name": "Cucumber", "icon": "🥒"},
+	INGREDIENT_ID_JALAPENO: {"display_name": "Jalapeño", "icon": "🌶️"},
+	INGREDIENT_ID_SPICY_SAUCE: {"display_name": "Spicy Sauce", "icon": "🔥"},
+	INGREDIENT_ID_CHEESE: {"display_name": "Cheese", "icon": "🧀"},
+	INGREDIENT_ID_BBQ_SAUCE: {"display_name": "BBQ Sauce", "icon": "🍖"},
+	INGREDIENT_ID_ONION: {"display_name": "Onion", "icon": "🧅"},
+	INGREDIENT_ID_DOUBLE_CHICKEN: {"display_name": "Double Chicken", "icon": "🍗"},
+	INGREDIENT_ID_LETTUCE: {"display_name": "Lettuce", "icon": "🥬"},
 }
 const INGREDIENT_UNLOCK_ORDER: Array[String] = [
 	INGREDIENT_ID_JALAPENO,
@@ -127,6 +127,20 @@ func get_next_locked_ingredient_id() -> String:
 func get_display_name(ingredient_id: String) -> String:
 	var ingredient_data: Dictionary = _get_ingredient_data(ingredient_id)
 	return str(ingredient_data.get("display_name", ingredient_id.capitalize()))
+
+
+func get_display_label(ingredient_id: String) -> String:
+	var ingredient_icon: String = get_icon(ingredient_id)
+	var display_name: String = get_display_name(ingredient_id)
+	if ingredient_icon.is_empty():
+		return display_name
+
+	return "%s %s" % [ingredient_icon, display_name]
+
+
+func get_icon(ingredient_id: String) -> String:
+	var ingredient_data: Dictionary = _get_ingredient_data(ingredient_id)
+	return str(ingredient_data.get("icon", ""))
 
 
 func get_unlock_cost(ingredient_id: String) -> int:

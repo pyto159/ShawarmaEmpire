@@ -27,6 +27,7 @@ func _ready() -> void:
 	_configure_customer_spawner()
 	_configure_spawn_timer()
 	_connect_cooking_stand()
+	_connect_progression_signals()
 	game_hud.set_cooking_stand(cooking_stand)
 	_try_spawn_customer()
 
@@ -78,6 +79,11 @@ func _connect_cooking_stand() -> void:
 		cooking_stand.cooking_completed.connect(_on_cooking_completed)
 
 
+func _connect_progression_signals() -> void:
+	if not GameManager.recipes_changed.is_connected(_on_recipes_changed):
+		GameManager.recipes_changed.connect(_on_recipes_changed)
+
+
 func _on_spawn_timer_timeout() -> void:
 	_try_spawn_customer()
 
@@ -119,6 +125,14 @@ func _assign_customer_order(customer: Customer) -> void:
 		customer.assign_order(order)
 
 
+func _refresh_customer_recipe_options() -> void:
+	var available_recipes: Array[Recipe] = GameManager.get_unlocked_recipes()
+	for child: Node in spawned_customers.get_children():
+		if child is Customer:
+			var customer: Customer = child as Customer
+			customer.available_recipes = available_recipes
+
+
 func _on_customer_left(_customer: Customer) -> void:
 	AudioManager.play_customer_leave()
 	_update_active_customer()
@@ -134,6 +148,11 @@ func _on_queue_slot_freed(_reservation: QueueReservation) -> void:
 	AudioManager.play_queue_move()
 	_update_active_customer()
 	call_deferred("_try_spawn_customer")
+
+
+func _on_recipes_changed() -> void:
+	_refresh_customer_recipe_options()
+	_update_active_customer()
 
 
 func _update_active_customer() -> void:
