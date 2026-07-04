@@ -44,9 +44,9 @@ const ENABLE_DEV_MENU: bool = true
 const DEV_BUTTON_TEXT: String = "DEV"
 const DEV_MENU_TITLE: String = "Developer Menu"
 const DEV_MENU_TESTING_NOTE: String = "Testing only. Disable before release."
-const DEV_BUTTON_SIZE: Vector2 = Vector2(40.0, 40.0)
+const DEV_BUTTON_SIZE: Vector2 = Vector2(44.0, 36.0)
 const DEV_BUTTON_FONT_SIZE: int = 11
-const DEV_BUTTON_MARGIN: float = 14.0
+const DEV_BUTTON_MARGIN: float = 16.0
 const DEV_BUTTON_CORNER_RADIUS: int = 10
 const DEV_BUTTON_SHADOW_SIZE: int = 3
 const DEV_BUTTON_SHADOW_OFFSET: Vector2 = Vector2(0.0, 2.0)
@@ -345,9 +345,12 @@ func _create_dev_menu() -> void:
 	_developer_ui.name = "DeveloperUI"
 	_developer_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_developer_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_developer_ui.offset_left = 0.0
+	_developer_ui.offset_top = 0.0
+	_developer_ui.offset_right = 0.0
+	_developer_ui.offset_bottom = 0.0
 	_developer_ui.z_index = 10
-	var developer_parent: Node = get_parent() if get_parent() != null else self
-	developer_parent.add_child(_developer_ui)
+	get_tree().root.add_child(_developer_ui)
 
 	_dev_button = Button.new()
 	_dev_button.text = DEV_BUTTON_TEXT
@@ -364,7 +367,10 @@ func _create_dev_menu() -> void:
 	_dev_button.add_theme_stylebox_override("pressed", _create_dev_button_style(DEV_BUTTON_PRESSED_COLOR, false))
 	_dev_button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	_dev_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_dev_button.position = Vector2(DEV_BUTTON_MARGIN, -DEV_BUTTON_SIZE.y - DEV_BUTTON_MARGIN)
+	_dev_button.offset_left = DEV_BUTTON_MARGIN
+	_dev_button.offset_top = -DEV_BUTTON_SIZE.y - DEV_BUTTON_MARGIN
+	_dev_button.offset_right = DEV_BUTTON_MARGIN + DEV_BUTTON_SIZE.x
+	_dev_button.offset_bottom = -DEV_BUTTON_MARGIN
 	_dev_button.pressed.connect(_on_dev_button_pressed)
 	_developer_ui.add_child(_dev_button)
 
@@ -372,7 +378,10 @@ func _create_dev_menu() -> void:
 	_dev_panel.custom_minimum_size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
 	_dev_panel.size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
 	_dev_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_dev_panel.position = Vector2(DEV_BUTTON_MARGIN, -DEV_MENU_HEIGHT - DEV_BUTTON_SIZE.y - DEV_MENU_MARGIN - DEV_BUTTON_MARGIN)
+	_dev_panel.offset_left = DEV_BUTTON_MARGIN
+	_dev_panel.offset_top = -DEV_MENU_HEIGHT - DEV_BUTTON_SIZE.y - DEV_MENU_MARGIN - DEV_BUTTON_MARGIN
+	_dev_panel.offset_right = DEV_BUTTON_MARGIN + DEV_MENU_WIDTH
+	_dev_panel.offset_bottom = -DEV_BUTTON_SIZE.y - DEV_MENU_MARGIN - DEV_BUTTON_MARGIN
 	_developer_ui.add_child(_dev_panel)
 	_populate_dev_panel()
 	_dev_panel.hide()
