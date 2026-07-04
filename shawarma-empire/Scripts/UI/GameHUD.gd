@@ -20,6 +20,8 @@ const ICON_CORNER_RADIUS: int = 21
 const BUTTON_PRESSED_SCALE: Vector2 = Vector2(0.97, 0.97)
 const BUTTON_NORMAL_SCALE: Vector2 = Vector2.ONE
 const BUTTON_ANIMATION_SECONDS: float = 0.08
+const ALL_INGREDIENTS_UNLOCKED_TEXT: String = "All ingredients unlocked"
+const NEXT_INGREDIENT_PREFIX: String = "Next: "
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
@@ -32,6 +34,10 @@ const BUTTON_ANIMATION_SECONDS: float = 0.08
 @onready var order_time_label: Label = %OrderTimeLabel
 @onready var prepare_button: Button = %PrepareButton
 @onready var upgrade_button: Button = %UpgradeButton
+@onready var ingredient_panel: PanelContainer = %IngredientPanel
+@onready var ingredient_label: Label = %IngredientLabel
+@onready var ingredient_cost_label: Label = %IngredientCostLabel
+@onready var ingredient_unlock_button: Button = %IngredientUnlockButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
 @onready var cooking_progress_bar: CookingProgressBar = %CookingProgressBar
@@ -47,9 +53,11 @@ func _ready() -> void:
 	prepare_button.button_down.connect(_on_prepare_button_down)
 	prepare_button.button_up.connect(_on_prepare_button_up)
 	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
+	ingredient_unlock_button.pressed.connect(_on_ingredient_unlock_button_pressed)
 	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
 	GameManager.currency_changed.connect(_on_currency_changed)
 	GameManager.upgrades_changed.connect(_on_upgrades_changed)
+	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
 	cooking_progress_bar.set_cooking_stand(_cooking_stand)
@@ -63,6 +71,8 @@ func _exit_tree() -> void:
 		GameManager.currency_changed.disconnect(_on_currency_changed)
 	if GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
 		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
+	if IngredientManager.ingredients_changed.is_connected(_on_ingredients_changed):
+		IngredientManager.ingredients_changed.disconnect(_on_ingredients_changed)
 
 
 func set_active_customer(customer: Customer) -> void:
@@ -96,11 +106,19 @@ func _apply_mobile_hud_theme() -> void:
 	upgrade_button.add_theme_stylebox_override("hover", _create_button_style(Color(0.25, 0.58, 0.98, 1.0), Color(0.04, 0.12, 0.28, 0.22)))
 	upgrade_button.add_theme_stylebox_override("pressed", _create_button_style(Color(0.13, 0.36, 0.72, 1.0), Color(0.02, 0.07, 0.18, 0.16)))
 	upgrade_button.add_theme_stylebox_override("disabled", _create_button_style(Color(0.36, 0.46, 0.58, 1.0), Color(0.08, 0.10, 0.12, 0.10)))
+	ingredient_panel.add_theme_stylebox_override("panel", _create_panel_style(Color(0.90, 0.98, 0.80, 0.96), Color(0.15, 0.28, 0.06, 0.16)))
+	ingredient_unlock_button.add_theme_stylebox_override("normal", _create_button_style(Color(0.22, 0.68, 0.38, 1.0), Color(0.04, 0.16, 0.08, 0.22)))
+	ingredient_unlock_button.add_theme_stylebox_override("hover", _create_button_style(Color(0.28, 0.76, 0.44, 1.0), Color(0.04, 0.16, 0.08, 0.22)))
+	ingredient_unlock_button.add_theme_stylebox_override("pressed", _create_button_style(Color(0.16, 0.50, 0.28, 1.0), Color(0.02, 0.08, 0.04, 0.16)))
+	ingredient_unlock_button.add_theme_stylebox_override("disabled", _create_button_style(Color(0.44, 0.54, 0.44, 1.0), Color(0.08, 0.10, 0.08, 0.10)))
 	coins_label.add_theme_font_size_override("font_size", 28)
 	order_label.add_theme_font_size_override("font_size", 20)
 	order_time_label.add_theme_font_size_override("font_size", 14)
 	prepare_button.add_theme_font_size_override("font_size", 22)
 	upgrade_button.add_theme_font_size_override("font_size", 18)
+	ingredient_label.add_theme_font_size_override("font_size", 17)
+	ingredient_cost_label.add_theme_font_size_override("font_size", 14)
+	ingredient_unlock_button.add_theme_font_size_override("font_size", 16)
 
 
 func _create_panel_style(color: Color, shadow_color: Color) -> StyleBoxFlat:
@@ -192,6 +210,7 @@ func _update_display() -> void:
 	prepare_button.disabled = not _can_prepare_order()
 	upgrade_button.text = _get_upgrade_button_text()
 	upgrade_button.disabled = GameManager.is_max_grill_level()
+	_update_ingredient_unlock_display()
 
 
 func show_coin_feedback(amount: int) -> void:
@@ -204,6 +223,21 @@ func show_coin_feedback(amount: int) -> void:
 
 func _get_upgrade_button_text() -> String:
 	return GameManager.get_next_grill_button_text().replace(" - ", "\n")
+
+
+func _update_ingredient_unlock_display() -> void:
+	var ingredient_id: String = IngredientManager.get_next_locked_ingredient_id()
+	if ingredient_id.is_empty():
+		ingredient_label.text = ALL_INGREDIENTS_UNLOCKED_TEXT
+		ingredient_cost_label.text = ""
+		ingredient_unlock_button.disabled = true
+		ingredient_unlock_button.text = "Done"
+		return
+
+	ingredient_label.text = NEXT_INGREDIENT_PREFIX + IngredientManager.get_display_name(ingredient_id)
+	ingredient_cost_label.text = str(IngredientManager.get_unlock_cost(ingredient_id)) + " Coins"
+	ingredient_unlock_button.disabled = not IngredientManager.can_unlock(ingredient_id)
+	ingredient_unlock_button.text = "Unlock"
 
 
 func _get_order_text() -> String:
@@ -258,6 +292,14 @@ func _on_prepare_button_pressed() -> void:
 		_update_display()
 
 
+func _on_ingredient_unlock_button_pressed() -> void:
+	AudioManager.play_button()
+	var ingredient_id: String = IngredientManager.get_next_locked_ingredient_id()
+	if IngredientManager.unlock_ingredient(ingredient_id):
+		AudioManager.play_upgrade()
+		_update_display()
+
+
 func _on_upgrade_button_pressed() -> void:
 	AudioManager.play_button()
 	if GameManager.purchase_next_grill_level():
@@ -282,6 +324,10 @@ func _on_currency_changed(_coins: int, _gems: int) -> void:
 
 
 func _on_upgrades_changed() -> void:
+	_update_display()
+
+
+func _on_ingredients_changed() -> void:
 	_update_display()
 
 

@@ -95,11 +95,13 @@ Planned recipe attributes may include:
 - Unlock cost.
 - Upgrade level.
 
-Current Sprint 6 starter menu:
+Current starter menu and ingredient progression:
 
-- **Classic Shawarma:** Lavash, Chicken, Tomato, Cucumber, Garlic Sauce. Sells for 15 coins and takes 3 seconds to prepare.
-- **Spicy Shawarma:** Lavash, Chicken, Jalapeño, Spicy Sauce. Sells for 22 coins and takes 3.5 seconds to prepare.
-- **Cheese Shawarma:** Lavash, Chicken, Cheese, Garlic Sauce. Sells for 30 coins and takes 4 seconds to prepare.
+- Players start with **Lavash**, **Chicken**, and **Garlic Sauce** unlocked.
+- **Classic Shawarma:** Lavash, Chicken, Garlic Sauce. Available from the start, sells for 15 coins, and takes 3 seconds to prepare.
+- **Spicy Shawarma:** Lavash, Chicken, Jalapeño, Spicy Sauce. Requires Jalapeño and Spicy Sauce, sells for 22 coins, and takes 3.5 seconds to prepare.
+- **Cheese Shawarma:** Lavash, Chicken, Cheese, Garlic Sauce. Requires Cheese, sells for 30 coins, and takes 4 seconds to prepare.
+- Unlockable ingredients are Tomato for 75 coins, Cucumber for 100 coins, Jalapeño for 150 coins, Spicy Sauce for 200 coins, and Cheese for 300 coins.
 
 Recipe principles:
 

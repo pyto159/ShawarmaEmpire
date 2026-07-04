@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_ingredient")
+id = "lavash"
 display_name = "Lavash"
 unlock_level = 1

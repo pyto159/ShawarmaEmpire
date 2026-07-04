@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_ingredient")
+id = "tomato"
 display_name = "Tomato"
 unlock_level = 1
