@@ -40,9 +40,20 @@ const BUSINESS_LEVEL_FEEDBACK_SECONDS: float = 2.0
 const TIP_FEEDBACK_PREFIX: String = "💰 Tip +"
 const COMBO_FEEDBACK_PREFIX: String = "🔥 Combo x"
 const COMBO_INCREASED_TEXT: String = "Combo Increased!"
+const ENABLE_DEV_MENU: bool = true
+const DEV_BUTTON_TEXT: String = "DEV"
+const DEV_MENU_TITLE: String = "Developer Menu"
+const DEV_MENU_TESTING_NOTE: String = "Testing only. Disable before release."
+const DEV_BUTTON_SIZE: Vector2 = Vector2(52.0, 32.0)
+const DEV_BUTTON_FONT_SIZE: int = 11
+const DEV_MENU_WIDTH: float = 320.0
+const DEV_MENU_HEIGHT: float = 460.0
+const DEV_MENU_MARGIN: float = 14.0
+const DEV_MENU_SECTION_FONT_SIZE: int = 16
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
+@export var enable_dev_menu: bool = ENABLE_DEV_MENU
 @onready var coins_label: Label = %CoinsLabel
 @onready var reputation_label: Label = %ReputationLabel
 @onready var business_level_label: Label = %BusinessLevelLabel
@@ -66,6 +77,8 @@ var _coin_feedback_base_position: Vector2
 var _recipes_panel: PanelContainer
 var _ingredients_panel: PanelContainer
 var _business_panel: PanelContainer
+var _dev_button: Button
+var _dev_panel: PanelContainer
 
 
 func _ready() -> void:
@@ -88,6 +101,7 @@ func _ready() -> void:
 	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
 	GameManager.recipes_changed.connect(_on_recipes_changed)
 	_create_progression_panels()
+	_create_dev_menu()
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
 	cooking_progress_bar.set_cooking_stand(_cooking_stand)
@@ -309,6 +323,89 @@ func _create_progression_panels() -> void:
 	_recipes_panel.hide()
 	_ingredients_panel.hide()
 	_business_panel.hide()
+
+
+func _create_dev_menu() -> void:
+	if not enable_dev_menu:
+		return
+
+	_dev_button = Button.new()
+	_dev_button.text = DEV_BUTTON_TEXT
+	_dev_button.custom_minimum_size = DEV_BUTTON_SIZE
+	_dev_button.add_theme_font_size_override("font_size", DEV_BUTTON_FONT_SIZE)
+	_dev_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_dev_button.position = Vector2(-DEV_BUTTON_SIZE.x, 0.0)
+	_dev_button.pressed.connect(_on_dev_button_pressed)
+	add_child(_dev_button)
+
+	_dev_panel = _create_base_panel(DEV_MENU_TITLE)
+	_dev_panel.custom_minimum_size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
+	_dev_panel.size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
+	_dev_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_dev_panel.position = Vector2(-DEV_MENU_WIDTH - DEV_MENU_MARGIN, DEV_BUTTON_SIZE.y + DEV_MENU_MARGIN)
+	add_child(_dev_panel)
+	_populate_dev_panel()
+	_dev_panel.hide()
+
+
+func _populate_dev_panel() -> void:
+	var content: VBoxContainer = _get_panel_content(_dev_panel)
+	_clear_panel_rows(content)
+	content.add_child(_create_dev_label(DEV_MENU_TESTING_NOTE))
+	content.add_child(_create_dev_section_label("Coins"))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("+100", _on_dev_add_coins_pressed.bind(100)),
+		_create_dev_button("+1,000", _on_dev_add_coins_pressed.bind(1000)),
+		_create_dev_button("+10,000", _on_dev_add_coins_pressed.bind(10000)),
+	]))
+	content.add_child(_create_dev_button("Reset Coins to 0", _on_dev_reset_coins_pressed))
+	content.add_child(_create_dev_section_label("Unlocks"))
+	content.add_child(_create_dev_button("Unlock All Ingredients", _on_dev_unlock_all_ingredients_pressed))
+	content.add_child(_create_dev_label("Recipes unlock automatically from ingredients."))
+	content.add_child(_create_dev_section_label("Grill Level"))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 1", _on_dev_set_grill_level_pressed.bind(1)),
+		_create_dev_button("Level 2", _on_dev_set_grill_level_pressed.bind(2)),
+		_create_dev_button("Level 3", _on_dev_set_grill_level_pressed.bind(3)),
+	]))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 4", _on_dev_set_grill_level_pressed.bind(4)),
+		_create_dev_button("Level 5", _on_dev_set_grill_level_pressed.bind(5)),
+	]))
+	content.add_child(_create_dev_section_label("Reputation"))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("+25", _on_dev_add_reputation_pressed.bind(25)),
+		_create_dev_button("+100", _on_dev_add_reputation_pressed.bind(100)),
+	]))
+
+
+func _create_dev_label(text: String) -> Label:
+	var label: Label = Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return label
+
+
+func _create_dev_section_label(text: String) -> Label:
+	var label: Label = _create_dev_label(text)
+	label.add_theme_font_size_override("font_size", DEV_MENU_SECTION_FONT_SIZE)
+	return label
+
+
+func _create_dev_button(text: String, callback: Callable) -> Button:
+	var button: Button = Button.new()
+	button.text = text
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(callback)
+	return button
+
+
+func _create_dev_button_row(buttons: Array[Button]) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
+	for button: Button in buttons:
+		row.add_child(button)
+	return row
 
 
 func _create_base_panel(title: String, has_scrollable_rows: bool = false) -> PanelContainer:
@@ -559,6 +656,7 @@ func _on_recipes_button_pressed() -> void:
 	AudioManager.play_button()
 	_ingredients_panel.hide()
 	_business_panel.hide()
+	_hide_dev_panel()
 	_populate_recipe_panel()
 	_recipes_panel.visible = not _recipes_panel.visible
 
@@ -567,6 +665,7 @@ func _on_ingredients_button_pressed() -> void:
 	AudioManager.play_button()
 	_recipes_panel.hide()
 	_business_panel.hide()
+	_hide_dev_panel()
 	_populate_ingredient_panel()
 	_ingredients_panel.visible = not _ingredients_panel.visible
 
@@ -575,8 +674,52 @@ func _on_business_button_pressed() -> void:
 	AudioManager.play_button()
 	_recipes_panel.hide()
 	_ingredients_panel.hide()
+	_hide_dev_panel()
 	_populate_business_panel()
 	_business_panel.visible = not _business_panel.visible
+
+
+func _hide_dev_panel() -> void:
+	if _dev_panel != null:
+		_dev_panel.hide()
+
+
+func _on_dev_button_pressed() -> void:
+	AudioManager.play_button()
+	_recipes_panel.hide()
+	_ingredients_panel.hide()
+	_business_panel.hide()
+	_dev_panel.visible = not _dev_panel.visible
+
+
+func _on_dev_add_coins_pressed(amount: int) -> void:
+	AudioManager.play_button()
+	GameManager.add_dev_coins(amount)
+	show_coin_feedback(amount)
+
+
+func _on_dev_reset_coins_pressed() -> void:
+	AudioManager.play_button()
+	GameManager.set_coins(0)
+
+
+func _on_dev_unlock_all_ingredients_pressed() -> void:
+	AudioManager.play_button()
+	IngredientManager.unlock_all_ingredients_for_testing()
+	AudioManager.play_upgrade()
+	_update_display()
+
+
+func _on_dev_set_grill_level_pressed(level: int) -> void:
+	AudioManager.play_button()
+	GameManager.set_grill_level_for_testing(level)
+	AudioManager.play_upgrade()
+	_update_display()
+
+
+func _on_dev_add_reputation_pressed(amount: int) -> void:
+	AudioManager.play_button()
+	ReputationManager.add_reputation(amount)
 
 
 func _on_reputation_changed(_reputation: int, _business_level: int, amount_added: int) -> void:

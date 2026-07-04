@@ -577,3 +577,9 @@ The runtime integrations are intentionally thin: `Main.gd` awards order Reputati
 `EconomyConfig` owns all tip and combo balance values: base tip chance, tip min percent, tip max percent, and the combo bonus table. The `.tres` resource is the primary tuning surface, while the script fallback mirrors safe defaults for missing or invalid resources.
 
 `Main.gd` remains the composition point for delivery: it requests reward details from `GameManager`, awards only the returned total coins, asks the HUD for text reward feedback, and spawns the existing floating coin popup. HUD presentation reads the reward details but does not calculate gameplay rewards.
+
+### Developer Menu
+
+`GameHUD` includes a hidden testing-only Developer Menu behind a small `DEV` corner button. It is controlled by `ENABLE_DEV_MENU` and the exported `enable_dev_menu` flag in `res://Scripts/UI/GameHUD.gd`, so release builds can disable it without changing gameplay systems.
+
+Developer actions are intentionally routed through existing managers instead of editing save files directly: coin actions use `GameManager`, ingredient and derived recipe unlock testing uses `IngredientManager`, grill-level testing uses `GameManager`'s grill system state, reputation actions use `ReputationManager`, and each action queues persistence through `SaveManager`. The menu is only for fast development/testing and must be disabled before release builds.
