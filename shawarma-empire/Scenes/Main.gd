@@ -5,6 +5,7 @@ const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 640.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
 const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
 const DEFAULT_QUEUE_CAPACITY: int = 5
+const FAVORITE_FEEDBACK_TEXT: String = "Favorite!"
 
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
@@ -117,6 +118,7 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 func _assign_customer_order(customer: Customer) -> void:
 	var available_recipes: Array[Recipe] = GameManager.get_unlocked_recipes()
 	customer.available_recipes = available_recipes
+	customer.assign_favorite_from_available_recipes()
 	if customer.has_order():
 		return
 
@@ -200,11 +202,12 @@ func _on_cooking_completed(order: Order) -> void:
 		_update_active_customer()
 		return
 
-	var earned_coins: int = max(order.total_price, 0)
+	var earned_coins: int = GameManager.calculate_order_reward(order, served_customer)
 	if earned_coins > 0:
 		GameManager.add_coins(earned_coins)
 		AudioManager.play_coin()
-		game_hud.show_coin_feedback(earned_coins)
+		var bonus_label: String = FAVORITE_FEEDBACK_TEXT if served_customer.is_favorite_order(order) else ""
+		game_hud.show_coin_feedback(earned_coins, bonus_label)
 		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
 		SaveManager.queue_save_game()
 

@@ -9,6 +9,8 @@ const DEFAULT_CREATION_TIME: float = 0.0
 const DEFAULT_COMPLETION_TIME: float = 0.0
 const MILLISECONDS_PER_SECOND: float = 1000.0
 const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
+const DEFAULT_REWARD_MULTIPLIER: float = 1.0
+const EMPTY_BONUS_LABEL: String = ""
 
 @export var selected_recipe: Recipe
 @export var total_price: int = DEFAULT_TOTAL_PRICE
@@ -16,11 +18,17 @@ const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
 @export var creation_time: float = DEFAULT_CREATION_TIME
 @export var completion_time: float = DEFAULT_COMPLETION_TIME
 @export var is_completed: bool = false
+@export var is_rare: bool = false
+@export var reward_multiplier: float = DEFAULT_REWARD_MULTIPLIER
+@export var bonus_label: String = EMPTY_BONUS_LABEL
 
 
-static func create(recipe: Recipe, order_creation_time: float) -> Order:
+static func create(recipe: Recipe, order_creation_time: float, rare_order: bool = false, order_reward_multiplier: float = DEFAULT_REWARD_MULTIPLIER, order_bonus_label: String = EMPTY_BONUS_LABEL) -> Order:
 	var order: Order = Order.new()
 	order.selected_recipe = recipe
+	order.is_rare = rare_order
+	order.reward_multiplier = max(order_reward_multiplier, DEFAULT_REWARD_MULTIPLIER)
+	order.bonus_label = order_bonus_label
 	if recipe != null:
 		var economy_config: EconomyConfig = EconomyConfig.load_or_default(ECONOMY_CONFIG_PATH)
 		order.total_price = economy_config.get_recipe_reward(recipe)
