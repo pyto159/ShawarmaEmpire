@@ -1,55 +1,128 @@
-[gd_scene load_steps=3 format=3 uid="uid://gamehud"]
+[gd_scene load_steps=10 format=3 uid="uid://gamehud"]
 
 [ext_resource type="Script" path="res://Scripts/UI/GameHUD.gd" id="1_game_hud"]
 [ext_resource type="PackedScene" path="res://Scenes/UI/CookingProgressBar.tscn" id="2_cooking_progress_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.98, 0.88, 0.68, 0.94)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.35, 0.18, 0.07, 0.22)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_icon"]
+bg_color = Color(1, 0.73, 0.25, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_button"]
+bg_color = Color(0.92, 0.31, 0.18, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.35, 0.13, 0.07, 0.25)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_button_hover"]
+bg_color = Color(1, 0.39, 0.23, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.35, 0.13, 0.07, 0.25)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_button_pressed"]
+bg_color = Color(0.78, 0.23, 0.13, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_button"]
+bg_color = Color(0.29, 0.68, 0.35, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.11, 0.28, 0.13, 0.24)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_button_hover"]
+bg_color = Color(0.35, 0.78, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.11, 0.28, 0.13, 0.24)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_button_pressed"]
+bg_color = Color(0.22, 0.55, 0.28, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="GameHUD" type="MarginContainer"]
 z_index = 100
 mouse_filter = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 18.0
-offset_top = 18.0
-offset_right = -18.0
-offset_bottom = 246.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
+offset_bottom = 166.0
 script = ExtResource("1_game_hud")
 
 [node name="Content" type="VBoxContainer" parent="."]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="TopRow" type="HBoxContainer" parent="Content"]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="CoinsPanel" type="PanelContainer" parent="Content/TopRow"]
 mouse_filter = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(184, 68)
+custom_minimum_size = Vector2(154, 44)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="CoinsMargin" type="MarginContainer" parent="Content/TopRow/CoinsPanel"]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
 
 [node name="CoinsRow" type="HBoxContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin"]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="CoinIcon" type="PanelContainer" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow"]
 mouse_filter = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_icon")
 
 [node name="CoinIconLabel" type="Label" parent="Content/TopRow/CoinsPanel/CoinsMargin/CoinsRow/CoinIcon"]
 mouse_filter = 2
@@ -69,28 +142,30 @@ vertical_alignment = 1
 [node name="OrderPanel" type="PanelContainer" parent="Content/TopRow"]
 mouse_filter = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(230, 68)
+custom_minimum_size = Vector2(230, 44)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="OrderMargin" type="MarginContainer" parent="Content/TopRow/OrderPanel"]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 9
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 9
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
 
 [node name="OrderRow" type="HBoxContainer" parent="Content/TopRow/OrderPanel/OrderMargin"]
 mouse_filter = 2
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="RecipeIcon" type="PanelContainer" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow"]
 mouse_filter = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(42, 42)
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_icon")
 
 [node name="RecipeIconLabel" type="Label" parent="Content/TopRow/OrderPanel/OrderMargin/OrderRow/RecipeIcon"]
 mouse_filter = 2
@@ -117,69 +192,83 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "No active order"
 
-[node name="ButtonRow" type="HBoxContainer" parent="Content"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PrepareButton" type="Button" parent="Content/ButtonRow"]
+[node name="StatusPanel" type="PanelContainer" parent="Content/TopRow"]
+mouse_filter = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(154, 44)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="StatusMargin" type="MarginContainer" parent="Content/TopRow/StatusPanel"]
+mouse_filter = 2
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
+
+[node name="StatusText" type="VBoxContainer" parent="Content/TopRow/StatusPanel/StatusMargin"]
+mouse_filter = 2
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="CookingStatusLabel" type="Label" parent="Content/TopRow/StatusPanel/StatusMargin/StatusText"]
+mouse_filter = 2
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="CookingProgressBar" parent="Content/TopRow/StatusPanel/StatusMargin/StatusText" instance=ExtResource("2_cooking_progress_bar")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrepareRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PrepareButton" type="Button" parent="Content/PrepareRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 38)
+layout_mode = 2
 text = "Prepare"
+theme_override_colors/font_color = Color(1, 0.97, 0.87, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_primary_button_hover")
 
-[node name="UpgradeButton" type="Button" parent="Content/ButtonRow"]
+[node name="BottomButtonRow" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="IngredientUnlockButton" type="Button" parent="Content/BottomButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Better Grill\n50 Coins"
+text = "Unlock Ingredient"
+theme_override_colors/font_color = Color(1, 0.97, 0.87, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_button_hover")
 
-[node name="IngredientPanel" type="PanelContainer" parent="Content"]
-mouse_filter = 2
+[node name="UpgradeButton" type="Button" parent="Content/BottomButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
-layout_mode = 2
-
-[node name="IngredientMargin" type="MarginContainer" parent="Content/IngredientPanel"]
-mouse_filter = 2
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
-
-[node name="IngredientRow" type="HBoxContainer" parent="Content/IngredientPanel/IngredientMargin"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="IngredientText" type="VBoxContainer" parent="Content/IngredientPanel/IngredientMargin/IngredientRow"]
-mouse_filter = 2
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 0
-
-[node name="IngredientLabel" type="Label" parent="Content/IngredientPanel/IngredientMargin/IngredientRow/IngredientText"]
-mouse_filter = 2
-unique_name_in_owner = true
-layout_mode = 2
-text = "Next Ingredient"
-
-[node name="IngredientCostLabel" type="Label" parent="Content/IngredientPanel/IngredientMargin/IngredientRow/IngredientText"]
-mouse_filter = 2
-unique_name_in_owner = true
-layout_mode = 2
-text = "75 Coins"
-
-[node name="IngredientUnlockButton" type="Button" parent="Content/IngredientPanel/IngredientMargin/IngredientRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(132, 42)
-layout_mode = 2
-text = "Unlock"
-
-[node name="CookingProgressBar" parent="Content" instance=ExtResource("2_cooking_progress_bar")]
-unique_name_in_owner = true
-layout_mode = 2
+text = "Better Grill 50 Coins"
+theme_override_colors/font_color = Color(1, 0.97, 0.87, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_primary_button_hover")
 
 [node name="CoinFeedbackLabel" type="Label" parent="Content"]
 mouse_filter = 2
@@ -188,6 +277,7 @@ visible = false
 layout_mode = 2
 text = "+0 Coins"
 theme_override_colors/font_color = Color(1, 0.86, 0.25, 1)
+horizontal_alignment = 1
 
 [node name="CoinFeedbackTimer" type="Timer" parent="."]
 unique_name_in_owner = true
