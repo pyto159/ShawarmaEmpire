@@ -36,7 +36,7 @@ func start_order(order: Order) -> bool:
 		return false
 
 	current_order = order
-	total_seconds = max(order.preparation_time, DEFAULT_PREPARATION_SECONDS)
+	total_seconds = _get_modified_preparation_time(order.preparation_time)
 	remaining_seconds = total_seconds
 	cooking_started.emit(current_order)
 	_emit_progress_changed()
@@ -51,12 +51,15 @@ func advance_cooking(delta: float) -> void:
 	if current_order == null:
 		return
 
-	var safe_speed_multiplier: float = max(cooking_speed_multiplier, MINIMUM_COOKING_SPEED_MULTIPLIER)
-	remaining_seconds = max(remaining_seconds - (delta / safe_speed_multiplier), DEFAULT_PREPARATION_SECONDS)
+	remaining_seconds = max(remaining_seconds - delta, DEFAULT_PREPARATION_SECONDS)
 	_emit_progress_changed()
 
 	if is_zero_approx(remaining_seconds):
 		_complete_current_order()
+
+
+func get_modified_preparation_time(base_preparation_time: float) -> float:
+	return _get_modified_preparation_time(base_preparation_time)
 
 
 func cancel_order() -> void:
@@ -80,6 +83,11 @@ func get_progress() -> float:
 
 func is_cooking() -> bool:
 	return current_order != null
+
+
+func _get_modified_preparation_time(base_preparation_time: float) -> float:
+	var safe_speed_multiplier: float = max(cooking_speed_multiplier, MINIMUM_COOKING_SPEED_MULTIPLIER)
+	return max(base_preparation_time * safe_speed_multiplier, DEFAULT_PREPARATION_SECONDS)
 
 
 func _complete_current_order() -> void:
