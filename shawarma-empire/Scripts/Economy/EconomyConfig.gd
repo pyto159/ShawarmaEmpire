@@ -8,6 +8,22 @@ const DEFAULT_RECIPE_PREPARATION_TIME: float = 1.00
 const DEFAULT_INGREDIENT_COST: int = 0
 const DEFAULT_GRILL_COST: int = 0
 const DEFAULT_KIOSK_UPGRADE_COST: int = 0
+const DEFAULT_TIP_CHANCE: float = 0.20
+const DEFAULT_TIP_MIN_PERCENT: float = 0.05
+const DEFAULT_TIP_MAX_PERCENT: float = 0.25
+const DEFAULT_COMBO_LEVEL: int = 1
+const FALLBACK_COMBO_BONUS_TABLE: Dictionary = {
+	1: 0.00,
+	2: 0.05,
+	3: 0.10,
+	4: 0.15,
+	5: 0.20,
+	6: 0.25,
+	7: 0.30,
+	8: 0.35,
+	9: 0.40,
+	10: 0.50,
+}
 const FALLBACK_GRILL_DISPLAY_NAME: String = "Basic Grill"
 const FALLBACK_GRILL_LEVELS: Dictionary = {
 	1: {"display_name": "Basic Grill", "cost": 0},
@@ -63,6 +79,10 @@ const FALLBACK_KIOSK_UPGRADES: Array[Dictionary] = [
 @export var recipe_preparation_times: Dictionary = {}
 @export var cooking_multipliers: Dictionary = {}
 @export var kiosk_upgrades: Array[Dictionary] = []
+@export_range(0.0, 1.0, 0.01) var tip_chance: float = DEFAULT_TIP_CHANCE
+@export_range(0.0, 1.0, 0.01) var tip_min_percent: float = DEFAULT_TIP_MIN_PERCENT
+@export_range(0.0, 1.0, 0.01) var tip_max_percent: float = DEFAULT_TIP_MAX_PERCENT
+@export var combo_bonus_table: Dictionary = {}
 @export var future_employee_costs: Dictionary = {}
 @export var future_reputation_rewards: Dictionary = {}
 
@@ -131,6 +151,31 @@ func get_recipe_preparation_time_by_path(recipe_path: String) -> float:
 	return float(_get_recipe_preparation_times().get(recipe_path, DEFAULT_RECIPE_PREPARATION_TIME))
 
 
+func get_tip_chance() -> float:
+	return clampf(tip_chance, 0.0, 1.0)
+
+
+func get_tip_min_percent() -> float:
+	return clampf(minf(tip_min_percent, tip_max_percent), 0.0, 1.0)
+
+
+func get_tip_max_percent() -> float:
+	return clampf(maxf(tip_min_percent, tip_max_percent), 0.0, 1.0)
+
+
+func get_max_combo_level() -> int:
+	var max_level: int = DEFAULT_COMBO_LEVEL
+	for level: Variant in _get_combo_bonus_table().keys():
+		max_level = maxi(max_level, int(level))
+
+	return max_level
+
+
+func get_combo_bonus_percent(combo_level: int) -> float:
+	var safe_level: int = clampi(combo_level, DEFAULT_COMBO_LEVEL, get_max_combo_level())
+	return float(_get_value_for_level(_get_combo_bonus_table(), safe_level, 0.0))
+
+
 func _get_grill_level_data(level: int) -> Dictionary:
 	return _get_value_for_level(_get_grill_levels(), level, {}) as Dictionary
 
@@ -175,3 +220,10 @@ func _get_cooking_multipliers() -> Dictionary:
 		return FALLBACK_COOKING_MULTIPLIERS
 
 	return cooking_multipliers
+
+
+func _get_combo_bonus_table() -> Dictionary:
+	if combo_bonus_table.is_empty():
+		return FALLBACK_COMBO_BONUS_TABLE
+
+	return combo_bonus_table
