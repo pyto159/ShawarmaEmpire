@@ -551,3 +551,13 @@ Scene scripts may still adjust layout-specific spacing or label sizes, but they 
 `GameManager.calculate_order_reward(order, customer)` centralizes final reward calculation. It starts from the order base price, applies the order reward multiplier, then applies the +25% favorite multiplier when the served customer matches the order. `Main` awards that calculated value once after `CookingStand.deliver_completed_order()` succeeds, so rare and favorite bonuses stack without duplicate coin grants.
 
 `GameHUD` displays the active recipe name and appends “Rare Order!” for rare orders. Completion coin feedback can include a bonus label, currently used for “Favorite!” after a favorite recipe match.
+
+### Kiosk Upgrade Manager
+
+`KioskUpgradeManager` is an autoload at `res://Managers/KioskUpgradeManager.gd` for the first Business Expansion progression track. It owns purchased kiosk upgrade ids, exposes purchase and save/load APIs, and reads upgrade definitions from `EconomyConfig` instead of hardcoding balance in UI code.
+
+The manager exposes gameplay bonus accessors for customer patience, customer spawn rate, rare order chance, and tip chance. `Main.gd` applies the spawn-rate multiplier to the customer spawn timer and stores the patience multiplier on spawned customers for the future patience loop. `OrderGenerator` adds the rare-order chance bonus when rolling orders, and `GameManager.calculate_order_reward()` rolls the current tip chance bonus when calculating served-order rewards.
+
+`GameHUD` creates a lightweight Business panel beside the existing Recipes, Ingredients, and Grill upgrade controls. The panel is presentation-only: it displays purchased upgrades, available upgrades, descriptions, and costs, then forwards purchase requests to `KioskUpgradeManager`.
+
+Kiosk upgrade save data is included in `GameManager.get_save_data()` under `purchased_kiosk_upgrades`, restored through `GameManager.apply_save_data()`, and reset by `GameManager.initialize_new_game()`.

@@ -270,6 +270,18 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_button_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_button_pressed")
 theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_button_hover")
 
+[node name="BusinessButton" type="Button" parent="Content/BottomButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Business"
+theme_override_colors/font_color = Color(1, 0.97, 0.87, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_button_hover")
+
 [node name="UpgradeButton" type="Button" parent="Content/BottomButtonRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 74)

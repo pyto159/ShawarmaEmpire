@@ -14,6 +14,7 @@ const SAVE_KEY_GRILL_LEVEL: String = "grill_level"
 const SAVE_KEY_PURCHASED_UPGRADES: String = "purchased_upgrades"
 const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
+const SAVE_KEY_PURCHASED_KIOSK_UPGRADES: String = "purchased_kiosk_upgrades"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
 const FAVORITE_RECIPE_REWARD_MULTIPLIER: float = 1.25
@@ -29,6 +30,7 @@ func initialize_new_game() -> void:
 	set_currency(STARTING_COINS, STARTING_GEMS)
 	purchased_upgrade_ids.clear()
 	IngredientManager.reset_to_defaults()
+	KioskUpgradeManager.reset_to_defaults()
 	set_grill_level(DEFAULT_GRILL_LEVEL)
 	recipes_changed.emit()
 
@@ -40,6 +42,8 @@ func calculate_order_reward(order: Order, customer: Customer = null) -> int:
 	var final_reward: float = float(max(order.total_price, 0)) * max(order.reward_multiplier, Order.DEFAULT_REWARD_MULTIPLIER)
 	if customer != null and customer.is_favorite_order(order):
 		final_reward *= FAVORITE_RECIPE_REWARD_MULTIPLIER
+	if randf() < KioskUpgradeManager.get_tip_chance_bonus():
+		final_reward *= 1.0 + KioskUpgradeManager.get_tip_reward_multiplier()
 
 	return roundi(final_reward)
 
@@ -145,6 +149,7 @@ func get_save_data() -> Dictionary:
 		SAVE_KEY_PURCHASED_UPGRADES: _get_purchased_upgrade_save_ids(),
 		SAVE_KEY_UNLOCKED_RECIPES: _get_available_recipe_save_paths(),
 		SAVE_KEY_UNLOCKED_INGREDIENTS: IngredientManager.get_unlocked_ingredient_ids(),
+		SAVE_KEY_PURCHASED_KIOSK_UPGRADES: KioskUpgradeManager.get_save_data(),
 		SAVE_KEY_GAME_VERSION: GAME_VERSION,
 	}
 
@@ -155,6 +160,7 @@ func apply_save_data(save_data: Dictionary) -> void:
 	set_currency(saved_coins, saved_gems)
 	_apply_purchased_upgrade_save_ids(save_data.get(SAVE_KEY_PURCHASED_UPGRADES, []))
 	IngredientManager.apply_unlocked_ingredient_ids(save_data.get(SAVE_KEY_UNLOCKED_INGREDIENTS, []))
+	KioskUpgradeManager.apply_save_data(save_data.get(SAVE_KEY_PURCHASED_KIOSK_UPGRADES, []))
 	_apply_grill_level_save_data(save_data)
 
 

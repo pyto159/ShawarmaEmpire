@@ -7,6 +7,7 @@ const DEFAULT_RECIPE_REWARD: int = 0
 const DEFAULT_RECIPE_PREPARATION_TIME: float = 1.00
 const DEFAULT_INGREDIENT_COST: int = 0
 const DEFAULT_GRILL_COST: int = 0
+const DEFAULT_KIOSK_UPGRADE_COST: int = 0
 const FALLBACK_GRILL_DISPLAY_NAME: String = "Basic Grill"
 const FALLBACK_GRILL_LEVELS: Dictionary = {
 	1: {"display_name": "Basic Grill", "cost": 0},
@@ -49,12 +50,19 @@ const FALLBACK_COOKING_MULTIPLIERS: Dictionary = {
 	4: 0.60,
 	5: 0.45,
 }
+const FALLBACK_KIOSK_UPGRADES: Array[Dictionary] = [
+	{"id": &"better_counter", "name": "Better Counter", "description": "A cleaner counter helps customers wait a little longer. +5% customer patience.", "cost": 120, "customer_patience_bonus": 0.05},
+	{"id": &"new_sign", "name": "New Sign", "description": "A brighter sign attracts more foot traffic. +10% customer spawn rate.", "cost": 180, "customer_spawn_rate_bonus": 0.10},
+	{"id": &"better_lighting", "name": "Better Lighting", "description": "Better lighting makes special orders more likely. +5% rare order chance.", "cost": 260, "rare_order_chance_bonus": 0.05},
+	{"id": &"decorations", "name": "Decorations", "description": "Cozy decorations encourage tips. +10% tip chance.", "cost": 340, "tip_chance_bonus": 0.10},
+]
 
 @export var grill_levels: Dictionary = {}
 @export var ingredient_costs: Dictionary = {}
 @export var recipe_rewards: Dictionary = {}
 @export var recipe_preparation_times: Dictionary = {}
 @export var cooking_multipliers: Dictionary = {}
+@export var kiosk_upgrades: Array[Dictionary] = []
 @export var future_employee_costs: Dictionary = {}
 @export var future_reputation_rewards: Dictionary = {}
 
@@ -88,6 +96,13 @@ func get_grill_cost(level: int) -> int:
 
 func get_cooking_multiplier(level: int) -> float:
 	return float(_get_value_for_level(_get_cooking_multipliers(), level, DEFAULT_COOKING_SPEED_MULTIPLIER))
+
+
+func get_kiosk_upgrades() -> Array[Dictionary]:
+	if kiosk_upgrades.is_empty():
+		return FALLBACK_KIOSK_UPGRADES
+
+	return kiosk_upgrades
 
 
 func get_ingredient_cost(ingredient_id: String) -> int:
