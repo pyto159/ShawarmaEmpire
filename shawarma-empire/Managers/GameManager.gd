@@ -15,11 +15,6 @@ const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
-const DEFAULT_UNLOCKED_RECIPE_PATHS: Array[String] = [
-	"res://Resources/Recipes/ClassicShawarma.tres",
-	"res://Resources/Recipes/SpicyShawarma.tres",
-	"res://Resources/Recipes/CheeseShawarma.tres",
-]
 const GRILL_LEVEL_DATA: Dictionary = {
 	1: {"display_name": "Basic Grill", "cost": 0, "cooking_speed_multiplier": 1.0},
 	2: {"display_name": "Better Grill", "cost": 50, "cooking_speed_multiplier": 0.90},
@@ -32,15 +27,12 @@ var gems: int = STARTING_GEMS
 var purchased_upgrade_ids: Array[StringName] = []
 var grill_level: int = DEFAULT_GRILL_LEVEL
 var cooking_speed_multiplier: float = DEFAULT_COOKING_SPEED_MULTIPLIER
-var unlocked_recipe_paths: Array[String] = DEFAULT_UNLOCKED_RECIPE_PATHS.duplicate()
-var unlocked_ingredient_ids: Array[String] = []
 
 
 func initialize_new_game() -> void:
 	set_currency(STARTING_COINS, STARTING_GEMS)
 	purchased_upgrade_ids.clear()
-	unlocked_recipe_paths = DEFAULT_UNLOCKED_RECIPE_PATHS.duplicate()
-	unlocked_ingredient_ids.clear()
+	IngredientManager.reset_to_defaults()
 	set_grill_level(DEFAULT_GRILL_LEVEL)
 	recipes_changed.emit()
 
@@ -139,8 +131,8 @@ func get_save_data() -> Dictionary:
 		"gems": gems,
 		SAVE_KEY_GRILL_LEVEL: grill_level,
 		SAVE_KEY_PURCHASED_UPGRADES: _get_purchased_upgrade_save_ids(),
-		SAVE_KEY_UNLOCKED_RECIPES: unlocked_recipe_paths.duplicate(),
-		SAVE_KEY_UNLOCKED_INGREDIENTS: unlocked_ingredient_ids.duplicate(),
+		SAVE_KEY_UNLOCKED_RECIPES: _get_available_recipe_save_paths(),
+		SAVE_KEY_UNLOCKED_INGREDIENTS: IngredientManager.get_unlocked_ingredient_ids(),
 		SAVE_KEY_GAME_VERSION: GAME_VERSION,
 	}
 
@@ -150,8 +142,7 @@ func apply_save_data(save_data: Dictionary) -> void:
 	var saved_gems: int = int(save_data.get("gems", STARTING_GEMS))
 	set_currency(saved_coins, saved_gems)
 	_apply_purchased_upgrade_save_ids(save_data.get(SAVE_KEY_PURCHASED_UPGRADES, []))
-	_apply_unlocked_recipe_paths(save_data.get(SAVE_KEY_UNLOCKED_RECIPES, DEFAULT_UNLOCKED_RECIPE_PATHS))
-	_apply_unlocked_ingredient_ids(save_data.get(SAVE_KEY_UNLOCKED_INGREDIENTS, []))
+	IngredientManager.apply_unlocked_ingredient_ids(save_data.get(SAVE_KEY_UNLOCKED_INGREDIENTS, []))
 	_apply_grill_level_save_data(save_data)
 
 
@@ -197,50 +188,20 @@ func _get_grill_level_data(level: int) -> Dictionary:
 	return GRILL_LEVEL_DATA.get(clampi(level, DEFAULT_GRILL_LEVEL, MAX_GRILL_LEVEL), {})
 
 
-func unlock_recipe(recipe_path: String) -> bool:
-	if recipe_path.is_empty() or unlocked_recipe_paths.has(recipe_path):
-		return false
-
-	unlocked_recipe_paths.append(recipe_path)
-	recipes_changed.emit()
-	SaveManager.queue_save_game()
-	return true
+func unlock_recipe(_recipe_path: String) -> bool:
+	return false
 
 
 func get_unlocked_recipes() -> Array[Recipe]:
-	var recipes: Array[Recipe] = []
-	for recipe_path: String in unlocked_recipe_paths:
-		var recipe: Resource = load(recipe_path)
-		if recipe is Recipe:
-			recipes.append(recipe as Recipe)
-
-	return recipes
+	return IngredientManager.get_available_recipes()
 
 
-func _apply_unlocked_recipe_paths(saved_recipe_paths: Variant) -> void:
-	unlocked_recipe_paths.clear()
-	if saved_recipe_paths is Array:
-		for saved_recipe_path: Variant in saved_recipe_paths:
-			var recipe_path: String = str(saved_recipe_path)
-			if recipe_path.is_empty() or unlocked_recipe_paths.has(recipe_path):
-				continue
-
-			unlocked_recipe_paths.append(recipe_path)
-
-	if unlocked_recipe_paths.is_empty():
-		unlocked_recipe_paths = DEFAULT_UNLOCKED_RECIPE_PATHS.duplicate()
-
-	recipes_changed.emit()
-
-
-func _apply_unlocked_ingredient_ids(saved_ingredient_ids: Variant) -> void:
-	unlocked_ingredient_ids.clear()
-	if not saved_ingredient_ids is Array:
-		return
-
-	for saved_ingredient_id: Variant in saved_ingredient_ids:
-		var ingredient_id: String = str(saved_ingredient_id)
-		if ingredient_id.is_empty() or unlocked_ingredient_ids.has(ingredient_id):
+func _get_available_recipe_save_paths() -> Array[String]:
+	var recipe_paths: Array[String] = []
+	for recipe: Recipe in get_unlocked_recipes():
+		if recipe.resource_path.is_empty():
 			continue
 
-		unlocked_ingredient_ids.append(ingredient_id)
+		recipe_paths.append(recipe.resource_path)
+
+	return recipe_paths
