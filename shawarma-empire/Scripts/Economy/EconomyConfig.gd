@@ -19,10 +19,10 @@ const FALLBACK_INGREDIENT_COSTS: Dictionary = {
 	"jalapeno": 100,
 	"spicy_sauce": 150,
 	"cheese": 250,
-	"onion": 300,
-	"bbq_sauce": 350,
-	"double_chicken": 450,
-	"lettuce": 500,
+	"onion": 350,
+	"bbq_sauce": 450,
+	"double_chicken": 600,
+	"lettuce": 300,
 }
 const FALLBACK_RECIPE_REWARDS: Dictionary = {
 	"res://Resources/Recipes/ClassicShawarma.tres": 15,
