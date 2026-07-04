@@ -18,6 +18,7 @@ run/main_scene="res://Scenes/MainMenu.tscn"
 [autoload]
 
 GameManager="*res://Managers/GameManager.gd"
+IngredientManager="*res://Managers/IngredientManager.gd"
 SaveManager="*res://Managers/SaveManager.gd"
 SceneManager="*res://Managers/SceneManager.gd"
 AudioManager="*res://Managers/AudioManager.tscn"

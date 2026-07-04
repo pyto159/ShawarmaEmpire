@@ -91,6 +91,8 @@ Grill progression starts at Level 1 `Basic Grill` with a 1.00 cooking speed mult
 
 `GameManager` includes `grill_level` in save data. Older saves that only contain purchased upgrade ids are migrated by treating any saved legacy upgrade as Level 2, preserving the original one-time Better Grill purchase as closely as possible. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` to active cooking progression. `CookingStation` treats the multiplier as a duration multiplier, so lower grill multipliers complete cooking faster without changing recipe data.
 
+`GameManager` also includes unlocked ingredient ids in save data through `IngredientManager.get_unlocked_ingredient_ids()`. Loading save data restores ingredient ids through `IngredientManager.apply_unlocked_ingredient_ids()`, while New Game resets ingredient progression back to Lavash, Chicken, and Garlic Sauce.
+
 
 
 ### Cooking Progress UI
@@ -153,9 +155,15 @@ Recipes use `Recipe` resources in `res://Resources/Recipes/`, and ingredients us
 
 Current recipe resources:
 
-- `ClassicShawarma.tres`: Lavash, Chicken, Tomato, Cucumber, Garlic Sauce; 15 coins; 3 seconds.
+- `ClassicShawarma.tres`: Lavash, Chicken, Garlic Sauce; 15 coins; 3 seconds.
 - `SpicyShawarma.tres`: Lavash, Chicken, Jalapeño, Spicy Sauce; 22 coins; 3.5 seconds.
 - `CheeseShawarma.tres`: Lavash, Chicken, Cheese, Garlic Sauce; 30 coins; 4 seconds.
+
+### Ingredient Progression
+
+`IngredientManager` is an autoload backed by `res://Managers/IngredientManager.gd`. It owns the reusable ingredient progression layer, tracks unlocked ingredient ids, exposes `is_unlocked(ingredient_id)`, `can_unlock(ingredient_id)`, and `unlock_ingredient(ingredient_id)`, and emits `ingredient_unlocked` plus `ingredients_changed` when ingredient state changes. Players start with Lavash, Chicken, and Garlic Sauce. The current unlock order is Tomato for 75 coins, Cucumber for 100 coins, Jalapeño for 150 coins, Spicy Sauce for 200 coins, and Cheese for 300 coins.
+
+Recipe availability is now derived from ingredient requirements: `GameManager.get_unlocked_recipes()` delegates to `IngredientManager.get_available_recipes()`, which only returns recipes whose required ingredient ids are unlocked. Classic Shawarma remains available from the start because it uses only starting ingredients. Spicy Shawarma becomes available after Jalapeño and Spicy Sauce are unlocked, and Cheese Shawarma becomes available after Cheese is unlocked. Customer spawning continues to pass the available recipe list into each customer, so generated orders only use currently available recipes.
 
 ### Main Scene
 
@@ -401,7 +409,7 @@ Reusable resource scripts live in `res://Scripts/Recipes/`.
 Current responsibilities:
 
 - Define `Recipe` resources with display name, base price, preparation time, and required ingredients.
-- Define `Ingredient` resources with display name, optional icon placeholder, and unlock level.
+- Define `Ingredient` resources with stable id, display name, optional icon placeholder, and unlock level.
 - Keep recipe and ingredient data separate from customers, orders, cooking, and UI so future systems can consume the same data without scene coupling.
 
 Planned responsibilities:
@@ -503,9 +511,9 @@ Visual Polish sprint has started. Technical work in this sprint should remain pr
 
 `SaveManager` is the only system that reads, writes, or deletes persistent progression files. It stores a single JSON save at `user://shawarma_empire_save.json`, exposes `save_game()`, `load_game()`, `delete_save()`, `has_save()`, and `initialize_new_game()`, and also provides deferred `queue_save_game()` calls so save requests can be coalesced after gameplay events without blocking moment-to-moment play.
 
-The saved payload currently includes coins, gems, grill level, legacy purchased upgrade ids, unlocked recipe resource paths, unlocked ingredient ids for future ingredient progression, and the current game version. Future progression fields should be added through explicit `GameManager` save/apply fields and then routed through `SaveManager`; gameplay, UI, queue, cooking, and spawning systems should not access save files directly.
+The saved payload currently includes coins, gems, grill level, legacy purchased upgrade ids, derived available recipe resource paths, unlocked ingredient ids, and the current game version. Future progression fields should be added through explicit manager save/apply fields and then routed through `SaveManager`; gameplay, UI, queue, cooking, and spawning systems should not access save files directly.
 
-`GameManager.initialize_new_game()` resets coins, gems, grill level, legacy upgrades, unlocked recipes, and unlocked ingredients to default values. The default recipe set currently matches existing gameplay by unlocking Classic Shawarma, Spicy Shawarma, and Cheese Shawarma at new-game start. `GameManager.get_unlocked_recipes()` resolves saved recipe paths into recipe resources for spawned customers.
+`GameManager.initialize_new_game()` resets coins, gems, grill level, and legacy upgrades, then asks `IngredientManager` to reset ingredients to Lavash, Chicken, and Garlic Sauce. `GameManager.get_unlocked_recipes()` now delegates recipe availability to `IngredientManager`, so spawned customers only receive recipes whose ingredient requirements are currently unlocked.
 
 `MainMenu.tscn` is now the configured project entry scene. It shows `Continue` only when `SaveManager.has_save()` is true, always shows `New Game`, and confirms destructive new-game starts when a save exists with the message: `Start a new game? Your current progress will be permanently deleted.` Confirming a new game deletes the previous save, initializes default progression, writes a fresh save, and enters `Main.tscn` through `SceneManager`.
 
