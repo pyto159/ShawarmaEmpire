@@ -158,15 +158,19 @@ Recipes use `Recipe` resources in `res://Resources/Recipes/`, and ingredients us
 
 Current recipe resources:
 
-- `ClassicShawarma.tres`: Lavash, Chicken, Garlic Sauce; reward and 3.0 second preparation time from `EconomyConfig`.
+- `ClassicShawarma.tres`: Lavash, Chicken, Garlic Sauce, Tomato, Cucumber; reward and 3.0 second preparation time from `EconomyConfig`.
 - `SpicyShawarma.tres`: Lavash, Chicken, Jalapeño, Spicy Sauce; reward and 3.6 second preparation time from `EconomyConfig`.
 - `CheeseShawarma.tres`: Lavash, Chicken, Cheese, Garlic Sauce; reward and 4.0 second preparation time from `EconomyConfig`.
+- `BBQShawarma.tres`: Lavash, Chicken, BBQ Sauce, Onion; 50 coin reward and 4.5 second preparation time from `EconomyConfig`.
+- `DoubleMeatShawarma.tres`: Lavash, Double Chicken, Garlic Sauce, Tomato; 65 coin reward and 5.0 second preparation time from `EconomyConfig`.
+- `VeggieShawarma.tres`: Lavash, Lettuce, Tomato, Cucumber, Cheese; 45 coin reward and 4.2 second preparation time from `EconomyConfig`.
+- `MegaShawarma.tres`: Lavash, Double Chicken, Cheese, Tomato, Cucumber, Jalapeño, Garlic Sauce, BBQ Sauce; 90 coin reward and 6.0 second preparation time from `EconomyConfig`.
 
 ### Ingredient Progression
 
-`IngredientManager` is an autoload backed by `res://Managers/IngredientManager.gd`. It owns the reusable ingredient progression layer, tracks unlocked ingredient ids, exposes `is_unlocked(ingredient_id)`, `can_unlock(ingredient_id)`, and `unlock_ingredient(ingredient_id)`, and emits `ingredient_unlocked` plus `ingredients_changed` when ingredient state changes. Players start with Lavash, Chicken, Garlic Sauce, Tomato, and Cucumber. The current unlock order is Jalapeño, Spicy Sauce, and Cheese, with unlock costs read from `EconomyConfig` (100, 150, and 250 coins respectively in the current config).
+`IngredientManager` is an autoload backed by `res://Managers/IngredientManager.gd`. It owns the reusable ingredient progression layer, tracks unlocked ingredient ids, exposes `is_unlocked(ingredient_id)`, `can_unlock(ingredient_id)`, and `unlock_ingredient(ingredient_id)`, and emits `ingredient_unlocked` plus `ingredients_changed` when ingredient state changes. Players start with Lavash, Chicken, Garlic Sauce, Tomato, and Cucumber. The current unlock order is Jalapeño, Spicy Sauce, Cheese, Onion, BBQ Sauce, Double Chicken, and Lettuce, with unlock costs read from `EconomyConfig` (100, 150, 250, 300, 350, 450, and 500 coins respectively in the current config).
 
-Recipe availability is now derived from ingredient requirements: `GameManager.get_unlocked_recipes()` delegates to `IngredientManager.get_available_recipes()`, which only returns recipes whose required ingredient ids are unlocked. Classic Shawarma remains available from the start because it uses only starting ingredients. Spicy Shawarma becomes available after Jalapeño and Spicy Sauce are unlocked, and Cheese Shawarma becomes available after Cheese is unlocked. Customer spawning continues to pass the available recipe list into each customer, so generated orders only use currently available recipes.
+Recipe availability is derived from ingredient requirements: `GameManager.get_unlocked_recipes()` delegates to `IngredientManager.get_available_recipes()`, which only returns recipes whose required ingredient ids are unlocked. New recipe resources are not unlocked directly and are not saved separately; they become available automatically when their required ingredient resources are unlocked. Customer spawning continues to pass the available recipe list into each customer, so generated orders only use currently available recipes.
 
 ### Main Scene
 

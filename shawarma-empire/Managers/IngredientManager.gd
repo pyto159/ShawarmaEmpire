@@ -11,9 +11,17 @@ const INGREDIENT_ID_CUCUMBER: String = "cucumber"
 const INGREDIENT_ID_JALAPENO: String = "jalapeno"
 const INGREDIENT_ID_SPICY_SAUCE: String = "spicy_sauce"
 const INGREDIENT_ID_CHEESE: String = "cheese"
+const INGREDIENT_ID_BBQ_SAUCE: String = "bbq_sauce"
+const INGREDIENT_ID_ONION: String = "onion"
+const INGREDIENT_ID_DOUBLE_CHICKEN: String = "double_chicken"
+const INGREDIENT_ID_LETTUCE: String = "lettuce"
 const CLASSIC_SHAWARMA_PATH: String = "res://Resources/Recipes/ClassicShawarma.tres"
 const SPICY_SHAWARMA_PATH: String = "res://Resources/Recipes/SpicyShawarma.tres"
 const CHEESE_SHAWARMA_PATH: String = "res://Resources/Recipes/CheeseShawarma.tres"
+const BBQ_SHAWARMA_PATH: String = "res://Resources/Recipes/BBQShawarma.tres"
+const DOUBLE_MEAT_SHAWARMA_PATH: String = "res://Resources/Recipes/DoubleMeatShawarma.tres"
+const VEGGIE_SHAWARMA_PATH: String = "res://Resources/Recipes/VeggieShawarma.tres"
+const MEGA_SHAWARMA_PATH: String = "res://Resources/Recipes/MegaShawarma.tres"
 const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
 const DEFAULT_UNLOCKED_INGREDIENT_IDS: Array[String] = [
 	INGREDIENT_ID_LAVASH,
@@ -31,16 +39,28 @@ const INGREDIENT_DEFINITIONS: Dictionary = {
 	INGREDIENT_ID_JALAPENO: {"display_name": "Jalapeño"},
 	INGREDIENT_ID_SPICY_SAUCE: {"display_name": "Spicy Sauce"},
 	INGREDIENT_ID_CHEESE: {"display_name": "Cheese"},
+	INGREDIENT_ID_BBQ_SAUCE: {"display_name": "BBQ Sauce"},
+	INGREDIENT_ID_ONION: {"display_name": "Onion"},
+	INGREDIENT_ID_DOUBLE_CHICKEN: {"display_name": "Double Chicken"},
+	INGREDIENT_ID_LETTUCE: {"display_name": "Lettuce"},
 }
 const INGREDIENT_UNLOCK_ORDER: Array[String] = [
 	INGREDIENT_ID_JALAPENO,
 	INGREDIENT_ID_SPICY_SAUCE,
 	INGREDIENT_ID_CHEESE,
+	INGREDIENT_ID_ONION,
+	INGREDIENT_ID_BBQ_SAUCE,
+	INGREDIENT_ID_DOUBLE_CHICKEN,
+	INGREDIENT_ID_LETTUCE,
 ]
 const RECIPE_PATHS: Array[String] = [
 	CLASSIC_SHAWARMA_PATH,
 	SPICY_SHAWARMA_PATH,
 	CHEESE_SHAWARMA_PATH,
+	BBQ_SHAWARMA_PATH,
+	DOUBLE_MEAT_SHAWARMA_PATH,
+	VEGGIE_SHAWARMA_PATH,
+	MEGA_SHAWARMA_PATH,
 ]
 
 var unlocked_ingredient_ids: Array[String] = DEFAULT_UNLOCKED_INGREDIENT_IDS.duplicate()
