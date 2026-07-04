@@ -16,6 +16,7 @@ const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
+const FAVORITE_RECIPE_REWARD_MULTIPLIER: float = 1.25
 var coins: int = STARTING_COINS
 var gems: int = STARTING_GEMS
 var purchased_upgrade_ids: Array[StringName] = []
@@ -30,6 +31,17 @@ func initialize_new_game() -> void:
 	IngredientManager.reset_to_defaults()
 	set_grill_level(DEFAULT_GRILL_LEVEL)
 	recipes_changed.emit()
+
+
+func calculate_order_reward(order: Order, customer: Customer = null) -> int:
+	if order == null:
+		return 0
+
+	var final_reward: float = float(max(order.total_price, 0)) * max(order.reward_multiplier, Order.DEFAULT_REWARD_MULTIPLIER)
+	if customer != null and customer.is_favorite_order(order):
+		final_reward *= FAVORITE_RECIPE_REWARD_MULTIPLIER
+
+	return roundi(final_reward)
 
 
 func add_coins(amount: int) -> void:
