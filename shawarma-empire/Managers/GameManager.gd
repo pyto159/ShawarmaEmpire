@@ -2,6 +2,7 @@ extends Node
 
 signal currency_changed(coins: int, gems: int)
 signal upgrades_changed
+signal grill_upgraded(level: int, speed_improvement_percent: int)
 signal recipes_changed
 
 const STARTING_COINS: int = 0
@@ -55,7 +56,9 @@ func purchase_next_grill_level() -> bool:
 	if not spend_coins(cost):
 		return false
 
+	var previous_multiplier: float = cooking_speed_multiplier
 	set_grill_level(next_level)
+	grill_upgraded.emit(grill_level, _get_speed_improvement_percent(previous_multiplier, cooking_speed_multiplier))
 	SaveManager.queue_save_game()
 	return true
 
@@ -82,10 +85,15 @@ func get_grill_level_cost(level: int) -> int:
 
 func get_next_grill_button_text() -> String:
 	if is_max_grill_level():
-		return "Max Grill"
+		return "MAX LEVEL\nLv. %d • %s" % [grill_level, get_grill_level_display_name(grill_level)]
 
 	var next_level: int = get_next_grill_level()
-	return "%s - %d Coins" % [get_grill_level_display_name(next_level), get_grill_level_cost(next_level)]
+	return "Lv. %d • %s\nNext: %s\nCost: %d Coins" % [
+		grill_level,
+		get_grill_level_display_name(grill_level),
+		get_grill_level_display_name(next_level),
+		get_grill_level_cost(next_level),
+	]
 
 
 func set_grill_level(level: int) -> void:
@@ -173,6 +181,14 @@ func _apply_grill_level_save_data(save_data: Dictionary) -> void:
 
 func _get_grill_level_multiplier(level: int) -> float:
 	return economy_config.get_cooking_multiplier(level)
+
+
+func _get_speed_improvement_percent(previous_multiplier: float, current_multiplier: float) -> int:
+	if previous_multiplier <= 0.0 or current_multiplier >= previous_multiplier:
+		return 0
+
+	var speed_ratio: float = previous_multiplier / current_multiplier
+	return roundi((speed_ratio - 1.0) * 100.0)
 
 
 func unlock_recipe(_recipe_path: String) -> bool:

@@ -12,7 +12,8 @@ const FALLBACK_GRILL_LEVELS: Dictionary = {
 	1: {"display_name": "Basic Grill", "cost": 0},
 	2: {"display_name": "Better Grill", "cost": 50},
 	3: {"display_name": "Fast Grill", "cost": 150},
-	4: {"display_name": "Pro Grill", "cost": 400},
+	4: {"display_name": "Professional Grill", "cost": 400},
+	5: {"display_name": "Master Grill", "cost": 900},
 }
 const FALLBACK_INGREDIENT_COSTS: Dictionary = {
 	"jalapeno": 100,
@@ -34,6 +35,7 @@ const FALLBACK_COOKING_MULTIPLIERS: Dictionary = {
 	2: 0.9,
 	3: 0.75,
 	4: 0.6,
+	5: 0.45,
 }
 
 @export var grill_levels: Dictionary = {}

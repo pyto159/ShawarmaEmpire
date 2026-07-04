@@ -8,7 +8,8 @@ grill_levels = {
 1: {"display_name": "Basic Grill", "cost": 0},
 2: {"display_name": "Better Grill", "cost": 50},
 3: {"display_name": "Fast Grill", "cost": 150},
-4: {"display_name": "Pro Grill", "cost": 400}
+4: {"display_name": "Professional Grill", "cost": 400},
+5: {"display_name": "Master Grill", "cost": 900}
 }
 ingredient_costs = {
 "lavash": 0,
@@ -34,7 +35,8 @@ cooking_multipliers = {
 1: 1.0,
 2: 0.9,
 3: 0.75,
-4: 0.6
+4: 0.6,
+5: 0.45
 }
 future_employee_costs = {}
 future_reputation_rewards = {}
