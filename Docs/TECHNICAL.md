@@ -75,6 +75,7 @@ Responsibilities:
 - Request AudioManager button feedback when the Prepare or upgrade button is pressed.
 - Request AudioManager cooking feedback when cooking starts and completes.
 - Show the next grill upgrade or `Max Grill` when the grill is fully upgraded.
+- Display the current grill level in the cooking status text and briefly show upgrade feedback after a successful grill purchase.
 - Forward grill upgrade purchase intent to `GameManager.purchase_next_grill_level()` when the upgrade button is pressed.
 - Request AudioManager upgrade feedback when a grill level is purchased successfully.
 - Disable the Prepare button while the stand is cooking or when no cookable order is available.
@@ -89,7 +90,7 @@ Upgrade definitions still support the reusable `UpgradeData` resource type in `r
 
 Grill progression starts at Level 1 `Basic Grill` with a 1.00 cooking speed multiplier. The next levels are Level 2 `Better Grill` for 50 coins with a 0.90 multiplier, Level 3 `Fast Grill` for 150 coins with a 0.75 multiplier, and Level 4 `Pro Grill` for 400 coins with a 0.60 multiplier. `GameManager.purchase_next_grill_level()` rejects purchases past the max level, rejects purchases when coins are insufficient, subtracts coins through the central currency API, applies the new grill level, updates the cooking speed multiplier, and emits `upgrades_changed`. The HUD displays the next grill upgrade and switches to `Max Grill` when Level 4 is reached.
 
-`GameManager` includes `grill_level` in save data. Older saves that only contain purchased upgrade ids are migrated by treating any saved legacy upgrade as Level 2, preserving the original one-time Better Grill purchase as closely as possible. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` to active cooking progression. `CookingStation` treats the multiplier as a duration multiplier, so lower grill multipliers complete cooking faster without changing recipe data.
+`GameManager` includes `grill_level` in save data. Older saves that only contain purchased upgrade ids are migrated by treating any saved legacy upgrade as Level 2, preserving the original one-time Better Grill purchase as closely as possible. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` before cooking starts. `CookingStation` treats the multiplier as a preparation-time duration multiplier by calculating `recipe.preparation_time * cooking_speed_multiplier` at the start of each order, so lower grill multipliers complete cooking faster without changing recipe data, rewards, queues, customers, saves, or ingredients. Classic Shawarma therefore takes 3.0 seconds at Level 1, approximately 2.7 seconds at Level 2, 2.25 seconds at Level 3, and 1.8 seconds at Level 4. The progress bar and PreparationTable consume the resulting cooking progress signal, keeping both UI progress and preparation animation synchronized with the modified duration.
 
 `GameManager` also includes unlocked ingredient ids in save data through `IngredientManager.get_unlocked_ingredient_ids()`. Loading save data restores ingredient ids through `IngredientManager.apply_unlocked_ingredient_ids()`, while New Game resets ingredient progression back to Lavash, Chicken, and Garlic Sauce.
 
