@@ -190,6 +190,9 @@ Monetization principles:
 - Purchases should not create confusing progression dependencies.
 - Monetization should be added only after the core loop is satisfying.
 
+
+Ingredient progression now has two lightweight HUD menus. The Recipe Menu lists every recipe resource, its EconomyConfig reward and preparation time, whether the recipe is currently unlocked, and each required ingredient with unlocked or locked status. The Ingredient Shop lists every unlockable ingredient from IngredientManager/EconomyConfig with emoji label, cost, unlock status, and an individual purchase button, so players can buy any affordable ingredient instead of only the next fixed progression item. Ingredient purchases still flow through IngredientManager, save through existing unlocked ingredient ids, refresh recipe availability immediately, and unlocked recipes remain derived from ingredient requirements.
+
 ## UI Principles
 
 The UI must be mobile-first and readable on small Android screens.
