@@ -44,8 +44,16 @@ const ENABLE_DEV_MENU: bool = true
 const DEV_BUTTON_TEXT: String = "DEV"
 const DEV_MENU_TITLE: String = "Developer Menu"
 const DEV_MENU_TESTING_NOTE: String = "Testing only. Disable before release."
-const DEV_BUTTON_SIZE: Vector2 = Vector2(52.0, 32.0)
+const DEV_BUTTON_SIZE: Vector2 = Vector2(40.0, 40.0)
 const DEV_BUTTON_FONT_SIZE: int = 11
+const DEV_BUTTON_MARGIN: float = 14.0
+const DEV_BUTTON_CORNER_RADIUS: int = 10
+const DEV_BUTTON_SHADOW_SIZE: int = 3
+const DEV_BUTTON_SHADOW_OFFSET: Vector2 = Vector2(0.0, 2.0)
+const DEV_BUTTON_BG_COLOR: Color = Color(0.29, 0.24, 0.12, 0.92)
+const DEV_BUTTON_HOVER_COLOR: Color = Color(0.36, 0.29, 0.15, 0.96)
+const DEV_BUTTON_PRESSED_COLOR: Color = Color(0.22, 0.18, 0.09, 0.96)
+const DEV_BUTTON_SHADOW_COLOR: Color = Color(0.12, 0.08, 0.03, 0.28)
 const DEV_MENU_WIDTH: float = 320.0
 const DEV_MENU_HEIGHT: float = 460.0
 const DEV_MENU_MARGIN: float = 14.0
@@ -77,6 +85,7 @@ var _coin_feedback_base_position: Vector2
 var _recipes_panel: PanelContainer
 var _ingredients_panel: PanelContainer
 var _business_panel: PanelContainer
+var _developer_ui: Control
 var _dev_button: Button
 var _dev_panel: PanelContainer
 
@@ -111,6 +120,9 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	_disconnect_cooking_stand_signals()
+	if _developer_ui != null and is_instance_valid(_developer_ui):
+		_developer_ui.queue_free()
+		_developer_ui = null
 	if GameManager.currency_changed.is_connected(_on_currency_changed):
 		GameManager.currency_changed.disconnect(_on_currency_changed)
 	if GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
@@ -329,23 +341,55 @@ func _create_dev_menu() -> void:
 	if not enable_dev_menu:
 		return
 
+	_developer_ui = Control.new()
+	_developer_ui.name = "DeveloperUI"
+	_developer_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_developer_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_developer_ui.z_index = 10
+	var developer_parent: Node = get_parent() if get_parent() != null else self
+	developer_parent.add_child(_developer_ui)
+
 	_dev_button = Button.new()
 	_dev_button.text = DEV_BUTTON_TEXT
 	_dev_button.custom_minimum_size = DEV_BUTTON_SIZE
+	_dev_button.size = DEV_BUTTON_SIZE
+	_dev_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	_dev_button.add_theme_font_size_override("font_size", DEV_BUTTON_FONT_SIZE)
-	_dev_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_dev_button.position = Vector2(-DEV_BUTTON_SIZE.x, 0.0)
+	_dev_button.add_theme_color_override("font_color", Color.WHITE)
+	_dev_button.add_theme_color_override("font_hover_color", Color.WHITE)
+	_dev_button.add_theme_color_override("font_pressed_color", Color.WHITE)
+	_dev_button.add_theme_color_override("font_focus_color", Color.WHITE)
+	_dev_button.add_theme_stylebox_override("normal", _create_dev_button_style(DEV_BUTTON_BG_COLOR, true))
+	_dev_button.add_theme_stylebox_override("hover", _create_dev_button_style(DEV_BUTTON_HOVER_COLOR, true))
+	_dev_button.add_theme_stylebox_override("pressed", _create_dev_button_style(DEV_BUTTON_PRESSED_COLOR, false))
+	_dev_button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	_dev_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_dev_button.position = Vector2(DEV_BUTTON_MARGIN, -DEV_BUTTON_SIZE.y - DEV_BUTTON_MARGIN)
 	_dev_button.pressed.connect(_on_dev_button_pressed)
-	add_child(_dev_button)
+	_developer_ui.add_child(_dev_button)
 
 	_dev_panel = _create_base_panel(DEV_MENU_TITLE)
 	_dev_panel.custom_minimum_size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
 	_dev_panel.size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
-	_dev_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_dev_panel.position = Vector2(-DEV_MENU_WIDTH - DEV_MENU_MARGIN, DEV_BUTTON_SIZE.y + DEV_MENU_MARGIN)
-	add_child(_dev_panel)
+	_dev_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_dev_panel.position = Vector2(DEV_BUTTON_MARGIN, -DEV_MENU_HEIGHT - DEV_BUTTON_SIZE.y - DEV_MENU_MARGIN - DEV_BUTTON_MARGIN)
+	_developer_ui.add_child(_dev_panel)
 	_populate_dev_panel()
 	_dev_panel.hide()
+
+
+func _create_dev_button_style(background_color: Color, include_shadow: bool) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = background_color
+	style.corner_radius_top_left = DEV_BUTTON_CORNER_RADIUS
+	style.corner_radius_top_right = DEV_BUTTON_CORNER_RADIUS
+	style.corner_radius_bottom_right = DEV_BUTTON_CORNER_RADIUS
+	style.corner_radius_bottom_left = DEV_BUTTON_CORNER_RADIUS
+	if include_shadow:
+		style.shadow_color = DEV_BUTTON_SHADOW_COLOR
+		style.shadow_size = DEV_BUTTON_SHADOW_SIZE
+		style.shadow_offset = DEV_BUTTON_SHADOW_OFFSET
+	return style
 
 
 func _populate_dev_panel() -> void:
