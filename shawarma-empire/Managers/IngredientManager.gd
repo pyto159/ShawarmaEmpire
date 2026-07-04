@@ -14,6 +14,7 @@ const INGREDIENT_ID_CHEESE: String = "cheese"
 const CLASSIC_SHAWARMA_PATH: String = "res://Resources/Recipes/ClassicShawarma.tres"
 const SPICY_SHAWARMA_PATH: String = "res://Resources/Recipes/SpicyShawarma.tres"
 const CHEESE_SHAWARMA_PATH: String = "res://Resources/Recipes/CheeseShawarma.tres"
+const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
 const DEFAULT_UNLOCKED_INGREDIENT_IDS: Array[String] = [
 	INGREDIENT_ID_LAVASH,
 	INGREDIENT_ID_CHICKEN,
@@ -22,14 +23,14 @@ const DEFAULT_UNLOCKED_INGREDIENT_IDS: Array[String] = [
 	INGREDIENT_ID_CUCUMBER,
 ]
 const INGREDIENT_DEFINITIONS: Dictionary = {
-	INGREDIENT_ID_LAVASH: {"display_name": "Lavash", "cost": 0},
-	INGREDIENT_ID_CHICKEN: {"display_name": "Chicken", "cost": 0},
-	INGREDIENT_ID_GARLIC_SAUCE: {"display_name": "Garlic Sauce", "cost": 0},
-	INGREDIENT_ID_TOMATO: {"display_name": "Tomato", "cost": 75},
-	INGREDIENT_ID_CUCUMBER: {"display_name": "Cucumber", "cost": 100},
-	INGREDIENT_ID_JALAPENO: {"display_name": "Jalapeño", "cost": 150},
-	INGREDIENT_ID_SPICY_SAUCE: {"display_name": "Spicy Sauce", "cost": 200},
-	INGREDIENT_ID_CHEESE: {"display_name": "Cheese", "cost": 300},
+	INGREDIENT_ID_LAVASH: {"display_name": "Lavash"},
+	INGREDIENT_ID_CHICKEN: {"display_name": "Chicken"},
+	INGREDIENT_ID_GARLIC_SAUCE: {"display_name": "Garlic Sauce"},
+	INGREDIENT_ID_TOMATO: {"display_name": "Tomato"},
+	INGREDIENT_ID_CUCUMBER: {"display_name": "Cucumber"},
+	INGREDIENT_ID_JALAPENO: {"display_name": "Jalapeño"},
+	INGREDIENT_ID_SPICY_SAUCE: {"display_name": "Spicy Sauce"},
+	INGREDIENT_ID_CHEESE: {"display_name": "Cheese"},
 }
 const INGREDIENT_UNLOCK_ORDER: Array[String] = [
 	INGREDIENT_ID_JALAPENO,
@@ -43,6 +44,7 @@ const RECIPE_PATHS: Array[String] = [
 ]
 
 var unlocked_ingredient_ids: Array[String] = DEFAULT_UNLOCKED_INGREDIENT_IDS.duplicate()
+var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
 
 
 func reset_to_defaults() -> void:
@@ -108,8 +110,7 @@ func get_display_name(ingredient_id: String) -> String:
 
 
 func get_unlock_cost(ingredient_id: String) -> int:
-	var ingredient_data: Dictionary = _get_ingredient_data(ingredient_id)
-	return int(ingredient_data.get("cost", 0))
+	return economy_config.get_ingredient_cost(ingredient_id)
 
 
 func get_available_recipes() -> Array[Recipe]:

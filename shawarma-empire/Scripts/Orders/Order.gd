@@ -8,6 +8,7 @@ const DEFAULT_PREPARATION_TIME: float = 0.0
 const DEFAULT_CREATION_TIME: float = 0.0
 const DEFAULT_COMPLETION_TIME: float = 0.0
 const MILLISECONDS_PER_SECOND: float = 1000.0
+const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
 
 @export var selected_recipe: Recipe
 @export var total_price: int = DEFAULT_TOTAL_PRICE
@@ -21,7 +22,8 @@ static func create(recipe: Recipe, order_creation_time: float) -> Order:
 	var order: Order = Order.new()
 	order.selected_recipe = recipe
 	if recipe != null:
-		order.total_price = recipe.base_price
+		var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
+		order.total_price = economy_config.get_recipe_reward(recipe)
 		order.preparation_time = recipe.preparation_time
 	order.creation_time = order_creation_time
 	return order

@@ -86,13 +86,15 @@ The HUD lives in `res://Scenes/UI/GameHUD.tscn` with presentation logic in `res:
 
 ### Upgrade System
 
-Upgrade definitions still support the reusable `UpgradeData` resource type in `res://Scripts/Upgrades/UpgradeData.gd` for future upgrade categories. The active grill progression is currently owned by `GameManager` as a compact multi-level table so the HUD can show the next grill upgrade without adding a shop screen.
+Economy balance data is centralized in the `EconomyConfig` resource at `res://Resources/Economy/EconomyConfig.tres`, with typed accessors in `res://Scripts/Economy/EconomyConfig.gd`. The config owns grill costs, ingredient costs, recipe rewards, cooking speed multipliers, and reserved dictionaries for future employee costs and reputation rewards so gameplay systems do not hard-code balance values.
 
-Grill progression starts at Level 1 `Basic Grill` with a 1.00 cooking speed multiplier. The next levels are Level 2 `Better Grill` for 50 coins with a 0.90 multiplier, Level 3 `Fast Grill` for 150 coins with a 0.75 multiplier, and Level 4 `Pro Grill` for 400 coins with a 0.60 multiplier. `GameManager.purchase_next_grill_level()` rejects purchases past the max level, rejects purchases when coins are insufficient, subtracts coins through the central currency API, applies the new grill level, updates the cooking speed multiplier, and emits `upgrades_changed`. The HUD displays the next grill upgrade and switches to `Max Grill` when Level 4 is reached.
+Upgrade definitions still support the reusable `UpgradeData` resource type in `res://Scripts/Upgrades/UpgradeData.gd` for future upgrade categories. The active grill progression is read by `GameManager` from `EconomyConfig` so the HUD can show the next grill upgrade without adding a shop screen.
+
+Grill progression starts at Level 1 `Basic Grill` with the configured Level 1 cooking speed multiplier. Later grill names, costs, and multipliers come from `EconomyConfig`. `GameManager.purchase_next_grill_level()` rejects purchases past the configured max level, rejects purchases when coins are insufficient, subtracts coins through the central currency API, applies the new grill level, updates the cooking speed multiplier, and emits `upgrades_changed`. The HUD displays the next grill upgrade and switches to `Max Grill` when the configured max level is reached.
 
 `GameManager` includes `grill_level` in save data. Older saves that only contain purchased upgrade ids are migrated by treating any saved legacy upgrade as Level 2, preserving the original one-time Better Grill purchase as closely as possible. `CookingStand` listens for upgrade changes and applies the current `GameManager.cooking_speed_multiplier` before cooking starts. `CookingStation` treats the multiplier as a preparation-time duration multiplier by calculating `recipe.preparation_time * cooking_speed_multiplier` at the start of each order, so lower grill multipliers complete cooking faster without changing recipe data, rewards, queues, customers, saves, or ingredients. Classic Shawarma therefore takes 3.0 seconds at Level 1, approximately 2.7 seconds at Level 2, 2.25 seconds at Level 3, and 1.8 seconds at Level 4. The progress bar and PreparationTable consume the resulting cooking progress signal, keeping both UI progress and preparation animation synchronized with the modified duration.
 
-`GameManager` also includes unlocked ingredient ids in save data through `IngredientManager.get_unlocked_ingredient_ids()`. Loading save data restores ingredient ids through `IngredientManager.apply_unlocked_ingredient_ids()`, while New Game resets ingredient progression back to Lavash, Chicken, and Garlic Sauce.
+`GameManager` also includes unlocked ingredient ids in save data through `IngredientManager.get_unlocked_ingredient_ids()`. Loading save data restores ingredient ids through `IngredientManager.apply_unlocked_ingredient_ids()`, while New Game resets ingredient progression back to Lavash, Chicken, Garlic Sauce, Tomato, and Cucumber.
 
 
 
@@ -152,17 +154,17 @@ Scene changes should continue to be routed through this service when transitions
 
 ### Recipe and Order Data
 
-Recipes use `Recipe` resources in `res://Resources/Recipes/`, and ingredients use `Ingredient` resources in `res://Resources/Ingredients/`. `OrderGenerator.generate_order()` receives the currently available unlocked recipe list from each customer and randomly selects one resource from that list. `Order.create()` copies the selected recipe price and preparation time into the order, so completed cooking rewards continue to pay `order.total_price`.
+Recipes use `Recipe` resources in `res://Resources/Recipes/`, and ingredients use `Ingredient` resources in `res://Resources/Ingredients/`. `OrderGenerator.generate_order()` receives the currently available unlocked recipe list from each customer and randomly selects one resource from that list. `Order.create()` copies the selected recipe preparation time and reads the selected recipe reward from `EconomyConfig` into the order, so completed cooking rewards continue to pay `order.total_price`.
 
 Current recipe resources:
 
-- `ClassicShawarma.tres`: Lavash, Chicken, Garlic Sauce; 15 coins; 3 seconds.
-- `SpicyShawarma.tres`: Lavash, Chicken, Jalapeño, Spicy Sauce; 22 coins; 3.5 seconds.
-- `CheeseShawarma.tres`: Lavash, Chicken, Cheese, Garlic Sauce; 30 coins; 4 seconds.
+- `ClassicShawarma.tres`: Lavash, Chicken, Garlic Sauce; reward from `EconomyConfig`; 3 seconds.
+- `SpicyShawarma.tres`: Lavash, Chicken, Jalapeño, Spicy Sauce; reward from `EconomyConfig`; 3.5 seconds.
+- `CheeseShawarma.tres`: Lavash, Chicken, Cheese, Garlic Sauce; reward from `EconomyConfig`; 4 seconds.
 
 ### Ingredient Progression
 
-`IngredientManager` is an autoload backed by `res://Managers/IngredientManager.gd`. It owns the reusable ingredient progression layer, tracks unlocked ingredient ids, exposes `is_unlocked(ingredient_id)`, `can_unlock(ingredient_id)`, and `unlock_ingredient(ingredient_id)`, and emits `ingredient_unlocked` plus `ingredients_changed` when ingredient state changes. Players start with Lavash, Chicken, and Garlic Sauce. The current unlock order is Tomato for 75 coins, Cucumber for 100 coins, Jalapeño for 150 coins, Spicy Sauce for 200 coins, and Cheese for 300 coins.
+`IngredientManager` is an autoload backed by `res://Managers/IngredientManager.gd`. It owns the reusable ingredient progression layer, tracks unlocked ingredient ids, exposes `is_unlocked(ingredient_id)`, `can_unlock(ingredient_id)`, and `unlock_ingredient(ingredient_id)`, and emits `ingredient_unlocked` plus `ingredients_changed` when ingredient state changes. Players start with Lavash, Chicken, Garlic Sauce, Tomato, and Cucumber. The current unlock order is Jalapeño, Spicy Sauce, and Cheese, with unlock costs read from `EconomyConfig`.
 
 Recipe availability is now derived from ingredient requirements: `GameManager.get_unlocked_recipes()` delegates to `IngredientManager.get_available_recipes()`, which only returns recipes whose required ingredient ids are unlocked. Classic Shawarma remains available from the start because it uses only starting ingredients. Spicy Shawarma becomes available after Jalapeño and Spicy Sauce are unlocked, and Cheese Shawarma becomes available after Cheese is unlocked. Customer spawning continues to pass the available recipe list into each customer, so generated orders only use currently available recipes.
 
