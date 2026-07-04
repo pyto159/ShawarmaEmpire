@@ -145,6 +145,19 @@ Planned upgrade categories:
 - Offline earnings.
 - Special event boosts.
 
+
+### Grill Progression
+
+The active grill upgrade path is a complete five-level service-speed progression:
+
+1. **Basic Grill**
+2. **Better Grill**
+3. **Fast Grill**
+4. **Professional Grill**
+5. **Master Grill**
+
+The upgrade button should always communicate the current grill level, current grill name, next grill name, and coin cost before purchase. At Level 5 it should clearly show **MAX LEVEL** and stop accepting purchases. Successful grill upgrades provide immediate feedback with a short floating notification: “🔥 Grill Upgraded!”, the new level, and the cooking speed increase percentage. Grill upgrades should immediately make active future cooking attempts faster, persist after restart, and reset to Level 1 on New Game. Visual flame intensity should increase per level whenever supported by available stand assets; otherwise the hook remains ready for future art.
+
 Upgrade principles:
 
 - Each upgrade should communicate its exact benefit.
