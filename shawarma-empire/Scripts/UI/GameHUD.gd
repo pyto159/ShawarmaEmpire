@@ -12,6 +12,8 @@ const COOKING_STAND_NOT_FOUND: String = "Cooking stand was not found."
 const COIN_FEEDBACK_PREFIX: String = "+"
 const COIN_FEEDBACK_SUFFIX: String = " Coins"
 const FEEDBACK_VISIBLE_SECONDS: float = 1.5
+const UPGRADE_FEEDBACK_SECONDS: float = 1.0
+const UPGRADE_FEEDBACK_TEXT: String = "Preparation Faster!"
 const NO_ORDER_TIME_TEXT: String = "No active order"
 const ORDER_TIME_SUFFIX: String = " sec prep"
 const BUTTON_PRESSED_SCALE: Vector2 = Vector2(0.97, 0.97)
@@ -164,6 +166,13 @@ func show_coin_feedback(amount: int) -> void:
 	coin_feedback_label.visible = true
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
+
+func show_upgrade_feedback() -> void:
+	coin_feedback_label.text = UPGRADE_FEEDBACK_TEXT
+	coin_feedback_label.visible = true
+	coin_feedback_timer.start(UPGRADE_FEEDBACK_SECONDS)
+
+
 func _get_upgrade_button_text() -> String:
 	return GameManager.get_next_grill_button_text().replace(" - ", " ")
 
@@ -180,13 +189,14 @@ func _update_ingredient_unlock_display() -> void:
 
 
 func _get_cooking_status_text() -> String:
+	var grill_text: String = "Grill Lv. %d" % GameManager.grill_level
 	if _cooking_stand != null and _cooking_stand.is_cooking():
-		return COOKING_ORDER_TEXT
+		return "%s • %s" % [COOKING_ORDER_TEXT, grill_text]
 
 	if _cooking_stand != null and _cooking_stand.can_cook():
-		return "Ready to cook"
+		return "Ready to cook • %s" % grill_text
 
-	return "Idle"
+	return "Idle • %s" % grill_text
 
 
 func _get_order_text() -> String:
@@ -203,7 +213,17 @@ func _get_order_time_text() -> String:
 	if _active_order == null:
 		return NO_ORDER_TIME_TEXT
 
-	return str(snappedf(_active_order.preparation_time, 0.1)) + ORDER_TIME_SUFFIX
+	return str(snappedf(_get_modified_order_time(_active_order), 0.1)) + ORDER_TIME_SUFFIX
+
+
+func _get_modified_order_time(order: Order) -> float:
+	if order == null:
+		return 0.0
+
+	if _cooking_stand != null:
+		return _cooking_stand.get_modified_preparation_time(order.preparation_time)
+
+	return order.preparation_time * GameManager.cooking_speed_multiplier
 
 
 func _get_recipe_name(order: Order) -> String:
@@ -253,6 +273,7 @@ func _on_upgrade_button_pressed() -> void:
 	AudioManager.play_button()
 	if GameManager.purchase_next_grill_level():
 		AudioManager.play_upgrade()
+		show_upgrade_feedback()
 		_update_display()
 
 
