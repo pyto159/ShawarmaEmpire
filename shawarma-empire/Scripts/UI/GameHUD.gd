@@ -26,6 +26,11 @@ const BUTTON_NORMAL_SCALE: Vector2 = Vector2.ONE
 const BUTTON_ANIMATION_SECONDS: float = 0.08
 const ALL_INGREDIENTS_UNLOCKED_TEXT: String = "All ingredients unlocked"
 const NEXT_INGREDIENT_PREFIX: String = "Next: "
+const PANEL_WIDTH: float = 430.0
+const PANEL_TOP: float = 160.0
+const PANEL_ROW_SEPARATION: int = 8
+const UNLOCKED_TEXT: String = "Unlocked"
+const LOCKED_TEXT: String = "Locked"
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
@@ -35,7 +40,8 @@ const NEXT_INGREDIENT_PREFIX: String = "Next: "
 @onready var prepare_button: Button = %PrepareButton
 @onready var upgrade_button: Button = %UpgradeButton
 @onready var cooking_status_label: Label = %CookingStatusLabel
-@onready var ingredient_unlock_button: Button = %IngredientUnlockButton
+@onready var recipes_button: Button = %RecipesButton
+@onready var ingredients_button: Button = %IngredientsButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
 @onready var cooking_progress_bar: CookingProgressBar = %CookingProgressBar
@@ -45,6 +51,8 @@ var _active_customer: Customer
 var _active_order: Order
 var _feedback_tween: Tween
 var _coin_feedback_base_position: Vector2
+var _recipes_panel: PanelContainer
+var _ingredients_panel: PanelContainer
 
 
 func _ready() -> void:
@@ -53,13 +61,16 @@ func _ready() -> void:
 	prepare_button.button_down.connect(_on_prepare_button_down)
 	prepare_button.button_up.connect(_on_prepare_button_up)
 	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
-	ingredient_unlock_button.pressed.connect(_on_ingredient_unlock_button_pressed)
+	recipes_button.pressed.connect(_on_recipes_button_pressed)
+	ingredients_button.pressed.connect(_on_ingredients_button_pressed)
 	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
 	_coin_feedback_base_position = coin_feedback_label.position
 	GameManager.currency_changed.connect(_on_currency_changed)
 	GameManager.upgrades_changed.connect(_on_upgrades_changed)
 	GameManager.grill_upgraded.connect(_on_grill_upgraded)
 	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
+	GameManager.recipes_changed.connect(_on_recipes_changed)
+	_create_progression_panels()
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
 	cooking_progress_bar.set_cooking_stand(_cooking_stand)
@@ -77,6 +88,8 @@ func _exit_tree() -> void:
 		GameManager.grill_upgraded.disconnect(_on_grill_upgraded)
 	if IngredientManager.ingredients_changed.is_connected(_on_ingredients_changed):
 		IngredientManager.ingredients_changed.disconnect(_on_ingredients_changed)
+	if GameManager.recipes_changed.is_connected(_on_recipes_changed):
+		GameManager.recipes_changed.disconnect(_on_recipes_changed)
 
 
 func set_active_customer(customer: Customer) -> void:
@@ -104,7 +117,8 @@ func _apply_mobile_hud_layout() -> void:
 	cooking_status_label.add_theme_font_size_override("font_size", 16)
 	prepare_button.add_theme_font_size_override("font_size", 17)
 	upgrade_button.add_theme_font_size_override("font_size", 15)
-	ingredient_unlock_button.add_theme_font_size_override("font_size", 15)
+	recipes_button.add_theme_font_size_override("font_size", 15)
+	ingredients_button.add_theme_font_size_override("font_size", 15)
 
 
 func _animate_prepare_button(target_scale: Vector2) -> void:
@@ -166,7 +180,7 @@ func _update_display() -> void:
 	cooking_status_label.text = _get_cooking_status_text()
 	upgrade_button.text = _get_upgrade_button_text()
 	upgrade_button.disabled = GameManager.is_max_grill_level()
-	_update_ingredient_unlock_display()
+	_refresh_open_progression_panel()
 
 
 func show_coin_feedback(amount: int) -> void:
@@ -211,18 +225,116 @@ func _start_upgrade_feedback_animation() -> void:
 	_feedback_tween.tween_property(coin_feedback_label, "modulate:a", 0.0, UPGRADE_FEEDBACK_FADE_SECONDS).set_delay(UPGRADE_FEEDBACK_SECONDS - UPGRADE_FEEDBACK_FADE_SECONDS)
 
 
-func _update_ingredient_unlock_display() -> void:
-	var ingredient_id: String = IngredientManager.get_next_locked_ingredient_id()
-	if ingredient_id.is_empty():
-		ingredient_unlock_button.disabled = true
-		ingredient_unlock_button.text = "Done"
-		return
+func _create_progression_panels() -> void:
+	_recipes_panel = _create_base_panel("Recipe Menu")
+	_ingredients_panel = _create_base_panel("Ingredient Shop")
+	add_child(_recipes_panel)
+	add_child(_ingredients_panel)
+	_recipes_panel.hide()
+	_ingredients_panel.hide()
 
-	ingredient_unlock_button.disabled = not IngredientManager.can_unlock(ingredient_id)
-	ingredient_unlock_button.text = "Unlock %s\n%d Coins" % [
+
+func _create_base_panel(title: String) -> PanelContainer:
+	var panel: PanelContainer = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0.0)
+	panel.position = Vector2(14.0, PANEL_TOP)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var margin: MarginContainer = MarginContainer.new()
+	margin.name = "PanelMargin"
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var content: VBoxContainer = VBoxContainer.new()
+	content.name = "PanelContent"
+	content.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
+	margin.add_child(content)
+
+	var header: HBoxContainer = HBoxContainer.new()
+	content.add_child(header)
+	var title_label: Label = Label.new()
+	title_label.text = title
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_label.add_theme_font_size_override("font_size", 20)
+	header.add_child(title_label)
+	var close_button: Button = Button.new()
+	close_button.text = "Close"
+	close_button.pressed.connect(Callable(panel, "hide"))
+	header.add_child(close_button)
+
+	return panel
+
+
+func _populate_recipe_panel() -> void:
+	var content: VBoxContainer = _get_panel_content(_recipes_panel)
+	_clear_panel_rows(content)
+	for recipe: Recipe in IngredientManager.get_all_recipes():
+		content.add_child(_create_recipe_row(recipe))
+
+
+func _create_recipe_row(recipe: Recipe) -> Label:
+	var status: String = UNLOCKED_TEXT if IngredientManager.is_recipe_available(recipe) else LOCKED_TEXT
+	var lines: Array[String] = [
+		"%s — %s" % [recipe.display_name, status],
+		"Reward: %d" % GameManager.economy_config.get_recipe_reward(recipe),
+		"Time: %.1fs" % GameManager.economy_config.get_recipe_preparation_time(recipe),
+		"Requires:",
+	]
+	for ingredient: Ingredient in recipe.required_ingredients:
+		var mark: String = "✅" if ingredient != null and IngredientManager.is_unlocked(ingredient.id) else "❌"
+		var name: String = IngredientManager.get_display_name(ingredient.id) if ingredient != null else "Unknown"
+		lines.append("%s %s" % [mark, name])
+
+	var label: Label = Label.new()
+	label.text = "\n".join(lines)
+	return label
+
+
+func _populate_ingredient_panel() -> void:
+	var content: VBoxContainer = _get_panel_content(_ingredients_panel)
+	_clear_panel_rows(content)
+	for ingredient_id: String in IngredientManager.get_unlockable_ingredient_ids():
+		content.add_child(_create_ingredient_row(ingredient_id))
+
+
+func _create_ingredient_row(ingredient_id: String) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
+	var label: Label = Label.new()
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.text = "%s — %d Coins — %s" % [
 		IngredientManager.get_display_label(ingredient_id),
 		IngredientManager.get_unlock_cost(ingredient_id),
+		UNLOCKED_TEXT if IngredientManager.is_unlocked(ingredient_id) else LOCKED_TEXT,
 	]
+	row.add_child(label)
+	var button: Button = Button.new()
+	button.text = "Unlocked" if IngredientManager.is_unlocked(ingredient_id) else "Buy"
+	button.disabled = IngredientManager.is_unlocked(ingredient_id) or not IngredientManager.can_unlock(ingredient_id)
+	button.pressed.connect(_on_ingredient_purchase_pressed.bind(ingredient_id))
+	row.add_child(button)
+	return row
+
+
+func _get_panel_content(panel: PanelContainer) -> VBoxContainer:
+	return panel.get_node("PanelMargin/PanelContent") as VBoxContainer
+
+
+func _clear_panel_rows(content: VBoxContainer) -> void:
+	for index: int in range(content.get_child_count() - 1, 0, -1):
+		var row: Node = content.get_child(index)
+		content.remove_child(row)
+		row.queue_free()
+
+
+func _refresh_open_progression_panel() -> void:
+	if _recipes_panel != null and _recipes_panel.visible:
+		_populate_recipe_panel()
+	if _ingredients_panel != null and _ingredients_panel.visible:
+		_populate_ingredient_panel()
 
 
 func _get_cooking_status_text() -> String:
@@ -298,11 +410,27 @@ func _on_prepare_button_pressed() -> void:
 		_update_display()
 
 
-func _on_ingredient_unlock_button_pressed() -> void:
+func _on_recipes_button_pressed() -> void:
 	AudioManager.play_button()
-	var ingredient_id: String = IngredientManager.get_next_locked_ingredient_id()
+	_ingredients_panel.hide()
+	_populate_recipe_panel()
+	_recipes_panel.visible = not _recipes_panel.visible
+
+
+func _on_ingredients_button_pressed() -> void:
+	AudioManager.play_button()
+	_recipes_panel.hide()
+	_populate_ingredient_panel()
+	_ingredients_panel.visible = not _ingredients_panel.visible
+
+
+func _on_ingredient_purchase_pressed(ingredient_id: String) -> void:
+	AudioManager.play_button()
 	if IngredientManager.unlock_ingredient(ingredient_id):
 		AudioManager.play_upgrade()
+		_populate_ingredient_panel()
+		if _recipes_panel.visible:
+			_populate_recipe_panel()
 		_update_display()
 
 
@@ -339,6 +467,10 @@ func _on_grill_upgraded(level: int, speed_improvement_percent: int) -> void:
 
 func _on_ingredients_changed() -> void:
 	_update_display()
+
+
+func _on_recipes_changed() -> void:
+	_refresh_open_progression_panel()
 
 
 func _reset_feedback_animation() -> void:

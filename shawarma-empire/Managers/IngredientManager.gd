@@ -116,6 +116,24 @@ func get_unlocked_ingredient_ids() -> Array[String]:
 	return unlocked_ingredient_ids.duplicate()
 
 
+func get_unlockable_ingredient_ids() -> Array[String]:
+	return INGREDIENT_UNLOCK_ORDER.duplicate()
+
+
+func get_all_recipes() -> Array[Recipe]:
+	var recipes: Array[Recipe] = []
+	for recipe_path: String in RECIPE_PATHS:
+		var recipe: Resource = load(recipe_path)
+		if recipe is Recipe:
+			recipes.append(recipe as Recipe)
+
+	return recipes
+
+
+func is_recipe_available(recipe: Recipe) -> bool:
+	return _is_recipe_available(recipe)
+
+
 func get_next_locked_ingredient_id() -> String:
 	for ingredient_id: String in INGREDIENT_UNLOCK_ORDER:
 		if not is_unlocked(ingredient_id):
