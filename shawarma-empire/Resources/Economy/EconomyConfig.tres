@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EconomyConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Economy/EconomyConfig.gd" id="1_economy_config"]
+
+[resource]
+script = ExtResource("1_economy_config")
+grill_levels = {
+1: {"display_name": "Basic Grill", "cost": 0},
+2: {"display_name": "Better Grill", "cost": 50},
+3: {"display_name": "Fast Grill", "cost": 150},
+4: {"display_name": "Pro Grill", "cost": 400}
+}
+ingredient_costs = {
+"lavash": 0,
+"chicken": 0,
+"garlic_sauce": 0,
+"tomato": 75,
+"cucumber": 100,
+"jalapeno": 150,
+"spicy_sauce": 200,
+"cheese": 300
+}
+recipe_rewards = {
+"res://Resources/Recipes/ClassicShawarma.tres": 15,
+"res://Resources/Recipes/SpicyShawarma.tres": 22,
+"res://Resources/Recipes/CheeseShawarma.tres": 30
+}
+cooking_multipliers = {
+1: 1.0,
+2: 0.9,
+3: 0.75,
+4: 0.6
+}
+future_employee_costs = {}
+future_reputation_rewards = {}

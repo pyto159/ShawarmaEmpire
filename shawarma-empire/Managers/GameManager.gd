@@ -7,26 +7,20 @@ signal recipes_changed
 const STARTING_COINS: int = 0
 const STARTING_GEMS: int = 0
 const DEFAULT_GRILL_LEVEL: int = 1
-const MAX_GRILL_LEVEL: int = 4
-const DEFAULT_COOKING_SPEED_MULTIPLIER: float = 1.0
+const DEFAULT_COOKING_SPEED_MULTIPLIER: float = EconomyConfig.DEFAULT_COOKING_SPEED_MULTIPLIER
+const ECONOMY_CONFIG_PATH: String = "res://Resources/Economy/EconomyConfig.tres"
 const SAVE_KEY_GRILL_LEVEL: String = "grill_level"
 const SAVE_KEY_PURCHASED_UPGRADES: String = "purchased_upgrades"
 const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
-const GRILL_LEVEL_DATA: Dictionary = {
-	1: {"display_name": "Basic Grill", "cost": 0, "cooking_speed_multiplier": 1.0},
-	2: {"display_name": "Better Grill", "cost": 50, "cooking_speed_multiplier": 0.90},
-	3: {"display_name": "Fast Grill", "cost": 150, "cooking_speed_multiplier": 0.75},
-	4: {"display_name": "Pro Grill", "cost": 400, "cooking_speed_multiplier": 0.60},
-}
-
 var coins: int = STARTING_COINS
 var gems: int = STARTING_GEMS
 var purchased_upgrade_ids: Array[StringName] = []
 var grill_level: int = DEFAULT_GRILL_LEVEL
 var cooking_speed_multiplier: float = DEFAULT_COOKING_SPEED_MULTIPLIER
+var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
 
 
 func initialize_new_game() -> void:
@@ -54,7 +48,7 @@ func spend_coins(amount: int) -> bool:
 
 func purchase_next_grill_level() -> bool:
 	var next_level: int = get_next_grill_level()
-	if next_level > MAX_GRILL_LEVEL:
+	if next_level > economy_config.get_max_grill_level():
 		return false
 
 	var cost: int = get_grill_level_cost(next_level)
@@ -71,7 +65,7 @@ func get_next_grill_level() -> int:
 
 
 func is_max_grill_level() -> bool:
-	return grill_level >= MAX_GRILL_LEVEL
+	return grill_level >= economy_config.get_max_grill_level()
 
 
 func get_grill_level_display_name(level: int = DEFAULT_GRILL_LEVEL) -> String:
@@ -79,13 +73,11 @@ func get_grill_level_display_name(level: int = DEFAULT_GRILL_LEVEL) -> String:
 	if display_level < DEFAULT_GRILL_LEVEL:
 		display_level = grill_level
 
-	var level_data: Dictionary = _get_grill_level_data(display_level)
-	return str(level_data.get("display_name", "Basic Grill"))
+	return economy_config.get_grill_display_name(display_level)
 
 
 func get_grill_level_cost(level: int) -> int:
-	var level_data: Dictionary = _get_grill_level_data(level)
-	return int(level_data.get("cost", 0))
+	return economy_config.get_grill_cost(level)
 
 
 func get_next_grill_button_text() -> String:
@@ -97,7 +89,7 @@ func get_next_grill_button_text() -> String:
 
 
 func set_grill_level(level: int) -> void:
-	grill_level = clampi(level, DEFAULT_GRILL_LEVEL, MAX_GRILL_LEVEL)
+	grill_level = clampi(level, DEFAULT_GRILL_LEVEL, economy_config.get_max_grill_level())
 	cooking_speed_multiplier = _get_grill_level_multiplier(grill_level)
 	upgrades_changed.emit()
 
@@ -180,12 +172,7 @@ func _apply_grill_level_save_data(save_data: Dictionary) -> void:
 
 
 func _get_grill_level_multiplier(level: int) -> float:
-	var level_data: Dictionary = _get_grill_level_data(level)
-	return float(level_data.get("cooking_speed_multiplier", DEFAULT_COOKING_SPEED_MULTIPLIER))
-
-
-func _get_grill_level_data(level: int) -> Dictionary:
-	return GRILL_LEVEL_DATA.get(clampi(level, DEFAULT_GRILL_LEVEL, MAX_GRILL_LEVEL), {})
+	return economy_config.get_cooking_multiplier(level)
 
 
 func unlock_recipe(_recipe_path: String) -> bool:
