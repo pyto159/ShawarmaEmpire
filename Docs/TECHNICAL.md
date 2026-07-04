@@ -518,3 +518,16 @@ The saved payload currently includes coins, gems, grill level, legacy purchased 
 `MainMenu.tscn` is now the configured project entry scene. It shows `Continue` only when `SaveManager.has_save()` is true, always shows `New Game`, and confirms destructive new-game starts when a save exists with the message: `Start a new game? Your current progress will be permanently deleted.` Confirming a new game deletes the previous save, initializes default progression, writes a fresh save, and enters `Main.tscn` through `SceneManager`.
 
 `Main.tscn` remains the gameplay composition scene. It loads save data on ready, assigns currently unlocked recipes to spawned customers, saves after completed paid orders, and saves on the window close notification. Grill upgrade purchases also queue a save after successful purchase.
+
+### Unified UI Theme
+
+The game uses one shared Godot `Theme` resource at `res://Resources/UI/ShawarmaTheme.tres` for the Cozy Cartoon Mediterranean interface. The project-wide theme is assigned through `gui/theme/custom` in `project.godot`, so current and future buttons inherit the same rounded, soft-shadow, touch-friendly style automatically.
+
+Theme responsibilities:
+
+- Define the shared button states for normal, hover, pressed, and disabled using the approved palette: primary `#6B8E23`, secondary `#8B5A2B`, accent `#D9772B`, danger `#C65A3A`, background `#F4E7CF`, and text `#3A2A20`.
+- Provide large readable default button typography and padding for mobile touch targets.
+- Provide matching rounded panel, popup, and dialog surfaces so HUD panels, menus, and confirmation dialogs feel coherent.
+- Keep UI scenes from styling buttons individually. New buttons should rely on the global theme unless a future feature adds a named reusable theme type for a clearly distinct semantic button role.
+
+Scene scripts may still adjust layout-specific spacing or label sizes, but they should not create per-button `StyleBoxFlat` overrides for normal gameplay buttons. This keeps Prepare, Better Grill, Ingredient Unlock, Continue, New Game, confirmation dialog buttons, and future buttons visually consistent by default.
