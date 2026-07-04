@@ -378,7 +378,7 @@ func _create_dev_menu() -> void:
 	_dev_button.pressed.connect(_on_dev_button_pressed)
 	_developer_ui.add_child(_dev_button)
 
-	_dev_panel = _create_base_panel(DEV_MENU_TITLE)
+	_dev_panel = _create_base_panel(DEV_MENU_TITLE, true)
 	_dev_panel.custom_minimum_size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
 	_dev_panel.size = Vector2(DEV_MENU_WIDTH, DEV_MENU_HEIGHT)
 	_dev_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
@@ -407,8 +407,8 @@ func _create_dev_button_style(background_color: Color, include_shadow: bool) -> 
 
 
 func _populate_dev_panel() -> void:
-	var content: VBoxContainer = _get_panel_content(_dev_panel)
-	_clear_panel_rows(content)
+	var content: VBoxContainer = _get_panel_rows(_dev_panel)
+	_clear_rows(content)
 	content.add_child(_create_dev_label(DEV_MENU_TESTING_NOTE))
 	content.add_child(_create_dev_section_label("Coins"))
 	content.add_child(_create_dev_button_row([
@@ -509,6 +509,7 @@ func _create_base_panel(title: String, has_scrollable_rows: bool = false) -> Pan
 
 		var rows: VBoxContainer = VBoxContainer.new()
 		rows.name = "Rows"
+		rows.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		rows.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
 		scroll_container.add_child(rows)
