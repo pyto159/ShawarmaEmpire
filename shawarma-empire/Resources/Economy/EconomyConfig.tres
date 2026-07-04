@@ -50,6 +50,21 @@ cooking_multipliers = {
 4: 0.60,
 5: 0.45
 }
+tip_chance = 0.2
+tip_min_percent = 0.05
+tip_max_percent = 0.25
+combo_bonus_table = {
+1: 0.0,
+2: 0.05,
+3: 0.1,
+4: 0.15,
+5: 0.2,
+6: 0.25,
+7: 0.3,
+8: 0.35,
+9: 0.4,
+10: 0.5
+}
 kiosk_upgrades = Array[Dictionary]([{
 "id": &"better_counter",
 "name": "Better Counter",

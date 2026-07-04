@@ -37,6 +37,9 @@ const REPUTATION_FEEDBACK_PREFIX: String = "⭐ Reputation +"
 const BUSINESS_LEVEL_UP_TITLE: String = "🏆 Business Level Up!"
 const BUSINESS_LEVEL_PREFIX: String = "Level "
 const BUSINESS_LEVEL_FEEDBACK_SECONDS: float = 2.0
+const TIP_FEEDBACK_PREFIX: String = "💰 Tip +"
+const COMBO_FEEDBACK_PREFIX: String = "🔥 Combo x"
+const COMBO_INCREASED_TEXT: String = "Combo Increased!"
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
@@ -207,6 +210,25 @@ func _update_display() -> void:
 	upgrade_button.disabled = GameManager.is_max_grill_level()
 	_refresh_open_progression_panel()
 
+
+func show_reward_feedback(reward_details: Dictionary) -> void:
+	var total_coins: int = int(reward_details.get(GameManager.REWARD_TOTAL_KEY, 0))
+	if total_coins <= 0:
+		return
+
+	_reset_feedback_animation()
+	var lines: Array[String] = [COIN_FEEDBACK_PREFIX + str(total_coins) + COIN_FEEDBACK_SUFFIX]
+	var tip_coins: int = int(reward_details.get(GameManager.REWARD_TIP_KEY, 0))
+	if tip_coins > 0:
+		lines.append(TIP_FEEDBACK_PREFIX + str(tip_coins))
+	var combo_level: int = int(reward_details.get(GameManager.REWARD_COMBO_LEVEL_KEY, 0))
+	if combo_level > 0:
+		lines.append(COMBO_FEEDBACK_PREFIX + str(combo_level))
+	if bool(reward_details.get(GameManager.REWARD_COMBO_INCREASED_KEY, false)):
+		lines.append(COMBO_INCREASED_TEXT)
+	coin_feedback_label.text = "\n".join(lines)
+	coin_feedback_label.visible = true
+	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
 func show_coin_feedback(amount: int, bonus_label: String = "") -> void:
 	if amount <= 0:

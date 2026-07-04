@@ -36,7 +36,7 @@ The Recipe Menu and Ingredient Shop expose the existing balance data without cha
 | Rare Order | 10% per generated order | x2 order reward | Rolls only after selecting from currently unlocked recipes. |
 | Customer Favorite | 25% per customer | x1.25 final reward when matched | Favorite recipe is selected only from currently unlocked recipes. |
 
-Rare and favorite bonuses multiply together. A rare order that also matches the customer's favorite pays `base recipe reward × 2.0 × 1.25`, rounded to the nearest coin, and is awarded once on delivery.
+Rare and favorite bonuses are calculated as separate additive bonus coin amounts so they stack cleanly with tips and combo bonuses. A rare order that also matches the customer's favorite pays `base recipe reward + rare bonus + favorite bonus`, before adding any rolled tip and combo bonus.
 
 ## Kiosk Upgrade Balance
 
@@ -70,3 +70,31 @@ Business Level thresholds and bonuses:
 | Level 3 | 75 | +5% Rare Order Chance |
 | Level 4 | 150 | +10% Customer Spawn Rate |
 | Level 5 | 300 | Future content hook; no gameplay bonus yet |
+
+## Tips and Combo Reward Balance
+
+Tips and combo bonuses live in `res://Resources/Economy/EconomyConfig.tres` and should be changed there first, with fallback values mirrored in `res://Scripts/Economy/EconomyConfig.gd`.
+
+| Value | Default |
+| --- | ---: |
+| Base Tip Chance | 20% per completed order |
+| Tip Amount | 5%–25% of base recipe reward, rounded, minimum 1 coin when a tip rolls |
+| Decorations Upgrade | +10% tip chance |
+| Maximum Combo | x10 |
+
+Combo bonuses are additive coin bonuses based on the base recipe reward. The first successful order in a streak is Combo x1 and grants no combo bonus; each consecutive successful order increases the combo by one until Combo x10.
+
+| Combo | Bonus |
+| --- | ---: |
+| x1 | +0% |
+| x2 | +5% |
+| x3 | +10% |
+| x4 | +15% |
+| x5 | +20% |
+| x6 | +25% |
+| x7 | +30% |
+| x8 | +35% |
+| x9 | +40% |
+| x10 | +50% |
+
+Final served-order coins are calculated modularly as base recipe reward plus tip coins plus combo bonus coins plus rare order bonus coins plus favorite bonus coins. Rare and favorite rewards now stack additively with tip and combo bonuses so each reward source can be tuned independently.

@@ -569,3 +569,11 @@ Kiosk upgrade save data is included in `GameManager.get_save_data()` under `purc
 `GameManager.get_save_data()` includes `reputation` and `business_level`, and `GameManager.apply_save_data()` restores Reputation through `ReputationManager.apply_save_data()`. New Game calls `ReputationManager.reset_to_defaults()`, which resets Reputation to 0 and Business Level to 1.
 
 The runtime integrations are intentionally thin: `Main.gd` awards order Reputation after a successful delivery, adds the Business Level queue-slot bonus to the configured queue capacity, and multiplies customer spawn rate by the Reputation spawn-rate bonus. `OrderGenerator` includes the Reputation rare-order bonus when rolling new orders. `GameHUD` listens to Reputation signals, displays compact Reputation and Business Level labels, and shows short feedback for Reputation gains and Business Level ups.
+
+## Tips and Combo Reward Implementation
+
+`GameManager` owns session-only combo state and reward calculation details. Combo is excluded from save data by design and is reset on new game, save load, customer leave, and queue cancellation. Successful delivery calls `calculate_order_reward_details(order, customer)`, which returns a modular dictionary containing base coins, tip coins, combo bonus coins, rare bonus coins, favorite bonus coins, total coins, combo level, and whether the combo increased.
+
+`EconomyConfig` owns all tip and combo balance values: base tip chance, tip min percent, tip max percent, and the combo bonus table. The `.tres` resource is the primary tuning surface, while the script fallback mirrors safe defaults for missing or invalid resources.
+
+`Main.gd` remains the composition point for delivery: it requests reward details from `GameManager`, awards only the returned total coins, asks the HUD for text reward feedback, and spawns the existing floating coin popup. HUD presentation reads the reward details but does not calculate gameplay rewards.
