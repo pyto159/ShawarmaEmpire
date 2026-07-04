@@ -12,8 +12,13 @@ const COOKING_STAND_NOT_FOUND: String = "Cooking stand was not found."
 const COIN_FEEDBACK_PREFIX: String = "+"
 const COIN_FEEDBACK_SUFFIX: String = " Coins"
 const FEEDBACK_VISIBLE_SECONDS: float = 1.5
-const UPGRADE_FEEDBACK_SECONDS: float = 1.0
-const UPGRADE_FEEDBACK_TEXT: String = "Preparation Faster!"
+const UPGRADE_FEEDBACK_SECONDS: float = 1.5
+const UPGRADE_FEEDBACK_TITLE: String = "🔥 Grill Upgraded!"
+const UPGRADE_FEEDBACK_LEVEL_PREFIX: String = "Level "
+const UPGRADE_FEEDBACK_SPEED_PREFIX: String = "Cooking Speed +"
+const UPGRADE_FEEDBACK_SPEED_SUFFIX: String = "%"
+const UPGRADE_FEEDBACK_RISE_PIXELS: float = 32.0
+const UPGRADE_FEEDBACK_FADE_SECONDS: float = 0.25
 const NO_ORDER_TIME_TEXT: String = "No active order"
 const ORDER_TIME_SUFFIX: String = " sec prep"
 const BUTTON_PRESSED_SCALE: Vector2 = Vector2(0.97, 0.97)
@@ -38,6 +43,8 @@ const NEXT_INGREDIENT_PREFIX: String = "Next: "
 var _cooking_stand: CookingStand
 var _active_customer: Customer
 var _active_order: Order
+var _feedback_tween: Tween
+var _coin_feedback_base_position: Vector2
 
 
 func _ready() -> void:
@@ -48,8 +55,10 @@ func _ready() -> void:
 	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
 	ingredient_unlock_button.pressed.connect(_on_ingredient_unlock_button_pressed)
 	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
+	_coin_feedback_base_position = coin_feedback_label.position
 	GameManager.currency_changed.connect(_on_currency_changed)
 	GameManager.upgrades_changed.connect(_on_upgrades_changed)
+	GameManager.grill_upgraded.connect(_on_grill_upgraded)
 	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
 	_resolve_configured_nodes()
 	_connect_cooking_stand_signals()
@@ -64,6 +73,8 @@ func _exit_tree() -> void:
 		GameManager.currency_changed.disconnect(_on_currency_changed)
 	if GameManager.upgrades_changed.is_connected(_on_upgrades_changed):
 		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
+	if GameManager.grill_upgraded.is_connected(_on_grill_upgraded):
+		GameManager.grill_upgraded.disconnect(_on_grill_upgraded)
 	if IngredientManager.ingredients_changed.is_connected(_on_ingredients_changed):
 		IngredientManager.ingredients_changed.disconnect(_on_ingredients_changed)
 
@@ -162,19 +173,42 @@ func show_coin_feedback(amount: int) -> void:
 	if amount <= 0:
 		return
 
+	_reset_feedback_animation()
 	coin_feedback_label.text = COIN_FEEDBACK_PREFIX + str(amount) + COIN_FEEDBACK_SUFFIX
 	coin_feedback_label.visible = true
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
 
-func show_upgrade_feedback() -> void:
-	coin_feedback_label.text = UPGRADE_FEEDBACK_TEXT
+func show_upgrade_feedback(level: int, speed_improvement_percent: int) -> void:
+	coin_feedback_label.text = _get_upgrade_feedback_text(level, speed_improvement_percent)
 	coin_feedback_label.visible = true
+	coin_feedback_label.modulate.a = 1.0
+	coin_feedback_label.position = _coin_feedback_base_position
+	_start_upgrade_feedback_animation()
 	coin_feedback_timer.start(UPGRADE_FEEDBACK_SECONDS)
 
 
 func _get_upgrade_button_text() -> String:
-	return GameManager.get_next_grill_button_text().replace(" - ", " ")
+	return GameManager.get_next_grill_button_text()
+
+
+func _get_upgrade_feedback_text(level: int, speed_improvement_percent: int) -> String:
+	return "%s\n%s%d\n%s%d%s" % [
+		UPGRADE_FEEDBACK_TITLE,
+		UPGRADE_FEEDBACK_LEVEL_PREFIX,
+		level,
+		UPGRADE_FEEDBACK_SPEED_PREFIX,
+		speed_improvement_percent,
+		UPGRADE_FEEDBACK_SPEED_SUFFIX,
+	]
+
+
+func _start_upgrade_feedback_animation() -> void:
+	_reset_feedback_animation()
+	_feedback_tween = create_tween()
+	_feedback_tween.set_parallel(true)
+	_feedback_tween.tween_property(coin_feedback_label, "position", _coin_feedback_base_position + Vector2.UP * UPGRADE_FEEDBACK_RISE_PIXELS, UPGRADE_FEEDBACK_SECONDS)
+	_feedback_tween.tween_property(coin_feedback_label, "modulate:a", 0.0, UPGRADE_FEEDBACK_FADE_SECONDS).set_delay(UPGRADE_FEEDBACK_SECONDS - UPGRADE_FEEDBACK_FADE_SECONDS)
 
 
 func _update_ingredient_unlock_display() -> void:
@@ -273,7 +307,6 @@ func _on_upgrade_button_pressed() -> void:
 	AudioManager.play_button()
 	if GameManager.purchase_next_grill_level():
 		AudioManager.play_upgrade()
-		show_upgrade_feedback()
 		_update_display()
 
 
@@ -297,9 +330,23 @@ func _on_upgrades_changed() -> void:
 	_update_display()
 
 
+func _on_grill_upgraded(level: int, speed_improvement_percent: int) -> void:
+	show_upgrade_feedback(level, speed_improvement_percent)
+
+
 func _on_ingredients_changed() -> void:
 	_update_display()
 
 
+func _reset_feedback_animation() -> void:
+	if _feedback_tween != null:
+		_feedback_tween.kill()
+		_feedback_tween = null
+
+	coin_feedback_label.modulate.a = 1.0
+	coin_feedback_label.position = _coin_feedback_base_position
+
+
 func _on_coin_feedback_timer_timeout() -> void:
 	coin_feedback_label.visible = false
+	_reset_feedback_animation()
