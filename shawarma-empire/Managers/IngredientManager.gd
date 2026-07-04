@@ -44,7 +44,7 @@ const RECIPE_PATHS: Array[String] = [
 ]
 
 var unlocked_ingredient_ids: Array[String] = DEFAULT_UNLOCKED_INGREDIENT_IDS.duplicate()
-var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
+var economy_config: EconomyConfig = EconomyConfig.load_or_default(ECONOMY_CONFIG_PATH)
 
 
 func reset_to_defaults() -> void:

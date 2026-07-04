@@ -16,14 +16,19 @@ ingredient_costs = {
 "garlic_sauce": 0,
 "tomato": 75,
 "cucumber": 100,
-"jalapeno": 150,
-"spicy_sauce": 200,
-"cheese": 300
+"jalapeno": 100,
+"spicy_sauce": 150,
+"cheese": 250
 }
 recipe_rewards = {
 "res://Resources/Recipes/ClassicShawarma.tres": 15,
-"res://Resources/Recipes/SpicyShawarma.tres": 22,
-"res://Resources/Recipes/CheeseShawarma.tres": 30
+"res://Resources/Recipes/SpicyShawarma.tres": 24,
+"res://Resources/Recipes/CheeseShawarma.tres": 35
+}
+recipe_preparation_times = {
+"res://Resources/Recipes/ClassicShawarma.tres": 3.0,
+"res://Resources/Recipes/SpicyShawarma.tres": 3.6,
+"res://Resources/Recipes/CheeseShawarma.tres": 4.0
 }
 cooking_multipliers = {
 1: 1.0,

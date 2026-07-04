@@ -10,5 +10,4 @@
 [resource]
 script = ExtResource("1_recipe")
 display_name = "Classic Shawarma"
-preparation_time = 3.0
 required_ingredients = Array[Resource]([ExtResource("2_lavash"), ExtResource("3_chicken"), ExtResource("4_garlic_sauce"), ExtResource("5_tomato"), ExtResource("6_cucumber")])
