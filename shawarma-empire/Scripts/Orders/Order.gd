@@ -22,9 +22,9 @@ static func create(recipe: Recipe, order_creation_time: float) -> Order:
 	var order: Order = Order.new()
 	order.selected_recipe = recipe
 	if recipe != null:
-		var economy_config: EconomyConfig = load(ECONOMY_CONFIG_PATH) as EconomyConfig
+		var economy_config: EconomyConfig = EconomyConfig.load_or_default(ECONOMY_CONFIG_PATH)
 		order.total_price = economy_config.get_recipe_reward(recipe)
-		order.preparation_time = recipe.preparation_time
+		order.preparation_time = economy_config.get_recipe_preparation_time(recipe)
 	order.creation_time = order_creation_time
 	return order
 
