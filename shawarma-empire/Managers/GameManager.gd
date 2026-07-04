@@ -15,6 +15,8 @@ const SAVE_KEY_PURCHASED_UPGRADES: String = "purchased_upgrades"
 const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
 const SAVE_KEY_PURCHASED_KIOSK_UPGRADES: String = "purchased_kiosk_upgrades"
+const SAVE_KEY_REPUTATION: String = "reputation"
+const SAVE_KEY_BUSINESS_LEVEL: String = "business_level"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
 const GAME_VERSION: String = "0.8.0"
 const FAVORITE_RECIPE_REWARD_MULTIPLIER: float = 1.25
@@ -31,6 +33,7 @@ func initialize_new_game() -> void:
 	purchased_upgrade_ids.clear()
 	IngredientManager.reset_to_defaults()
 	KioskUpgradeManager.reset_to_defaults()
+	ReputationManager.reset_to_defaults()
 	set_grill_level(DEFAULT_GRILL_LEVEL)
 	recipes_changed.emit()
 
@@ -150,6 +153,8 @@ func get_save_data() -> Dictionary:
 		SAVE_KEY_UNLOCKED_RECIPES: _get_available_recipe_save_paths(),
 		SAVE_KEY_UNLOCKED_INGREDIENTS: IngredientManager.get_unlocked_ingredient_ids(),
 		SAVE_KEY_PURCHASED_KIOSK_UPGRADES: KioskUpgradeManager.get_save_data(),
+		SAVE_KEY_REPUTATION: ReputationManager.reputation,
+		SAVE_KEY_BUSINESS_LEVEL: ReputationManager.business_level,
 		SAVE_KEY_GAME_VERSION: GAME_VERSION,
 	}
 
@@ -161,6 +166,7 @@ func apply_save_data(save_data: Dictionary) -> void:
 	_apply_purchased_upgrade_save_ids(save_data.get(SAVE_KEY_PURCHASED_UPGRADES, []))
 	IngredientManager.apply_unlocked_ingredient_ids(save_data.get(SAVE_KEY_UNLOCKED_INGREDIENTS, []))
 	KioskUpgradeManager.apply_save_data(save_data.get(SAVE_KEY_PURCHASED_KIOSK_UPGRADES, []))
+	ReputationManager.apply_save_data(save_data.get(SAVE_KEY_REPUTATION, ReputationManager.STARTING_REPUTATION), save_data.get(SAVE_KEY_BUSINESS_LEVEL, ReputationManager.STARTING_BUSINESS_LEVEL))
 	_apply_grill_level_save_data(save_data)
 
 

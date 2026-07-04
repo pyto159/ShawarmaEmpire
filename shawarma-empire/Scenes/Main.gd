@@ -43,7 +43,7 @@ func _configure_customer_queue() -> void:
 		push_error("Main scene is missing a CustomerQueue reference.")
 		return
 
-	customer_queue.queue_capacity = queue_capacity
+	customer_queue.queue_capacity = _get_total_queue_capacity()
 	customer_queue.collect_child_queue_points()
 	if not customer_queue.reservation_created.is_connected(_on_queue_changed):
 		customer_queue.reservation_created.connect(_on_queue_changed)
@@ -85,6 +85,8 @@ func _connect_progression_signals() -> void:
 		GameManager.recipes_changed.connect(_on_recipes_changed)
 	if not KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
 		KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
+	if not ReputationManager.business_level_changed.is_connected(_on_business_level_changed):
+		ReputationManager.business_level_changed.connect(_on_business_level_changed)
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -165,8 +167,22 @@ func _on_kiosk_upgrades_changed() -> void:
 	_apply_customer_patience_bonus()
 
 
+func _on_business_level_changed(_business_level: int) -> void:
+	_configure_customer_queue()
+	_update_spawn_timer_wait_time()
+	call_deferred("_try_spawn_customer")
+
+
 func _update_spawn_timer_wait_time() -> void:
-	_spawn_timer.wait_time = max(spawn_interval / KioskUpgradeManager.get_customer_spawn_rate_multiplier(), 0.1)
+	_spawn_timer.wait_time = max(spawn_interval / _get_total_spawn_rate_multiplier(), 0.1)
+
+
+func _get_total_spawn_rate_multiplier() -> float:
+	return KioskUpgradeManager.get_customer_spawn_rate_multiplier() * ReputationManager.get_customer_spawn_rate_multiplier()
+
+
+func _get_total_queue_capacity() -> int:
+	return queue_capacity + ReputationManager.get_queue_slot_bonus()
 
 
 func _apply_customer_patience_bonus() -> void:
@@ -227,7 +243,9 @@ func _on_cooking_completed(order: Order) -> void:
 		var bonus_label: String = FAVORITE_FEEDBACK_TEXT if served_customer.is_favorite_order(order) else ""
 		game_hud.show_coin_feedback(earned_coins, bonus_label)
 		_show_floating_coin_feedback(served_customer.global_position, earned_coins)
-		SaveManager.queue_save_game()
+
+	ReputationManager.add_order_reputation(order, served_customer)
+	SaveManager.queue_save_game()
 
 	_update_active_customer()
 
