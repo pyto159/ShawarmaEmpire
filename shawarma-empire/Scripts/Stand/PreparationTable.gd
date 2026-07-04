@@ -28,6 +28,9 @@ const SMOKE_PULSE_SECONDS: float = 0.8
 @onready var _cucumber: ColorRect = $Panel/Board/CucumberSlices
 @onready var _jalapeno: ColorRect = $Panel/Board/JalapenoSlices
 @onready var _cheese: ColorRect = $Panel/Board/Cheese
+@onready var _bbq_sauce: ColorRect = $Panel/Board/BBQSauce
+@onready var _onion: ColorRect = $Panel/Board/OnionSlices
+@onready var _lettuce: ColorRect = $Panel/Board/Lettuce
 @onready var _rolled_shawarma: ColorRect = $Panel/Board/RolledShawarma
 @onready var _complete_label: Label = $Panel/Board/CompleteLabel
 @onready var _smoke_particles: Array[ColorRect] = [$Panel/Board/SmokeOne, $Panel/Board/SmokeTwo]
@@ -252,10 +255,14 @@ func _get_ingredient_node(ingredient: Ingredient) -> Control:
 			return _lavash
 		"Chicken":
 			return _meat
+		"Double Chicken":
+			return _meat
 		"Garlic Sauce":
 			return _garlic_sauce
 		"Spicy Sauce":
 			return _spicy_sauce
+		"BBQ Sauce":
+			return _bbq_sauce
 		"Tomato":
 			return _tomato
 		"Cucumber":
@@ -264,12 +271,16 @@ func _get_ingredient_node(ingredient: Ingredient) -> Control:
 			return _jalapeno
 		"Cheese":
 			return _cheese
+		"Onion":
+			return _onion
+		"Lettuce":
+			return _lettuce
 
 	return null
 
 
 func _get_visual_ingredient_nodes() -> Array[Control]:
-	return [_lavash, _meat, _garlic_sauce, _spicy_sauce, _tomato, _cucumber, _jalapeno, _cheese, _rolled_shawarma]
+	return [_lavash, _meat, _garlic_sauce, _spicy_sauce, _tomato, _cucumber, _jalapeno, _cheese, _bbq_sauce, _onion, _lettuce, _rolled_shawarma]
 
 
 func _get_ingredient_progress(ingredient_index: int) -> float:

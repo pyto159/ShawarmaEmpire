@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Recipe" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Recipes/Recipe.gd" id="1_recipe"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Lavash.tres" id="2_lavash"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Lettuce.tres" id="3_lettuce"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Tomato.tres" id="4_tomato"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Cucumber.tres" id="5_cucumber"]
+[ext_resource type="Resource" path="res://Resources/Ingredients/Cheese.tres" id="6_cheese"]
+
+[resource]
+script = ExtResource("1_recipe")
+display_name = "Veggie Shawarma"
+required_ingredients = Array[Resource]([ExtResource("2_lavash"), ExtResource("3_lettuce"), ExtResource("4_tomato"), ExtResource("5_cucumber"), ExtResource("6_cheese")])

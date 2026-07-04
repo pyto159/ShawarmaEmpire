@@ -19,16 +19,28 @@ const FALLBACK_INGREDIENT_COSTS: Dictionary = {
 	"jalapeno": 100,
 	"spicy_sauce": 150,
 	"cheese": 250,
+	"onion": 300,
+	"bbq_sauce": 350,
+	"double_chicken": 450,
+	"lettuce": 500,
 }
 const FALLBACK_RECIPE_REWARDS: Dictionary = {
 	"res://Resources/Recipes/ClassicShawarma.tres": 15,
 	"res://Resources/Recipes/SpicyShawarma.tres": 24,
 	"res://Resources/Recipes/CheeseShawarma.tres": 35,
+	"res://Resources/Recipes/BBQShawarma.tres": 50,
+	"res://Resources/Recipes/DoubleMeatShawarma.tres": 65,
+	"res://Resources/Recipes/VeggieShawarma.tres": 45,
+	"res://Resources/Recipes/MegaShawarma.tres": 90,
 }
 const FALLBACK_RECIPE_PREPARATION_TIMES: Dictionary = {
 	"res://Resources/Recipes/ClassicShawarma.tres": 3.00,
 	"res://Resources/Recipes/SpicyShawarma.tres": 3.60,
 	"res://Resources/Recipes/CheeseShawarma.tres": 4.00,
+	"res://Resources/Recipes/BBQShawarma.tres": 4.50,
+	"res://Resources/Recipes/DoubleMeatShawarma.tres": 5.00,
+	"res://Resources/Recipes/VeggieShawarma.tres": 4.20,
+	"res://Resources/Recipes/MegaShawarma.tres": 6.00,
 }
 const FALLBACK_COOKING_MULTIPLIERS: Dictionary = {
 	1: 1.00,
