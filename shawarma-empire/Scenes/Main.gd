@@ -37,7 +37,12 @@ func _notification(what: int) -> void:
 
 
 func _configure_customer_queue() -> void:
+	if customer_queue == null:
+		push_error("Main scene is missing a CustomerQueue reference.")
+		return
+
 	customer_queue.queue_capacity = queue_capacity
+	customer_queue.collect_child_queue_points()
 	if not customer_queue.reservation_created.is_connected(_on_queue_changed):
 		customer_queue.reservation_created.connect(_on_queue_changed)
 	if not customer_queue.reservation_cancelled.is_connected(_on_queue_slot_freed):
@@ -47,12 +52,20 @@ func _configure_customer_queue() -> void:
 
 
 func _configure_customer_spawner() -> void:
+	if customer_spawner == null or spawned_customers == null:
+		push_error("Main scene is missing customer spawning references.")
+		return
+
 	customer_spawner.spawn_parent = spawned_customers
+	customer_spawner.collect_child_spawn_points()
 	if not customer_spawner.spawn_succeeded.is_connected(_on_customer_spawned):
 		customer_spawner.spawn_succeeded.connect(_on_customer_spawned)
 
 
 func _configure_spawn_timer() -> void:
+	if _spawn_timer.timeout.is_connected(_on_spawn_timer_timeout):
+		return
+
 	_spawn_timer.one_shot = false
 	_spawn_timer.wait_time = max(spawn_interval, 0.1)
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
@@ -70,6 +83,9 @@ func _on_spawn_timer_timeout() -> void:
 
 
 func _try_spawn_customer() -> void:
+	if customer_spawner == null or customer_queue == null:
+		return
+
 	if _get_active_customer_count() >= max_active_customers:
 		return
 

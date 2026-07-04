@@ -120,6 +120,11 @@ func get_available_recipes() -> Array[Recipe]:
 		if recipe is Recipe and _is_recipe_available(recipe as Recipe):
 			available_recipes.append(recipe as Recipe)
 
+	if available_recipes.is_empty():
+		var classic_recipe: Recipe = load(CLASSIC_SHAWARMA_PATH) as Recipe
+		if classic_recipe != null:
+			available_recipes.append(classic_recipe)
+
 	return available_recipes
 
 
