@@ -37,3 +37,16 @@ The Recipe Menu and Ingredient Shop expose the existing balance data without cha
 | Customer Favorite | 25% per customer | x1.25 final reward when matched | Favorite recipe is selected only from currently unlocked recipes. |
 
 Rare and favorite bonuses multiply together. A rare order that also matches the customer's favorite pays `base recipe reward × 2.0 × 1.25`, rounded to the nearest coin, and is awarded once on delivery.
+
+## Kiosk Upgrade Balance
+
+Kiosk upgrade costs and effects live in `res://Resources/Economy/EconomyConfig.tres` and should be changed there first, with fallback values mirrored in `res://Scripts/Economy/EconomyConfig.gd`.
+
+| Upgrade | Cost | Effect |
+| --- | ---: | --- |
+| Better Counter | 120 coins | +5% customer patience |
+| New Sign | 180 coins | +10% customer spawn rate |
+| Better Lighting | 260 coins | +5% rare order chance |
+| Decorations | 340 coins | +10% tip chance |
+
+Kiosk upgrades are one-time purchases and are independent from Grill progression. The tip chance currently rolls a 20% bonus tip on served-order rewards when Decorations succeeds.

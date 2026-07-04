@@ -65,6 +65,7 @@ enum CustomerState {
 @export var favorite_recipe: Recipe
 @export var food_visual_path: NodePath
 @export var free_on_leave_completed: bool = true
+@export var patience_multiplier: float = 1.0
 
 var current_state: CustomerState = CustomerState.IDLE
 var _target_position: Vector2 = Vector2.ZERO

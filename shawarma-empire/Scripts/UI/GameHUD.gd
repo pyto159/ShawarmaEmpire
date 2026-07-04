@@ -44,6 +44,7 @@ const RARE_ORDER_TEXT: String = "Rare Order!"
 @onready var cooking_status_label: Label = %CookingStatusLabel
 @onready var recipes_button: Button = %RecipesButton
 @onready var ingredients_button: Button = %IngredientsButton
+@onready var business_button: Button = %BusinessButton
 @onready var coin_feedback_label: Label = %CoinFeedbackLabel
 @onready var coin_feedback_timer: Timer = %CoinFeedbackTimer
 @onready var cooking_progress_bar: CookingProgressBar = %CookingProgressBar
@@ -55,6 +56,7 @@ var _feedback_tween: Tween
 var _coin_feedback_base_position: Vector2
 var _recipes_panel: PanelContainer
 var _ingredients_panel: PanelContainer
+var _business_panel: PanelContainer
 
 
 func _ready() -> void:
@@ -65,11 +67,13 @@ func _ready() -> void:
 	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
 	recipes_button.pressed.connect(_on_recipes_button_pressed)
 	ingredients_button.pressed.connect(_on_ingredients_button_pressed)
+	business_button.pressed.connect(_on_business_button_pressed)
 	coin_feedback_timer.timeout.connect(_on_coin_feedback_timer_timeout)
 	_coin_feedback_base_position = coin_feedback_label.position
 	GameManager.currency_changed.connect(_on_currency_changed)
 	GameManager.upgrades_changed.connect(_on_upgrades_changed)
 	GameManager.grill_upgraded.connect(_on_grill_upgraded)
+	KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
 	IngredientManager.ingredients_changed.connect(_on_ingredients_changed)
 	GameManager.recipes_changed.connect(_on_recipes_changed)
 	_create_progression_panels()
@@ -88,6 +92,8 @@ func _exit_tree() -> void:
 		GameManager.upgrades_changed.disconnect(_on_upgrades_changed)
 	if GameManager.grill_upgraded.is_connected(_on_grill_upgraded):
 		GameManager.grill_upgraded.disconnect(_on_grill_upgraded)
+	if KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
+		KioskUpgradeManager.kiosk_upgrades_changed.disconnect(_on_kiosk_upgrades_changed)
 	if IngredientManager.ingredients_changed.is_connected(_on_ingredients_changed):
 		IngredientManager.ingredients_changed.disconnect(_on_ingredients_changed)
 	if GameManager.recipes_changed.is_connected(_on_recipes_changed):
@@ -121,6 +127,7 @@ func _apply_mobile_hud_layout() -> void:
 	upgrade_button.add_theme_font_size_override("font_size", 15)
 	recipes_button.add_theme_font_size_override("font_size", 15)
 	ingredients_button.add_theme_font_size_override("font_size", 15)
+	business_button.add_theme_font_size_override("font_size", 15)
 
 
 func _animate_prepare_button(target_scale: Vector2) -> void:
@@ -232,10 +239,13 @@ func _start_upgrade_feedback_animation() -> void:
 func _create_progression_panels() -> void:
 	_recipes_panel = _create_base_panel("Recipe Menu", true)
 	_ingredients_panel = _create_base_panel("Ingredient Shop")
+	_business_panel = _create_base_panel("Business", true)
 	add_child(_recipes_panel)
 	add_child(_ingredients_panel)
+	add_child(_business_panel)
 	_recipes_panel.hide()
 	_ingredients_panel.hide()
+	_business_panel.hide()
 
 
 func _create_base_panel(title: String, has_scrollable_rows: bool = false) -> PanelContainer:
@@ -369,6 +379,41 @@ func _refresh_open_progression_panel() -> void:
 		_populate_recipe_panel()
 	if _ingredients_panel != null and _ingredients_panel.visible:
 		_populate_ingredient_panel()
+	if _business_panel != null and _business_panel.visible:
+		_populate_business_panel()
+
+
+func _populate_business_panel() -> void:
+	var rows: VBoxContainer = _get_panel_rows(_business_panel)
+	_clear_rows(rows)
+	rows.add_child(_create_business_section_label("Purchased Upgrades"))
+	for purchased_upgrade: Dictionary in KioskUpgradeManager.get_purchased_upgrades():
+		rows.add_child(_create_kiosk_upgrade_row(purchased_upgrade, true))
+	rows.add_child(_create_business_section_label("Available Upgrades"))
+	for available_upgrade: Dictionary in KioskUpgradeManager.get_available_upgrades():
+		rows.add_child(_create_kiosk_upgrade_row(available_upgrade, false))
+
+
+func _create_business_section_label(text: String) -> Label:
+	var label: Label = Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 17)
+	return label
+
+
+func _create_kiosk_upgrade_row(upgrade: Dictionary, purchased: bool) -> HBoxContainer:
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
+	var label: Label = Label.new()
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.text = "%s — %d Coins\n%s" % [upgrade.get("name", "Upgrade"), int(upgrade.get("cost", 0)), upgrade.get("description", "")]
+	row.add_child(label)
+	var button: Button = Button.new()
+	button.text = "Purchased" if purchased else "Buy"
+	button.disabled = purchased or not KioskUpgradeManager.can_purchase(StringName(str(upgrade.get("id", ""))))
+	button.pressed.connect(_on_kiosk_upgrade_purchase_pressed.bind(StringName(str(upgrade.get("id", "")))))
+	row.add_child(button)
+	return row
 
 
 func _get_cooking_status_text() -> String:
@@ -450,6 +495,7 @@ func _on_prepare_button_pressed() -> void:
 func _on_recipes_button_pressed() -> void:
 	AudioManager.play_button()
 	_ingredients_panel.hide()
+	_business_panel.hide()
 	_populate_recipe_panel()
 	_recipes_panel.visible = not _recipes_panel.visible
 
@@ -457,8 +503,17 @@ func _on_recipes_button_pressed() -> void:
 func _on_ingredients_button_pressed() -> void:
 	AudioManager.play_button()
 	_recipes_panel.hide()
+	_business_panel.hide()
 	_populate_ingredient_panel()
 	_ingredients_panel.visible = not _ingredients_panel.visible
+
+
+func _on_business_button_pressed() -> void:
+	AudioManager.play_button()
+	_recipes_panel.hide()
+	_ingredients_panel.hide()
+	_populate_business_panel()
+	_business_panel.visible = not _business_panel.visible
 
 
 func _on_ingredient_purchase_pressed(ingredient_id: String) -> void:
@@ -468,6 +523,14 @@ func _on_ingredient_purchase_pressed(ingredient_id: String) -> void:
 		_populate_ingredient_panel()
 		if _recipes_panel.visible:
 			_populate_recipe_panel()
+		_update_display()
+
+
+func _on_kiosk_upgrade_purchase_pressed(upgrade_id: StringName) -> void:
+	AudioManager.play_button()
+	if KioskUpgradeManager.purchase(upgrade_id):
+		AudioManager.play_upgrade()
+		_populate_business_panel()
 		_update_display()
 
 
@@ -508,6 +571,10 @@ func _on_ingredients_changed() -> void:
 
 func _on_recipes_changed() -> void:
 	_refresh_open_progression_panel()
+
+
+func _on_kiosk_upgrades_changed() -> void:
+	_update_display()
 
 
 func _reset_feedback_animation() -> void:
