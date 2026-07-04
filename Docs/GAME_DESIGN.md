@@ -226,3 +226,11 @@ Potential long-term expansion directions:
 - Cloud save and account progression.
 
 Future expansion should be implemented as additive systems whenever possible. Existing queue, spawning, currency, and save systems should be extended through clean interfaces rather than rewritten.
+
+## Rare Orders and Customer Favorites
+
+Rare orders add lightweight reward variety to the normal customer loop without changing queue behavior, ingredient unlocks, or cooking flow. A rare order is generated from the same currently unlocked recipe pool as a normal order, appears with a default 10% chance, displays the simple HUD label “Rare Order!”, and pays a x2 reward multiplier when delivered.
+
+Customer favorite recipes add a small satisfaction bonus. Each spawned customer may receive one favorite recipe with a default 25% chance, selected only from currently unlocked recipes. If that customer receives the matching recipe, the reward gains an additional +25%, the HUD feedback shows “Favorite!”, and the existing happy customer emotion is used.
+
+Rare and favorite bonuses can stack safely because the final delivery reward is calculated once through the game/economy layer after cooking completes.

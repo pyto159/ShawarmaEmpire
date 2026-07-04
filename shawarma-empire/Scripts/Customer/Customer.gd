@@ -45,6 +45,7 @@ const BREATHING_SCALE: Vector2 = Vector2(1.018, 0.988)
 const IDLE_SWAY_DEGREES: float = 1.4
 const BODY_BOB_PIXELS: float = 1.2
 const IDLE_ANIMATION_SECONDS: float = 1.35
+const DEFAULT_FAVORITE_RECIPE_CHANCE: float = 0.25
 
 
 enum CustomerState {
@@ -61,6 +62,7 @@ enum CustomerState {
 @export var create_order_on_ready: bool = true
 @export var available_recipes: Array[Recipe] = []
 @export var starting_order: Order
+@export var favorite_recipe: Recipe
 @export var food_visual_path: NodePath
 @export var free_on_leave_completed: bool = true
 
@@ -95,6 +97,7 @@ var _idle_body_position: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
+	assign_favorite_from_available_recipes()
 	_apply_random_visual_style()
 	_start_idle_animation()
 	_target_position = global_position
@@ -175,6 +178,10 @@ func receive_food(order: Order) -> bool:
 	return true
 
 
+func is_favorite_order(order: Order) -> bool:
+	return order != null and favorite_recipe != null and order.selected_recipe == favorite_recipe
+
+
 func receive_completed_order(order: Order, leave_target_position: Vector2) -> bool:
 	if not can_receive_completed_order(order):
 		return false
@@ -223,6 +230,16 @@ func complete_current_order() -> bool:
 
 func has_active_order() -> bool:
 	return has_order()
+
+
+func assign_favorite_from_available_recipes() -> void:
+	if favorite_recipe != null or available_recipes.is_empty():
+		return
+
+	if randf() >= DEFAULT_FAVORITE_RECIPE_CHANCE:
+		return
+
+	favorite_recipe = available_recipes[randi_range(0, available_recipes.size() - 1)]
 
 
 func _create_order() -> void:

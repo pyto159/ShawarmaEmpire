@@ -541,3 +541,13 @@ Theme responsibilities:
 - Keep UI scenes from styling buttons individually. New buttons should rely on the global theme unless a future feature adds a named reusable theme type for a clearly distinct semantic button role.
 
 Scene scripts may still adjust layout-specific spacing or label sizes, but they should not create per-button `StyleBoxFlat` overrides for normal gameplay buttons. This keeps Prepare, Better Grill, Ingredient Unlock, Continue, New Game, confirmation dialog buttons, and future buttons visually consistent by default.
+
+### Rare Orders and Favorite Recipes
+
+`Order` now carries lightweight bonus metadata: `is_rare`, `reward_multiplier`, and `bonus_label`. `OrderGenerator` remains responsible for selecting only from the available unlocked recipe list it receives, then rolls a default 10% rare-order chance and applies the x2 rare reward multiplier plus the “Rare Order!” label.
+
+`Customer` owns optional favorite recipe state through `favorite_recipe`. Favorites are assigned from the customer's available unlocked recipes with a default 25% chance and are checked through `Customer.is_favorite_order(order)`, keeping customer code independent from coin math.
+
+`GameManager.calculate_order_reward(order, customer)` centralizes final reward calculation. It starts from the order base price, applies the order reward multiplier, then applies the +25% favorite multiplier when the served customer matches the order. `Main` awards that calculated value once after `CookingStand.deliver_completed_order()` succeeds, so rare and favorite bonuses stack without duplicate coin grants.
+
+`GameHUD` displays the active recipe name and appends “Rare Order!” for rare orders. Completion coin feedback can include a bonus label, currently used for “Favorite!” after a favorite recipe match.

@@ -32,6 +32,7 @@ const PANEL_ROW_SEPARATION: int = 8
 const PANEL_HEIGHT: float = 520.0
 const UNLOCKED_TEXT: String = "Unlocked"
 const LOCKED_TEXT: String = "Locked"
+const RARE_ORDER_TEXT: String = "Rare Order!"
 
 @export var cooking_stand_path: NodePath
 @export var active_customer_path: NodePath
@@ -184,12 +185,14 @@ func _update_display() -> void:
 	_refresh_open_progression_panel()
 
 
-func show_coin_feedback(amount: int) -> void:
+func show_coin_feedback(amount: int, bonus_label: String = "") -> void:
 	if amount <= 0:
 		return
 
 	_reset_feedback_animation()
 	coin_feedback_label.text = COIN_FEEDBACK_PREFIX + str(amount) + COIN_FEEDBACK_SUFFIX
+	if not bonus_label.is_empty():
+		coin_feedback_label.text += "\n" + bonus_label
 	coin_feedback_label.visible = true
 	coin_feedback_timer.start(FEEDBACK_VISIBLE_SECONDS)
 
@@ -386,7 +389,10 @@ func _get_order_text() -> String:
 	if _active_order == null:
 		return NO_ORDER_TEXT
 
-	return _get_recipe_name(_active_order)
+	var order_lines: Array[String] = [_get_recipe_name(_active_order)]
+	if _active_order.is_rare:
+		order_lines.append(RARE_ORDER_TEXT)
+	return "\n".join(order_lines)
 
 
 func _get_order_time_text() -> String:
