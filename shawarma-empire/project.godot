@@ -19,6 +19,7 @@ run/main_scene="res://Scenes/MainMenu.tscn"
 
 GameManager="*res://Managers/GameManager.gd"
 IngredientManager="*res://Managers/IngredientManager.gd"
+KioskUpgradeManager="*res://Managers/KioskUpgradeManager.gd"
 SaveManager="*res://Managers/SaveManager.gd"
 SceneManager="*res://Managers/SceneManager.gd"
 AudioManager="*res://Managers/AudioManager.tscn"

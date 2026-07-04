@@ -69,7 +69,7 @@ func _configure_spawn_timer() -> void:
 		return
 
 	_spawn_timer.one_shot = false
-	_spawn_timer.wait_time = max(spawn_interval, 0.1)
+	_update_spawn_timer_wait_time()
 	_spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	add_child(_spawn_timer)
 	_spawn_timer.start()
@@ -83,6 +83,8 @@ func _connect_cooking_stand() -> void:
 func _connect_progression_signals() -> void:
 	if not GameManager.recipes_changed.is_connected(_on_recipes_changed):
 		GameManager.recipes_changed.connect(_on_recipes_changed)
+	if not KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
+		KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -109,6 +111,7 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 	var customer: Customer = instance as Customer
 	_assign_customer_order(customer)
 	customer.queue_system_path = CUSTOMER_QUEUE_PATH
+	customer.patience_multiplier = KioskUpgradeManager.get_customer_patience_multiplier()
 	customer.left.connect(_on_customer_left, CONNECT_ONE_SHOT)
 	AudioManager.play_customer_arrive()
 	customer.join_queue(customer_queue)
@@ -155,6 +158,21 @@ func _on_queue_slot_freed(_reservation: QueueReservation) -> void:
 func _on_recipes_changed() -> void:
 	_refresh_customer_recipe_options()
 	_update_active_customer()
+
+
+func _on_kiosk_upgrades_changed() -> void:
+	_update_spawn_timer_wait_time()
+	_apply_customer_patience_bonus()
+
+
+func _update_spawn_timer_wait_time() -> void:
+	_spawn_timer.wait_time = max(spawn_interval / KioskUpgradeManager.get_customer_spawn_rate_multiplier(), 0.1)
+
+
+func _apply_customer_patience_bonus() -> void:
+	for child: Node in spawned_customers.get_children():
+		if child is Customer:
+			(child as Customer).patience_multiplier = KioskUpgradeManager.get_customer_patience_multiplier()
 
 
 func _update_active_customer() -> void:

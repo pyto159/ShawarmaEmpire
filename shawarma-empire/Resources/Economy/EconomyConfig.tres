@@ -50,5 +50,30 @@ cooking_multipliers = {
 4: 0.60,
 5: 0.45
 }
+kiosk_upgrades = Array[Dictionary]([{
+"id": &"better_counter",
+"name": "Better Counter",
+"description": "A cleaner counter helps customers wait a little longer. +5% customer patience.",
+"cost": 120,
+"customer_patience_bonus": 0.05
+}, {
+"id": &"new_sign",
+"name": "New Sign",
+"description": "A brighter sign attracts more foot traffic. +10% customer spawn rate.",
+"cost": 180,
+"customer_spawn_rate_bonus": 0.10
+}, {
+"id": &"better_lighting",
+"name": "Better Lighting",
+"description": "Better lighting makes special orders more likely. +5% rare order chance.",
+"cost": 260,
+"rare_order_chance_bonus": 0.05
+}, {
+"id": &"decorations",
+"name": "Decorations",
+"description": "Cozy decorations encourage tips. +10% tip chance.",
+"cost": 340,
+"tip_chance_bonus": 0.10
+}])
 future_employee_costs = {}
 future_reputation_rewards = {}

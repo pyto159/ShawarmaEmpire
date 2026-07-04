@@ -234,3 +234,16 @@ Rare orders add lightweight reward variety to the normal customer loop without c
 Customer favorite recipes add a small satisfaction bonus. Each spawned customer may receive one favorite recipe with a default 25% chance, selected only from currently unlocked recipes. If that customer receives the matching recipe, the reward gains an additional +25%, the HUD feedback shows “Favorite!”, and the existing happy customer emotion is used.
 
 Rare and favorite bonuses can stack safely because the final delivery reward is calculated once through the game/economy layer after cooking completes.
+
+### Business Expansion: Kiosk Upgrades
+
+Kiosk Upgrades are the first Business Expansion progression track and are independent from Grill upgrades. Each kiosk upgrade is purchased once from the Business panel, uses coin costs from `EconomyConfig`, persists through saves, and resets on New Game.
+
+Current kiosk upgrades:
+
+- **Better Counter:** improves customer comfort with **+5% customer patience**. Current patience behavior is exposed as a gameplay multiplier for customer systems and uses placeholder visuals until the patience loop receives final presentation.
+- **New Sign:** improves storefront visibility with **+10% customer spawn rate**.
+- **Better Lighting:** improves order presentation with **+5% rare order chance**.
+- **Decorations:** improves atmosphere with **+10% tip chance**.
+
+The Business panel displays purchased kiosk upgrades, available kiosk upgrades, descriptions, and upgrade costs so players can plan expansion separately from cooking speed progression.
