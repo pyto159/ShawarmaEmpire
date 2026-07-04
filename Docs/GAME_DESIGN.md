@@ -105,7 +105,7 @@ Current starter menu and ingredient progression:
 - **Double Meat Shawarma:** Lavash, Double Chicken, Garlic Sauce, Tomato. Requires Double Chicken, sells for 65 coins, and takes 5.0 seconds to prepare.
 - **Veggie Shawarma:** Lavash, Lettuce, Tomato, Cucumber, Cheese. Requires Lettuce and Cheese, sells for 45 coins, and takes 4.2 seconds to prepare.
 - **Mega Shawarma:** Lavash, Double Chicken, Cheese, Tomato, Cucumber, Jalapeño, Garlic Sauce, BBQ Sauce. Requires every listed ingredient, sells for 90 coins, and takes 6.0 seconds to prepare.
-- Unlockable ingredients are Jalapeño for 100 coins, Spicy Sauce for 150 coins, Cheese for 250 coins, Onion for 300 coins, BBQ Sauce for 350 coins, Double Chicken for 450 coins, and Lettuce for 500 coins.
+- Unlockable ingredients are Jalapeño for 100 coins, Spicy Sauce for 150 coins, Cheese for 250 coins, Lettuce for 300 coins, Onion for 350 coins, BBQ Sauce for 450 coins, and Double Chicken for 600 coins.
 
 Recipe principles:
 
