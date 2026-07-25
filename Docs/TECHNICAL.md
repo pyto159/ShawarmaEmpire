@@ -556,11 +556,13 @@ Scene scripts may still adjust layout-specific spacing or label sizes, but they 
 
 `KioskUpgradeManager` is an autoload at `res://Managers/KioskUpgradeManager.gd` for kiosk progression. It owns levels by stable upgrade id, exposes generic purchase and save/load APIs, and reads level costs and effects from `EconomyConfig` instead of hardcoding balance in UI code.
 
+Better Lighting is the `better_lighting` kiosk upgrade and scales the chance of each newly generated rare order. `OrderGenerator` calculates `clamp((default rare chance + Reputation bonus) * lighting multiplier, 0.0, 1.0)` at generation time, so existing orders are unchanged. The manager's lighting accessor is intentionally reusable by a future VIP probability system without adding VIP state or behavior now.
+
 The first configured category is Better Counter. `GameManager.calculate_order_reward_details()` applies its multiplier only to normal order income before independently adding rare, favorite, combo, and tip rewards.
 
 `GameHUD` creates a scrollable Kiosk Upgrades panel beside the existing Recipes, Ingredients, and Grill controls. The panel is presentation-only: it displays current and next-level effects and cost, then forwards purchase requests to `KioskUpgradeManager`.
 
-Kiosk levels are saved under the version-tolerant `kiosk_upgrades` dictionary. Missing or invalid Better Counter levels default to Level 1 and clamp to the configured range. Legacy `purchased_kiosk_upgrades` saves migrate a purchased Better Counter to Level 2.
+Kiosk levels are saved under the version-tolerant `kiosk_upgrades` dictionary. Every missing or invalid configured upgrade level defaults to Level 1 and clamps to its configured range, so saves created before New Sign or Better Lighting remain compatible. Legacy `purchased_kiosk_upgrades` saves migrate a purchased Better Counter to Level 2.
 
 ## Reputation System
 
