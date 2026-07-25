@@ -82,8 +82,6 @@ func _connect_cooking_stand() -> void:
 func _connect_progression_signals() -> void:
 	if not GameManager.recipes_changed.is_connected(_on_recipes_changed):
 		GameManager.recipes_changed.connect(_on_recipes_changed)
-	if not KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
-		KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
 	if not ReputationManager.business_level_changed.is_connected(_on_business_level_changed):
 		ReputationManager.business_level_changed.connect(_on_business_level_changed)
 
@@ -112,7 +110,6 @@ func _on_customer_spawned(instance: Node, _definition: SpawnDefinition, _spawn_p
 	var customer: Customer = instance as Customer
 	_assign_customer_order(customer)
 	customer.queue_system_path = CUSTOMER_QUEUE_PATH
-	customer.patience_multiplier = KioskUpgradeManager.get_customer_patience_multiplier()
 	customer.left.connect(_on_customer_left, CONNECT_ONE_SHOT)
 	AudioManager.play_customer_arrive()
 	customer.join_queue(customer_queue)
@@ -167,11 +164,6 @@ func _on_recipes_changed() -> void:
 	_update_active_customer()
 
 
-func _on_kiosk_upgrades_changed() -> void:
-	_update_spawn_timer_wait_time()
-	_apply_customer_patience_bonus()
-
-
 func _on_business_level_changed(_business_level: int) -> void:
 	_configure_customer_queue()
 	_update_spawn_timer_wait_time()
@@ -183,17 +175,11 @@ func _update_spawn_timer_wait_time() -> void:
 
 
 func _get_total_spawn_rate_multiplier() -> float:
-	return KioskUpgradeManager.get_customer_spawn_rate_multiplier() * ReputationManager.get_customer_spawn_rate_multiplier()
+	return ReputationManager.get_customer_spawn_rate_multiplier()
 
 
 func _get_total_queue_capacity() -> int:
 	return queue_capacity + ReputationManager.get_queue_slot_bonus()
-
-
-func _apply_customer_patience_bonus() -> void:
-	for child: Node in spawned_customers.get_children():
-		if child is Customer:
-			(child as Customer).patience_multiplier = KioskUpgradeManager.get_customer_patience_multiplier()
 
 
 func _update_active_customer() -> void:

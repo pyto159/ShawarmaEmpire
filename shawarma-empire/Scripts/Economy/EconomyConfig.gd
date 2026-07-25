@@ -8,6 +8,7 @@ const DEFAULT_RECIPE_PREPARATION_TIME: float = 1.00
 const DEFAULT_INGREDIENT_COST: int = 0
 const DEFAULT_GRILL_COST: int = 0
 const DEFAULT_KIOSK_UPGRADE_COST: int = 0
+const DEFAULT_KIOSK_UPGRADE_EFFECT: float = 1.0
 const DEFAULT_TIP_CHANCE: float = 0.20
 const DEFAULT_TIP_MIN_PERCENT: float = 0.05
 const DEFAULT_TIP_MAX_PERCENT: float = 0.25
@@ -66,19 +67,23 @@ const FALLBACK_COOKING_MULTIPLIERS: Dictionary = {
 	4: 0.60,
 	5: 0.45,
 }
-const FALLBACK_KIOSK_UPGRADES: Array[Dictionary] = [
-	{"id": &"better_counter", "name": "Better Counter", "description": "A cleaner counter helps customers wait a little longer. +5% customer patience.", "cost": 120, "customer_patience_bonus": 0.05},
-	{"id": &"new_sign", "name": "New Sign", "description": "A brighter sign attracts more foot traffic. +10% customer spawn rate.", "cost": 180, "customer_spawn_rate_bonus": 0.10},
-	{"id": &"better_lighting", "name": "Better Lighting", "description": "Better lighting makes special orders more likely. +5% rare order chance.", "cost": 260, "rare_order_chance_bonus": 0.05},
-	{"id": &"decorations", "name": "Decorations", "description": "Cozy decorations encourage tips. +10% tip chance.", "cost": 340, "tip_chance_bonus": 0.10},
-]
+const FALLBACK_KIOSK_UPGRADES: Dictionary = {
+	&"better_counter": {
+		"display_name": "Better Counter",
+		"levels": {
+			1: {"cost": 0, "effect": 1.00}, 2: {"cost": 300, "effect": 1.05},
+			3: {"cost": 900, "effect": 1.10}, 4: {"cost": 2500, "effect": 1.18},
+			5: {"cost": 6500, "effect": 1.28},
+		},
+	},
+}
 
 @export var grill_levels: Dictionary = {}
 @export var ingredient_costs: Dictionary = {}
 @export var recipe_rewards: Dictionary = {}
 @export var recipe_preparation_times: Dictionary = {}
 @export var cooking_multipliers: Dictionary = {}
-@export var kiosk_upgrades: Array[Dictionary] = []
+@export var kiosk_upgrades: Dictionary = {}
 @export_range(0.0, 1.0, 0.01) var tip_chance: float = DEFAULT_TIP_CHANCE
 @export_range(0.0, 1.0, 0.01) var tip_min_percent: float = DEFAULT_TIP_MIN_PERCENT
 @export_range(0.0, 1.0, 0.01) var tip_max_percent: float = DEFAULT_TIP_MAX_PERCENT
@@ -118,11 +123,52 @@ func get_cooking_multiplier(level: int) -> float:
 	return float(_get_value_for_level(_get_cooking_multipliers(), level, DEFAULT_COOKING_SPEED_MULTIPLIER))
 
 
-func get_kiosk_upgrades() -> Array[Dictionary]:
+func get_kiosk_upgrades() -> Dictionary:
 	if kiosk_upgrades.is_empty():
 		return FALLBACK_KIOSK_UPGRADES
 
 	return kiosk_upgrades
+
+
+func get_kiosk_upgrade_ids() -> Array[StringName]:
+	var upgrade_ids: Array[StringName] = []
+	for upgrade_id: Variant in get_kiosk_upgrades().keys():
+		upgrade_ids.append(StringName(str(upgrade_id)))
+	return upgrade_ids
+
+
+func has_kiosk_upgrade(upgrade_id: StringName) -> bool:
+	return get_kiosk_upgrades().has(upgrade_id) or get_kiosk_upgrades().has(String(upgrade_id))
+
+
+func get_upgrade_display_name(upgrade_id: StringName) -> String:
+	return str(_get_kiosk_upgrade_data(upgrade_id).get("display_name", String(upgrade_id).capitalize()))
+
+
+func get_upgrade_max_level(upgrade_id: StringName) -> int:
+	var max_level: int = 0
+	for level: Variant in _get_upgrade_levels(upgrade_id).keys():
+		max_level = maxi(max_level, int(level))
+	return max_level
+
+
+func get_upgrade_cost(upgrade_id: StringName, level: int) -> int:
+	var level_data: Dictionary = _get_value_for_level(_get_upgrade_levels(upgrade_id), level, {}) as Dictionary
+	return int(level_data.get("cost", DEFAULT_KIOSK_UPGRADE_COST))
+
+
+func get_upgrade_effect(upgrade_id: StringName, level: int) -> float:
+	var safe_level: int = clampi(level, 1, maxi(get_upgrade_max_level(upgrade_id), 1))
+	var level_data: Dictionary = _get_value_for_level(_get_upgrade_levels(upgrade_id), safe_level, {}) as Dictionary
+	return float(level_data.get("effect", DEFAULT_KIOSK_UPGRADE_EFFECT))
+
+
+func _get_kiosk_upgrade_data(upgrade_id: StringName) -> Dictionary:
+	return get_kiosk_upgrades().get(upgrade_id, get_kiosk_upgrades().get(String(upgrade_id), {})) as Dictionary
+
+
+func _get_upgrade_levels(upgrade_id: StringName) -> Dictionary:
+	return _get_kiosk_upgrade_data(upgrade_id).get("levels", {}) as Dictionary
 
 
 func get_ingredient_cost(ingredient_id: String) -> int:
