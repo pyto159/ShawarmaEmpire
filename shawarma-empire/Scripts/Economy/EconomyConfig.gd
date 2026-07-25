@@ -76,6 +76,14 @@ const FALLBACK_KIOSK_UPGRADES: Dictionary = {
 			5: {"cost": 6500, "effect": 1.28},
 		},
 	},
+	&"new_sign": {
+		"display_name": "New Sign",
+		"levels": {
+			1: {"cost": 0, "effect": 1.00}, 2: {"cost": 450, "effect": 0.94},
+			3: {"cost": 1300, "effect": 0.87}, 4: {"cost": 3600, "effect": 0.78},
+			5: {"cost": 9000, "effect": 0.68},
+		},
+	},
 }
 
 @export var grill_levels: Dictionary = {}

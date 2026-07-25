@@ -50,7 +50,17 @@ Kiosk upgrade costs and effects live in `res://Resources/Economy/EconomyConfig.t
 | 4 | 2,500 coins | 1.18x |
 | 5 | 6,500 coins | 1.28x |
 
-Better Counter multiplies normal order income. Tips, combos, rare bonuses, and favorite bonuses remain independently based on the recipe reward. New Sign, Better Lighting, and Decorations are planned but not implemented.
+Better Counter multiplies normal order income. Tips, combos, rare bonuses, and favorite bonuses remain independently based on the recipe reward.
+
+| New Sign Level | Cost | Customer Arrival Interval Multiplier |
+| --- | ---: | ---: |
+| 1 | 0 coins | 1.00x |
+| 2 | 450 coins | 0.94x |
+| 3 | 1,300 coins | 0.87x |
+| 4 | 3,600 coins | 0.78x |
+| 5 | 9,000 coins | 0.68x |
+
+New Sign multiplies the normal customer spawn interval, so lower multipliers make spawn attempts more frequent while all queue limits remain unchanged. Better Lighting and Decorations are planned but not implemented.
 
 ## Business Reputation Balance
 
