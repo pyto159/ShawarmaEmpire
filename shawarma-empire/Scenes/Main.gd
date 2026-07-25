@@ -5,6 +5,7 @@ const CUSTOMER_EXIT_POSITION: Vector2 = Vector2(1100.0, 640.0)
 const DEFAULT_SPAWN_INTERVAL: float = 3.0
 const DEFAULT_MAX_ACTIVE_CUSTOMERS: int = 5
 const DEFAULT_QUEUE_CAPACITY: int = 5
+const MINIMUM_SPAWN_INTERVAL: float = 0.5
 
 @export var spawn_interval: float = DEFAULT_SPAWN_INTERVAL
 @export var max_active_customers: int = DEFAULT_MAX_ACTIVE_CUSTOMERS
@@ -84,6 +85,8 @@ func _connect_progression_signals() -> void:
 		GameManager.recipes_changed.connect(_on_recipes_changed)
 	if not ReputationManager.business_level_changed.is_connected(_on_business_level_changed):
 		ReputationManager.business_level_changed.connect(_on_business_level_changed)
+	if not KioskUpgradeManager.kiosk_upgrades_changed.is_connected(_on_kiosk_upgrades_changed):
+		KioskUpgradeManager.kiosk_upgrades_changed.connect(_on_kiosk_upgrades_changed)
 
 
 func _on_spawn_timer_timeout() -> void:
@@ -170,8 +173,15 @@ func _on_business_level_changed(_business_level: int) -> void:
 	call_deferred("_try_spawn_customer")
 
 
+func _on_kiosk_upgrades_changed() -> void:
+	# Updating wait_time without restarting preserves the current countdown and timeout connection.
+	_update_spawn_timer_wait_time()
+
+
 func _update_spawn_timer_wait_time() -> void:
-	_spawn_timer.wait_time = max(spawn_interval / _get_total_spawn_rate_multiplier(), 0.1)
+	# Always derive the effective delay from the unchanged base interval.
+	var effective_interval: float = spawn_interval * KioskUpgradeManager.get_customer_arrival_interval_multiplier()
+	_spawn_timer.wait_time = max(effective_interval / _get_total_spawn_rate_multiplier(), MINIMUM_SPAWN_INTERVAL)
 
 
 func _get_total_spawn_rate_multiplier() -> float:
