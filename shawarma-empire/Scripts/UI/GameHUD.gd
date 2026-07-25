@@ -450,6 +450,16 @@ func _populate_dev_panel() -> void:
 		_create_dev_button("Level 4", _on_dev_set_sign_level_pressed.bind(4)),
 		_create_dev_button("Level 5", _on_dev_set_sign_level_pressed.bind(5)),
 	]))
+	content.add_child(_create_dev_section_label("Better Lighting"))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 1", _on_dev_set_lighting_level_pressed.bind(1)),
+		_create_dev_button("Level 2", _on_dev_set_lighting_level_pressed.bind(2)),
+		_create_dev_button("Level 3", _on_dev_set_lighting_level_pressed.bind(3)),
+	]))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 4", _on_dev_set_lighting_level_pressed.bind(4)),
+		_create_dev_button("Level 5", _on_dev_set_lighting_level_pressed.bind(5)),
+	]))
 	content.add_child(_create_dev_section_label("Reputation"))
 	content.add_child(_create_dev_button_row([
 		_create_dev_button("+25", _on_dev_add_reputation_pressed.bind(25)),
@@ -627,6 +637,7 @@ func _populate_business_panel() -> void:
 	_clear_rows(rows)
 	rows.add_child(_create_kiosk_upgrade_row(KioskUpgradeManager.BETTER_COUNTER_ID))
 	rows.add_child(_create_kiosk_upgrade_row(KioskUpgradeManager.NEW_SIGN_ID))
+	rows.add_child(_create_kiosk_upgrade_row(KioskUpgradeManager.BETTER_LIGHTING_ID))
 
 
 func _create_business_section_label(text: String) -> Label:
@@ -675,6 +686,8 @@ func _get_kiosk_upgrade_bonus_percent(upgrade_id: StringName, effect: float) -> 
 func _get_kiosk_upgrade_effect_text(upgrade_id: StringName, bonus_percent: int) -> String:
 	if upgrade_id == KioskUpgradeManager.NEW_SIGN_ID:
 		return "Customer arrival speed: +%d%%" % bonus_percent
+	if upgrade_id == KioskUpgradeManager.BETTER_LIGHTING_ID:
+		return "Rare order chance: +%d%%" % bonus_percent
 	return "Order income: +%d%%" % bonus_percent
 
 
@@ -829,6 +842,13 @@ func _on_dev_set_counter_level_pressed(level: int) -> void:
 func _on_dev_set_sign_level_pressed(level: int) -> void:
 	AudioManager.play_button()
 	KioskUpgradeManager.set_upgrade_level_for_testing(KioskUpgradeManager.NEW_SIGN_ID, level)
+	AudioManager.play_upgrade()
+	_update_display()
+
+
+func _on_dev_set_lighting_level_pressed(level: int) -> void:
+	AudioManager.play_button()
+	KioskUpgradeManager.set_upgrade_level_for_testing(KioskUpgradeManager.BETTER_LIGHTING_ID, level)
 	AudioManager.play_upgrade()
 	_update_display()
 

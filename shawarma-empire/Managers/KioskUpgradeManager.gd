@@ -5,6 +5,7 @@ signal kiosk_upgrade_purchased(upgrade_id: StringName, level: int)
 
 const BETTER_COUNTER_ID: StringName = &"better_counter"
 const NEW_SIGN_ID: StringName = &"new_sign"
+const BETTER_LIGHTING_ID: StringName = &"better_lighting"
 const DEFAULT_UPGRADE_LEVEL: int = 1
 
 var upgrade_levels: Dictionary = {}
@@ -59,6 +60,11 @@ func get_order_income_multiplier() -> float:
 
 func get_customer_arrival_interval_multiplier() -> float:
 	return get_upgrade_effect(NEW_SIGN_ID)
+
+
+func get_rare_order_chance_multiplier() -> float:
+	# This shared lighting effect can also scale VIP chance when VIP customers are added.
+	return get_upgrade_effect(BETTER_LIGHTING_ID)
 
 
 func set_upgrade_level_for_testing(upgrade_id: StringName, level: int) -> void:

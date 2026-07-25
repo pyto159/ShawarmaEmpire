@@ -242,9 +242,11 @@ Kiosk Upgrades are a level-based Business Expansion progression track independen
 Current kiosk upgrades:
 
 - **Better Counter:** five levels increase normal order income from **1.00x** to **1.28x**.
-- **New Sign, Better Lighting, and Decorations:** planned future categories; not implemented yet.
+- **New Sign:** five levels reduce the customer arrival interval from **1.00x** to **0.68x**.
+- **Better Lighting:** five levels increase rare-order chance from **1.00x** to **2.00x** and provide the effect hook for future VIP customer chance.
+- **Decorations:** planned future category; not implemented yet.
 
-The Kiosk Upgrades panel displays current and maximum level, current and next income bonuses, and the next upgrade cost.
+The Kiosk Upgrades panel displays current and maximum level, the category's current and next effect bonuses, and the next upgrade cost.
 
 ## Business Reputation
 
