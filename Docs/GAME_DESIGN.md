@@ -237,16 +237,14 @@ Rare and favorite bonuses can stack safely because the final delivery reward is 
 
 ### Business Expansion: Kiosk Upgrades
 
-Kiosk Upgrades are the first Business Expansion progression track and are independent from Grill upgrades. Each kiosk upgrade is purchased once from the Business panel, uses coin costs from `EconomyConfig`, persists through saves, and resets on New Game.
+Kiosk Upgrades are a level-based Business Expansion progression track independent from Grill upgrades. Upgrade levels use coin costs from `EconomyConfig`, persist through saves, and reset on New Game.
 
 Current kiosk upgrades:
 
-- **Better Counter:** improves customer comfort with **+5% customer patience**. Current patience behavior is exposed as a gameplay multiplier for customer systems and uses placeholder visuals until the patience loop receives final presentation.
-- **New Sign:** improves storefront visibility with **+10% customer spawn rate**.
-- **Better Lighting:** improves order presentation with **+5% rare order chance**.
-- **Decorations:** improves atmosphere with **+10% tip chance**.
+- **Better Counter:** five levels increase normal order income from **1.00x** to **1.28x**.
+- **New Sign, Better Lighting, and Decorations:** planned future categories; not implemented yet.
 
-The Business panel displays purchased kiosk upgrades, available kiosk upgrades, descriptions, and upgrade costs so players can plan expansion separately from cooking speed progression.
+The Kiosk Upgrades panel displays current and maximum level, current and next income bonuses, and the next upgrade cost.
 
 ## Business Reputation
 

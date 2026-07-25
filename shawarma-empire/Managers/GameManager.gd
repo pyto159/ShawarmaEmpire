@@ -15,7 +15,8 @@ const SAVE_KEY_GRILL_LEVEL: String = "grill_level"
 const SAVE_KEY_PURCHASED_UPGRADES: String = "purchased_upgrades"
 const SAVE_KEY_UNLOCKED_RECIPES: String = "unlocked_recipes"
 const SAVE_KEY_UNLOCKED_INGREDIENTS: String = "unlocked_ingredients"
-const SAVE_KEY_PURCHASED_KIOSK_UPGRADES: String = "purchased_kiosk_upgrades"
+const SAVE_KEY_KIOSK_UPGRADES: String = "kiosk_upgrades"
+const LEGACY_SAVE_KEY_KIOSK_UPGRADES: String = "purchased_kiosk_upgrades"
 const SAVE_KEY_REPUTATION: String = "reputation"
 const SAVE_KEY_BUSINESS_LEVEL: String = "business_level"
 const SAVE_KEY_GAME_VERSION: String = "game_version"
@@ -59,11 +60,13 @@ func calculate_order_reward_details(order: Order, customer: Customer = null) -> 
 		return _create_empty_reward_details(false)
 
 	var combo_increased: bool = increase_combo()
-	var base_coins: int = max(order.total_price, 0)
-	var rare_bonus_coins: int = _calculate_rare_bonus(base_coins, order.reward_multiplier)
-	var favorite_bonus_coins: int = _calculate_favorite_bonus(base_coins, customer, order)
-	var combo_bonus_coins: int = roundi(float(base_coins) * economy_config.get_combo_bonus_percent(combo_level))
-	var tip_coins: int = _roll_tip_coins(base_coins)
+	var unmodified_base_coins: int = max(order.total_price, 0)
+	# Counter income is rounded first; tips and other bonuses remain based on recipe income.
+	var base_coins: int = roundi(float(unmodified_base_coins) * KioskUpgradeManager.get_order_income_multiplier())
+	var rare_bonus_coins: int = _calculate_rare_bonus(unmodified_base_coins, order.reward_multiplier)
+	var favorite_bonus_coins: int = _calculate_favorite_bonus(unmodified_base_coins, customer, order)
+	var combo_bonus_coins: int = roundi(float(unmodified_base_coins) * economy_config.get_combo_bonus_percent(combo_level))
+	var tip_coins: int = _roll_tip_coins(unmodified_base_coins)
 	var total_coins: int = base_coins + rare_bonus_coins + favorite_bonus_coins + combo_bonus_coins + tip_coins
 
 	return {
@@ -213,7 +216,7 @@ func get_save_data() -> Dictionary:
 		SAVE_KEY_PURCHASED_UPGRADES: _get_purchased_upgrade_save_ids(),
 		SAVE_KEY_UNLOCKED_RECIPES: _get_available_recipe_save_paths(),
 		SAVE_KEY_UNLOCKED_INGREDIENTS: IngredientManager.get_unlocked_ingredient_ids(),
-		SAVE_KEY_PURCHASED_KIOSK_UPGRADES: KioskUpgradeManager.get_save_data(),
+		SAVE_KEY_KIOSK_UPGRADES: KioskUpgradeManager.get_save_data(),
 		SAVE_KEY_REPUTATION: ReputationManager.reputation,
 		SAVE_KEY_BUSINESS_LEVEL: ReputationManager.business_level,
 		SAVE_KEY_GAME_VERSION: GAME_VERSION,
@@ -226,10 +229,20 @@ func apply_save_data(save_data: Dictionary) -> void:
 	set_currency(saved_coins, saved_gems)
 	_apply_purchased_upgrade_save_ids(save_data.get(SAVE_KEY_PURCHASED_UPGRADES, []))
 	IngredientManager.apply_unlocked_ingredient_ids(save_data.get(SAVE_KEY_UNLOCKED_INGREDIENTS, []))
-	KioskUpgradeManager.apply_save_data(save_data.get(SAVE_KEY_PURCHASED_KIOSK_UPGRADES, []))
+	KioskUpgradeManager.apply_save_data(_get_kiosk_upgrade_save_data(save_data))
 	ReputationManager.apply_save_data(save_data.get(SAVE_KEY_REPUTATION, ReputationManager.STARTING_REPUTATION), save_data.get(SAVE_KEY_BUSINESS_LEVEL, ReputationManager.STARTING_BUSINESS_LEVEL))
 	_apply_grill_level_save_data(save_data)
 	reset_combo()
+
+
+func _get_kiosk_upgrade_save_data(save_data: Dictionary) -> Variant:
+	if save_data.has(SAVE_KEY_KIOSK_UPGRADES):
+		return save_data[SAVE_KEY_KIOSK_UPGRADES]
+	# The previous one-time Better Counter purchase maps to level 2.
+	var legacy_upgrades: Variant = save_data.get(LEGACY_SAVE_KEY_KIOSK_UPGRADES, [])
+	if legacy_upgrades is Array and legacy_upgrades.has(String(KioskUpgradeManager.BETTER_COUNTER_ID)):
+		return {String(KioskUpgradeManager.BETTER_COUNTER_ID): 2}
+	return {}
 
 
 func _get_purchased_upgrade_save_ids() -> Array[String]:
@@ -295,7 +308,7 @@ func _calculate_favorite_bonus(base_coins: int, customer: Customer, order: Order
 
 
 func _roll_tip_coins(base_coins: int) -> int:
-	var total_tip_chance: float = clampf(economy_config.get_tip_chance() + KioskUpgradeManager.get_tip_chance_bonus(), 0.0, 1.0)
+	var total_tip_chance: float = economy_config.get_tip_chance()
 	if base_coins <= 0 or randf() >= total_tip_chance:
 		return 0
 

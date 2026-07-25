@@ -42,14 +42,15 @@ Rare and favorite bonuses are calculated as separate additive bonus coin amounts
 
 Kiosk upgrade costs and effects live in `res://Resources/Economy/EconomyConfig.tres` and should be changed there first, with fallback values mirrored in `res://Scripts/Economy/EconomyConfig.gd`.
 
-| Upgrade | Cost | Effect |
-| --- | ---: | --- |
-| Better Counter | 120 coins | +5% customer patience |
-| New Sign | 180 coins | +10% customer spawn rate |
-| Better Lighting | 260 coins | +5% rare order chance |
-| Decorations | 340 coins | +10% tip chance |
+| Better Counter Level | Cost | Order Income Multiplier |
+| --- | ---: | ---: |
+| 1 | 0 coins | 1.00x |
+| 2 | 300 coins | 1.05x |
+| 3 | 900 coins | 1.10x |
+| 4 | 2,500 coins | 1.18x |
+| 5 | 6,500 coins | 1.28x |
 
-Kiosk upgrades are one-time purchases and are independent from Grill progression. The tip chance currently rolls a 20% bonus tip on served-order rewards when Decorations succeeds.
+Better Counter multiplies normal order income. Tips, combos, rare bonuses, and favorite bonuses remain independently based on the recipe reward. New Sign, Better Lighting, and Decorations are planned but not implemented.
 
 ## Business Reputation Balance
 
@@ -79,7 +80,6 @@ Tips and combo bonuses live in `res://Resources/Economy/EconomyConfig.tres` and 
 | --- | ---: |
 | Base Tip Chance | 20% per completed order |
 | Tip Amount | 5%–25% of base recipe reward, rounded, minimum 1 coin when a tip rolls |
-| Decorations Upgrade | +10% tip chance |
 | Maximum Combo | x10 |
 
 Combo bonuses are additive coin bonuses based on the base recipe reward. The first successful order in a streak is Combo x1 and grants no combo bonus; each consecutive successful order increases the combo by one until Combo x10.

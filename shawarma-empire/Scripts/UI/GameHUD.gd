@@ -330,7 +330,7 @@ func _start_feedback_animation(duration_seconds: float) -> void:
 func _create_progression_panels() -> void:
 	_recipes_panel = _create_base_panel("Recipe Menu", true)
 	_ingredients_panel = _create_base_panel("Ingredient Shop")
-	_business_panel = _create_base_panel("Business", true)
+	_business_panel = _create_base_panel("Kiosk Upgrades", true)
 	add_child(_recipes_panel)
 	add_child(_ingredients_panel)
 	add_child(_business_panel)
@@ -429,6 +429,16 @@ func _populate_dev_panel() -> void:
 	content.add_child(_create_dev_button_row([
 		_create_dev_button("Level 4", _on_dev_set_grill_level_pressed.bind(4)),
 		_create_dev_button("Level 5", _on_dev_set_grill_level_pressed.bind(5)),
+	]))
+	content.add_child(_create_dev_section_label("Better Counter"))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 1", _on_dev_set_counter_level_pressed.bind(1)),
+		_create_dev_button("Level 2", _on_dev_set_counter_level_pressed.bind(2)),
+		_create_dev_button("Level 3", _on_dev_set_counter_level_pressed.bind(3)),
+	]))
+	content.add_child(_create_dev_button_row([
+		_create_dev_button("Level 4", _on_dev_set_counter_level_pressed.bind(4)),
+		_create_dev_button("Level 5", _on_dev_set_counter_level_pressed.bind(5)),
 	]))
 	content.add_child(_create_dev_section_label("Reputation"))
 	content.add_child(_create_dev_button_row([
@@ -605,12 +615,7 @@ func _refresh_open_progression_panel() -> void:
 func _populate_business_panel() -> void:
 	var rows: VBoxContainer = _get_panel_rows(_business_panel)
 	_clear_rows(rows)
-	rows.add_child(_create_business_section_label("Purchased Upgrades"))
-	for purchased_upgrade: Dictionary in KioskUpgradeManager.get_purchased_upgrades():
-		rows.add_child(_create_kiosk_upgrade_row(purchased_upgrade, true))
-	rows.add_child(_create_business_section_label("Available Upgrades"))
-	for available_upgrade: Dictionary in KioskUpgradeManager.get_available_upgrades():
-		rows.add_child(_create_kiosk_upgrade_row(available_upgrade, false))
+	rows.add_child(_create_kiosk_upgrade_row(KioskUpgradeManager.BETTER_COUNTER_ID))
 
 
 func _create_business_section_label(text: String) -> Label:
@@ -620,17 +625,31 @@ func _create_business_section_label(text: String) -> Label:
 	return label
 
 
-func _create_kiosk_upgrade_row(upgrade: Dictionary, purchased: bool) -> HBoxContainer:
+func _create_kiosk_upgrade_row(upgrade_id: StringName) -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", PANEL_ROW_SEPARATION)
 	var label: Label = Label.new()
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.text = "%s — %d Coins\n%s" % [upgrade.get("name", "Upgrade"), int(upgrade.get("cost", 0)), upgrade.get("description", "")]
+	var level: int = KioskUpgradeManager.get_upgrade_level(upgrade_id)
+	var max_level: int = GameManager.economy_config.get_upgrade_max_level(upgrade_id)
+	var current_bonus: int = roundi((KioskUpgradeManager.get_upgrade_effect(upgrade_id) - 1.0) * 100.0)
+	var lines: Array[String] = [
+		GameManager.economy_config.get_upgrade_display_name(upgrade_id),
+		"Level %d / %d" % [level, max_level],
+		"Order income: +%d%%" % current_bonus,
+	]
+	if KioskUpgradeManager.is_upgrade_maxed(upgrade_id):
+		lines.append("MAX LEVEL")
+	else:
+		var next_effect: float = GameManager.economy_config.get_upgrade_effect(upgrade_id, level + 1)
+		lines.append("Next level: +%d%%" % roundi((next_effect - 1.0) * 100.0))
+		lines.append("Upgrade: %d coins" % KioskUpgradeManager.get_next_upgrade_cost(upgrade_id))
+	label.text = "\n".join(lines)
 	row.add_child(label)
 	var button: Button = Button.new()
-	button.text = "Purchased" if purchased else "Buy"
-	button.disabled = purchased or not KioskUpgradeManager.can_purchase(StringName(str(upgrade.get("id", ""))))
-	button.pressed.connect(_on_kiosk_upgrade_purchase_pressed.bind(StringName(str(upgrade.get("id", "")))))
+	button.text = "MAX LEVEL" if KioskUpgradeManager.is_upgrade_maxed(upgrade_id) else "Upgrade"
+	button.disabled = not KioskUpgradeManager.can_purchase_upgrade(upgrade_id)
+	button.pressed.connect(_on_kiosk_upgrade_purchase_pressed.bind(upgrade_id))
 	row.add_child(button)
 	return row
 
@@ -776,6 +795,13 @@ func _on_dev_set_grill_level_pressed(level: int) -> void:
 	_update_display()
 
 
+func _on_dev_set_counter_level_pressed(level: int) -> void:
+	AudioManager.play_button()
+	KioskUpgradeManager.set_upgrade_level_for_testing(KioskUpgradeManager.BETTER_COUNTER_ID, level)
+	AudioManager.play_upgrade()
+	_update_display()
+
+
 func _on_dev_add_reputation_pressed(amount: int) -> void:
 	AudioManager.play_button()
 	ReputationManager.add_reputation(amount)
@@ -803,7 +829,7 @@ func _on_ingredient_purchase_pressed(ingredient_id: String) -> void:
 
 func _on_kiosk_upgrade_purchase_pressed(upgrade_id: StringName) -> void:
 	AudioManager.play_button()
-	if KioskUpgradeManager.purchase(upgrade_id):
+	if KioskUpgradeManager.purchase_upgrade(upgrade_id):
 		AudioManager.play_upgrade()
 		_populate_business_panel()
 		_update_display()

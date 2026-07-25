@@ -554,13 +554,13 @@ Scene scripts may still adjust layout-specific spacing or label sizes, but they 
 
 ### Kiosk Upgrade Manager
 
-`KioskUpgradeManager` is an autoload at `res://Managers/KioskUpgradeManager.gd` for the first Business Expansion progression track. It owns purchased kiosk upgrade ids, exposes purchase and save/load APIs, and reads upgrade definitions from `EconomyConfig` instead of hardcoding balance in UI code.
+`KioskUpgradeManager` is an autoload at `res://Managers/KioskUpgradeManager.gd` for kiosk progression. It owns levels by stable upgrade id, exposes generic purchase and save/load APIs, and reads level costs and effects from `EconomyConfig` instead of hardcoding balance in UI code.
 
-The manager exposes gameplay bonus accessors for customer patience, customer spawn rate, rare order chance, and tip chance. `Main.gd` applies the spawn-rate multiplier to the customer spawn timer and stores the patience multiplier on spawned customers for the future patience loop. `OrderGenerator` adds the rare-order chance bonus when rolling orders, and `GameManager.calculate_order_reward()` rolls the current tip chance bonus when calculating served-order rewards.
+The first configured category is Better Counter. `GameManager.calculate_order_reward_details()` applies its multiplier only to normal order income before independently adding rare, favorite, combo, and tip rewards.
 
-`GameHUD` creates a lightweight Business panel beside the existing Recipes, Ingredients, and Grill upgrade controls. The panel is presentation-only: it displays purchased upgrades, available upgrades, descriptions, and costs, then forwards purchase requests to `KioskUpgradeManager`.
+`GameHUD` creates a scrollable Kiosk Upgrades panel beside the existing Recipes, Ingredients, and Grill controls. The panel is presentation-only: it displays current and next-level effects and cost, then forwards purchase requests to `KioskUpgradeManager`.
 
-Kiosk upgrade save data is included in `GameManager.get_save_data()` under `purchased_kiosk_upgrades`, restored through `GameManager.apply_save_data()`, and reset by `GameManager.initialize_new_game()`.
+Kiosk levels are saved under the version-tolerant `kiosk_upgrades` dictionary. Missing or invalid Better Counter levels default to Level 1 and clamp to the configured range. Legacy `purchased_kiosk_upgrades` saves migrate a purchased Better Counter to Level 2.
 
 ## Reputation System
 
